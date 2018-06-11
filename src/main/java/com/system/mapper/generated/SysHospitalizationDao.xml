@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.SysHospitalizationDao">
+  <resultMap id="BaseResultMap" type="com.system.entity.SysHospitalization">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="h_id" jdbcType="BIGINT" property="hId" />
+    <result column="p_name" jdbcType="VARCHAR" property="pName" />
+    <result column="p_sex" jdbcType="VARCHAR" property="pSex" />
+    <result column="p_age" jdbcType="INTEGER" property="pAge" />
+    <result column="h_area" jdbcType="INTEGER" property="hArea" />
+    <result column="h_bed" jdbcType="VARCHAR" property="hBed" />
+    <result column="escorts_num" jdbcType="INTEGER" property="escortsNum" />
+    <result column="visit_status" jdbcType="VARCHAR" property="visitStatus" />
+    <result column="h_date" jdbcType="DATE" property="hDate" />
+    <result column="p_status" jdbcType="VARCHAR" property="pStatus" />
+    <result column="p_insur" jdbcType="VARCHAR" property="pInsur" />
+    <result column="dcr_name" jdbcType="VARCHAR" property="dcrName" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    h_id, p_name, p_sex, p_age, h_area, h_bed, escorts_num, visit_status, h_date, p_status, 
+    p_insur, dcr_name, gmt_create, gmt_modified
+  </sql>
+</mapper>
