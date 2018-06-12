@@ -74,11 +74,5 @@ public class SysUserController {
         return sysUserService.delete(idList);
     }
 
-    @ApiOperation(value = "病区下拉列表")
-    @RequestMapping(value = "/getAreaEnumList", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public List<EnumBean> getAreaEnumList(){
-        return sysUserService.getAreaEnumList();
-    }
 
 }

@@ -103,7 +103,15 @@ public class Checker {
 
     private static Method getMethod(Object o, Field f) {
         try {
+
+            if(f.getName().length()>=2) {
+                char c = f.getName().substring(1, 2).charAt(0);
+                if (Character.isUpperCase(c)) {
+                    return o.getClass().getMethod("get" + f.getName());
+                }
+            }
             return o.getClass().getMethod("get" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1));
+
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }

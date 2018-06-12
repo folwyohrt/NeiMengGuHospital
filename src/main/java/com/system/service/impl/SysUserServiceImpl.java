@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Created by 韩宪斌 on 2017/7/10.
  */
-@Service("userService")
+@Service("sysUserService")
 class SysUserServiceImpl implements SysUserService {
 
     @Resource
@@ -68,7 +68,7 @@ class SysUserServiceImpl implements SysUserService {
     }
 
     public boolean insert(CreateSysUserInfo createSysUserInfo){
-        List<SysUser> sysUserList=sysUserDao.selectByExample(getExample(createSysUserInfo));
+        List<SysUser> sysUserList=sysUserDao.selectByExample(getExample(createSysUserInfo.getUserName()));
         if(sysUserList!=null&&sysUserList.size()>0){
             throw new NoneSaveException("不能新增同一条记录");
         }
@@ -98,21 +98,6 @@ class SysUserServiceImpl implements SysUserService {
         return true;
     }
 
-    @Override
-    public List<EnumBean> getAreaEnumList(){
-        List<EnumBean> list=new ArrayList<>();
-        try{
-            EnumBean enumBean;
-            for (AreaEnum a :AreaEnum.values()){
-                enumBean=new EnumBean(a.getKey(),a.getValue());
-                list.add(enumBean);
-            }
-        }catch (Exception e){
-            throw new NoneGetException();
-        }
-        return list;
-    }
-
     private Example getExample(String userName) {
         Example example = new Example(SysUser.class);
         Example.Criteria criteria = example.createCriteria();
@@ -123,18 +108,12 @@ class SysUserServiceImpl implements SysUserService {
     private Example getExample(SysUserQuery sysUserQuery) {
         Example example = new Example(SysUser.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("userName", sysUserQuery.getUserName());
-        criteria.andEqualTo("userPwd", sysUserQuery.getUserPwd());
-        return example;
-    }
-
-    private Example getExample(CreateSysUserInfo createSysUserInfo) {
-        Example example = new Example(SysUser.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("userName", createSysUserInfo.getUserName());
-        criteria.andEqualTo("userPwd", createSysUserInfo.getUserPwd());
-        criteria.andEqualTo("userGroup", createSysUserInfo.getUserGroup());
-        criteria.andEqualTo("userRole", "2");
+        if(sysUserQuery.getUserName()!=""){
+            criteria.andEqualTo("userName", sysUserQuery.getUserName());
+        }
+        if(sysUserQuery.getUserPwd()!=""){
+            criteria.andEqualTo("userPwd", sysUserQuery.getUserPwd());
+        }
         return example;
     }
 

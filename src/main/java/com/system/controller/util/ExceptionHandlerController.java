@@ -9,12 +9,15 @@ import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.ui.Model;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -127,6 +130,8 @@ public class ExceptionHandlerController {
         logger.error("Request: " + request.getRequestURL() + " raised:", e);
         return "输入信息为空或不合法，请检查输入信息重新输入。";
     }
+
+    private final static String ERROR_PAGE = "error";
 
     @ExceptionHandler(WebServiceException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

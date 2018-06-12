@@ -27,6 +27,5 @@ public interface SysUserService {
 
     boolean delete(List<Integer> idList);
 
-    List<EnumBean> getAreaEnumList();
 
 }

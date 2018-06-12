@@ -6,12 +6,15 @@ import javax.persistence.*;
 
 @Table(name = "sys_surgery")
 public class SysSurgery implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     /**
      * 住院号
      */
-    @Id
     @Column(name = "h_id")
-    private Long hId;
+    private String hId;
 
     /**
      * 姓名
@@ -88,11 +91,25 @@ public class SysSurgery implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * @return id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
      * 获取住院号
      *
      * @return h_id - 住院号
      */
-    public Long gethId() {
+    public String gethId() {
         return hId;
     }
 
@@ -101,8 +118,8 @@ public class SysSurgery implements Serializable {
      *
      * @param hId 住院号
      */
-    public void sethId(Long hId) {
-        this.hId = hId;
+    public void sethId(String hId) {
+        this.hId = hId == null ? null : hId.trim();
     }
 
     /**
@@ -333,7 +350,8 @@ public class SysSurgery implements Serializable {
             return false;
         }
         SysSurgery other = (SysSurgery) that;
-        return (this.gethId() == null ? other.gethId() == null : this.gethId().equals(other.gethId()))
+        return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
+            && (this.gethId() == null ? other.gethId() == null : this.gethId().equals(other.gethId()))
             && (this.getpName() == null ? other.getpName() == null : this.getpName().equals(other.getpName()))
             && (this.getpSex() == null ? other.getpSex() == null : this.getpSex().equals(other.getpSex()))
             && (this.getpAge() == null ? other.getpAge() == null : this.getpAge().equals(other.getpAge()))
@@ -352,6 +370,7 @@ public class SysSurgery implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((gethId() == null) ? 0 : gethId().hashCode());
         result = prime * result + ((getpName() == null) ? 0 : getpName().hashCode());
         result = prime * result + ((getpSex() == null) ? 0 : getpSex().hashCode());
@@ -374,6 +393,7 @@ public class SysSurgery implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
+        sb.append(", id=").append(id);
         sb.append(", hId=").append(hId);
         sb.append(", pName=").append(pName);
         sb.append(", pSex=").append(pSex);
