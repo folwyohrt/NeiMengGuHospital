@@ -1,9 +1,12 @@
 package com.system.service.impl;
 
+import com.system.controller.util.ExceptionHandlerController;
 import com.system.dao.SysAreaDao;
 import com.system.entity.SysArea;
 import com.system.service.SysAreaService;
 import com.system.util.exception.controller.result.NoneGetException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,7 +19,6 @@ import java.util.List;
  */
 @Service("sysAreaService")
 public class SysAreaServiceImpl implements SysAreaService {
-
     @Resource
     private SysAreaDao sysAreaDao;
 

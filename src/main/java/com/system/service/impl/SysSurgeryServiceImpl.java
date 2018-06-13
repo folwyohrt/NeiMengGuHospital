@@ -1,10 +1,12 @@
 package com.system.service.impl;
 
 import com.system.dao.SysSurgeryDao;
+import com.system.entity.SysArea;
 import com.system.entity.SysSurgery;
 import com.system.entity.SysSurgery;
 import com.system.entity.SysUser;
 import com.system.pojo.*;
+import com.system.service.SysAreaService;
 import com.system.service.SysSurgeryService;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,6 +26,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.system.util.tools.DateFormatHelper.getDate;
+import static com.system.util.tools.DateFormatHelper.getDateFormat;
+import static com.system.util.tools.DateFormatHelper.getDateStr;
 
 /**
  * @Auther: 李景然
@@ -38,23 +45,23 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     @Override
     public SysSurgeryDTO get(long id) {
         SysSurgery result = sysSurgeryDao.selectByPrimaryKey(id);
-        if(result==null){
+        if (result == null) {
             throw new NoneGetException("没有此条信息！");
         }
-        SysSurgeryDTO sysSurgeryDTO=convertToSysSurgeryDTO(result);
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sysSurgeryDTO.setSurgeryDatetime(simpleDateFormat.format(result.getSurgeryDatetime()));
+        SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(result);
+        sysSurgeryDTO.sethAreaStr(getAreaStr(result.gethArea()));
+        sysSurgeryDTO.setSurgeryDatetime(getDateStr(result.getSurgeryDatetime()));
         return sysSurgeryDTO;
     }
 
     @Override
     public List<SysSurgeryDTO> getList() {
-        List<SysSurgery> list=sysSurgeryDao.selectAll().stream().sorted(Comparator.comparing(SysSurgery::getGmtModified).reversed()).collect(Collectors.toList());
-        List<SysSurgeryDTO> resultList=new ArrayList<>();
-        for (SysSurgery item:list){
-            SysSurgeryDTO sysSurgeryDTO=convertToSysSurgeryDTO(item);
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            sysSurgeryDTO.setSurgeryDatetime(simpleDateFormat.format(item.getSurgeryDatetime()));
+        List<SysSurgery> list = sysSurgeryDao.selectAll().stream().sorted(Comparator.comparing(SysSurgery::getGmtModified).reversed()).collect(Collectors.toList());
+        List<SysSurgeryDTO> resultList = new ArrayList<>();
+        for (SysSurgery item : list) {
+            SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(item);
+            sysSurgeryDTO.sethAreaStr(getAreaStr(item.gethArea()));
+            sysSurgeryDTO.setSurgeryDatetime(getDateStr(item.getSurgeryDatetime()));
             resultList.add(sysSurgeryDTO);
         }
         if (resultList.size() == 0) {
@@ -64,14 +71,20 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     }
 
     @Override
-    public List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery) throws ParseException {
+    public List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getDateFormat());
         List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(sysSurgeryQuery)).stream().sorted(Comparator.comparing
-                (SysSurgery::getGmtModified).reversed()).collect(Collectors.toList());
-        List<SysSurgeryDTO> resultList=new ArrayList<>();
-        for (SysSurgery item:list){
-            SysSurgeryDTO sysSurgeryDTO=convertToSysSurgeryDTO(item);
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            sysSurgeryDTO.setSurgeryDatetime(simpleDateFormat.format(item.getSurgeryDatetime()));
+                (SysSurgery::getGmtModified).reversed()).filter(item -> {
+            if (sysSurgeryQuery.getSurgeryDatetime() != ""&&!simpleDateFormat.format(item.getSurgeryDatetime()).substring(0, 10).equals(sysSurgeryQuery.getSurgeryDatetime())) {
+            return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+        List<SysSurgeryDTO> resultList = new ArrayList<>();
+        for (SysSurgery item : list) {
+            SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(item);
+            sysSurgeryDTO.sethAreaStr(getAreaStr(item.gethArea()));
+            sysSurgeryDTO.setSurgeryDatetime(getDateStr(item.getSurgeryDatetime()));
             resultList.add(sysSurgeryDTO);
         }
         if (resultList.size() == 0) {
@@ -81,24 +94,22 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     }
 
     @Override
-    public boolean insert(SysSurgeryDTO sysSurgeryDTO) throws ParseException {
-        List<SysSurgery> sysSurgeryList=sysSurgeryDao.selectByExample(getExample(sysSurgeryDTO));
-        if(sysSurgeryList!=null&&sysSurgeryList.size()>0){
+    public boolean insert(SysSurgeryDTO sysSurgeryDTO) {
+        List<SysSurgery> sysSurgeryList = sysSurgeryDao.selectByExample(getExample(sysSurgeryDTO));
+        if (sysSurgeryList != null && sysSurgeryList.size() > 0) {
             throw new NoneSaveException("不能新增同一条记录");
         }
-        SysSurgery sysSurgery=convertToSysSurgery(sysSurgeryDTO);
+        SysSurgery sysSurgery = convertToSysSurgery(sysSurgeryDTO);
 
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sysSurgery.setSurgeryDatetime(simpleDateFormat.parse(sysSurgeryDTO.getSurgeryDatetime()));
-        return sysSurgeryDao.insertSelective(sysSurgery)>0;
+        sysSurgery.setSurgeryDatetime(getDate(sysSurgeryDTO.getSurgeryDatetime()));
+        return sysSurgeryDao.insertSelective(sysSurgery) > 0;
     }
 
     @Override
-    public boolean update(SysSurgeryDTO sysSurgeryDTO) throws ParseException {
+    public boolean update(SysSurgeryDTO sysSurgeryDTO) {
         SysSurgery sysSurgery = convertToSysSurgery(sysSurgeryDTO);
 
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sysSurgery.setSurgeryDatetime(simpleDateFormat.parse(sysSurgeryDTO.getSurgeryDatetime()));
+        sysSurgery.setSurgeryDatetime(getDate(sysSurgeryDTO.getSurgeryDatetime()));
         if (sysSurgeryDao.updateByPrimaryKeySelective(sysSurgery) > 0) {
             return true;
         }
@@ -116,28 +127,29 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         return true;
     }
 
-    private Example getExample(SysSurgeryQuery sysSurgeryQuery) throws ParseException {
+    private Example getExample(SysSurgeryQuery sysSurgeryQuery) {
         Example example = new Example(SysSurgery.class);
         Example.Criteria criteria = example.createCriteria();
 
-        if(sysSurgeryQuery.getpName()!=""){
+        if (sysSurgeryQuery.getpName() != "") {
             criteria.andEqualTo("pName", sysSurgeryQuery.getpName());
         }
-        if(sysSurgeryQuery.gethId()!=""){
+        if (sysSurgeryQuery.gethId() != "") {
             criteria.andEqualTo("hId", sysSurgeryQuery.gethId());
         }
-        if(sysSurgeryQuery.gethArea()!=0){
-            criteria.andEqualTo("hArea", sysSurgeryQuery.gethArea());;
+        if (sysSurgeryQuery.gethArea() != 0) {
+            criteria.andEqualTo("hArea", sysSurgeryQuery.gethArea());
+            ;
         }
-        if(sysSurgeryQuery.getSurgeryDatetime()!=""){
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date=simpleDateFormat.parse(sysSurgeryQuery.getSurgeryDatetime());
-            criteria.andEqualTo("surgeryDatetime", date);
-        }
+        //不能查找时间
+//        if(sysSurgeryQuery.getSurgeryDatetime()!=""){
+//            Date date = getDate(sysSurgeryQuery. getSurgeryDatetime());
+//            criteria.andEqualTo("surgeryDatetime", date);
+//        }
         return example;
     }
 
-    private Example getExample(SysSurgeryDTO sysSurgeryDTO) throws ParseException {
+    private Example getExample(SysSurgeryDTO sysSurgeryDTO) {
         Example example = new Example(SysSurgery.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("pName", sysSurgeryDTO.getpName());
@@ -153,8 +165,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         criteria.andEqualTo("visitStatus", sysSurgeryDTO.getVisitStatus());
         criteria.andEqualTo("surgeryStatus", sysSurgeryDTO.getSurgeryStatus());
 
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date=simpleDateFormat.parse(sysSurgeryDTO.getSurgeryDatetime());
+        Date date = getDate(sysSurgeryDTO.getSurgeryDatetime());
         criteria.andEqualTo("surgeryDatetime", date);
         return example;
     }
@@ -166,6 +177,14 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         SysSurgeryDTO resultDTO = new SysSurgeryDTO();
         BeanUtils.copyProperties(inputObject, resultDTO);
         return resultDTO;
+    }
+
+    @Resource
+    SysAreaService sysAreaService;
+
+    private String getAreaStr(int area) {
+        SysArea sysArea = sysAreaService.get(area);
+        return sysArea.getValue();
     }
 
     private SysSurgery convertToSysSurgery(Object inputObject) {

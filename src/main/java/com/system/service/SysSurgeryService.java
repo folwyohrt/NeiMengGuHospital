@@ -4,6 +4,7 @@ import com.system.pojo.SysSurgeryDTO;
 import com.system.pojo.SysSurgeryQuery;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -13,15 +14,15 @@ import java.util.List;
  * @Description:
  */
 public interface SysSurgeryService {
-    SysSurgeryDTO get(long id);
+    SysSurgeryDTO get(long id) ;
 
-    List<SysSurgeryDTO> getList();
+    List<SysSurgeryDTO> getList() ;
 
-    List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery) throws ParseException;
+    List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery)  ;
 
-    boolean insert(SysSurgeryDTO createSysSurgeryInfo) throws ParseException;
+    boolean insert(SysSurgeryDTO createSysSurgeryInfo)  ;
 
-    boolean update(SysSurgeryDTO sysUserDTO) throws ParseException;
+    boolean update(SysSurgeryDTO sysUserDTO)  ;
 
     boolean delete(List<Long> idList);
 

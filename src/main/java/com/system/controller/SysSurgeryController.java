@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @Api(tags = "sysSurgery", description = "手术相关操作")
 @RequestMapping(value = "/sysSurgery")
-//@CheckException(reason = "检查手术操作参数的合法性")
+@CheckException(reason = "检查手术操作参数的合法性")
 public class SysSurgeryController {
     @Resource
     private SysSurgeryService sysSurgeryService;
@@ -36,7 +36,7 @@ public class SysSurgeryController {
     @ApiOperation(value = "按多条件查询手术信息")
     @RequestMapping(value = "/getList", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public List<SysSurgeryDTO> getList(@RequestBody SysSurgeryQuery sysSurgeryQuery) throws ParseException {
+    public List<SysSurgeryDTO> getList(@RequestBody SysSurgeryQuery sysSurgeryQuery)  {
         return sysSurgeryService.getList(sysSurgeryQuery);
     }
 
@@ -50,14 +50,14 @@ public class SysSurgeryController {
     @ApiOperation(value ="新增手术信息")
     @RequestMapping(value = "/",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public boolean insert(@RequestBody SysSurgeryDTO sysSurgeryDTO) throws ParseException {
+    public boolean insert(@RequestBody SysSurgeryDTO sysSurgeryDTO)  {
         return sysSurgeryService.insert(sysSurgeryDTO);
     }
 
     @ApiOperation(value ="修改手术信息")
     @RequestMapping(value = "/",method = RequestMethod.PATCH)
     @ResponseStatus(HttpStatus.OK)
-    public boolean update(@RequestBody SysSurgeryDTO sysSurgeryDTO) throws ParseException {
+    public boolean update(@RequestBody SysSurgeryDTO sysSurgeryDTO)  {
         return sysSurgeryService.update(sysSurgeryDTO);
     }
 
