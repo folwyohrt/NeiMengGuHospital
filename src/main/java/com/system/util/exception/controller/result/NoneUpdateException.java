@@ -9,4 +9,8 @@ public class NoneUpdateException extends RequestResultErrorException {
         super("数据库更新失败！请检查输入信息！\n");
     }
 
+    public NoneUpdateException(String message) {
+        super(message+"\n");
+    }
+
 }

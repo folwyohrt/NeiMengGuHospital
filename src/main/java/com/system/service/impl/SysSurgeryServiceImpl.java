@@ -152,6 +152,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     private Example getExample(SysSurgeryDTO sysSurgeryDTO) {
         Example example = new Example(SysSurgery.class);
         Example.Criteria criteria = example.createCriteria();
+        // 应对输入数据做判空判断
         criteria.andEqualTo("pName", sysSurgeryDTO.getpName());
         criteria.andEqualTo("hId", sysSurgeryDTO.gethId());
         criteria.andEqualTo("hArea", sysSurgeryDTO.gethArea());
@@ -184,6 +185,9 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
 
     private String getAreaStr(int area) {
         SysArea sysArea = sysAreaService.get(area);
+        if(sysArea == null){
+            throw new NoneGetException("病区号：" + area + "在sys_area表中不存在！");
+        }
         return sysArea.getValue();
     }
 
