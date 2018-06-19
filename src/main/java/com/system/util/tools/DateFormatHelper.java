@@ -15,9 +15,11 @@ import java.util.Properties;
 public class DateFormatHelper {
     public static String getDateFormatAll() {
         Properties prop = new Properties();
-        String filepath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath() + "webCongfig.properties";
         try {
-            prop.load(new FileInputStream(filepath + "webCongfig.properties"));
+            // 将文件路径中含有的%20替换为空格，避免出现java.io.fileNotFoundException
+            String encodedPath = filePath.replaceAll("%20", " ");
+            prop.load(new FileInputStream(encodedPath));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -26,9 +28,11 @@ public class DateFormatHelper {
 
     public static String getDateFormat() {
         Properties prop = new Properties();
-        String filepath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath() + "webCongfig.properties";
         try {
-            prop.load(new FileInputStream(filepath + "webCongfig.properties"));
+            // 将文件路径中含有的%20替换为空格，避免出现java.io.fileNotFoundException
+            String encodedPath = filePath.replaceAll("%20", " ");
+            prop.load(new FileInputStream(encodedPath));
         } catch (IOException e) {
             e.printStackTrace();
         }
