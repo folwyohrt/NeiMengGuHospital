@@ -63,6 +63,8 @@ public class DateFormatHelper {
 
     private void readProperties(){
         String filepath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        // 将文件路径中含有的%20替换为空格，避免出现java.io.fileNotFoundException
+        filepath = filepath.replaceAll("%20", " ");
         try {
             prop.load(new FileInputStream(filepath + "webCongfig.properties"));
         } catch (IOException e) {
