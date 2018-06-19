@@ -1,5 +1,6 @@
 package com.system.controller;
 
+import com.system.facade.SysHospitalizationVisitStatusService;
 import com.system.pojo.SysHospitalizationDTO;
 import com.system.pojo.SysHospitalizationQuery;
 import com.system.service.SysHospitalizationService;
@@ -66,5 +67,15 @@ public class SysHospitalizationController {
     @ResponseStatus(HttpStatus.OK)
     public boolean delete(@RequestBody List<Long> idList){
         return sysHospitalizationService.delete(idList);
+    }
+
+    @Resource
+    private SysHospitalizationVisitStatusService sysHospitalizationVisitStatusService;
+
+    @ApiOperation(value ="修改病人探视信息")
+    @RequestMapping(value = "update/{id}/{status}",method = RequestMethod.PATCH)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateVisitStatus(@PathVariable Long id, @PathVariable Integer status){
+        sysHospitalizationVisitStatusService.updateHospitalizationVisitStatus(id, status);
     }
 }
