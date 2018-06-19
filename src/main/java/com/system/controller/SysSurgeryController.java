@@ -1,5 +1,6 @@
 package com.system.controller;
 
+import com.system.facade.SysSurgeryVisitService;
 import com.system.pojo.SysSurgeryDTO;
 import com.system.pojo.SysSurgeryQuery;
 import com.system.service.SysSurgeryService;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -26,11 +26,14 @@ public class SysSurgeryController {
     @Resource
     private SysSurgeryService sysSurgeryService;
 
+    @Resource
+    private SysSurgeryVisitService sysSurgeryVisitService;
+
     @ApiOperation(value = "根据id查询手术信息")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public SysSurgeryDTO get(@PathVariable long id){
-        return sysSurgeryService.get(id);
+        return sysSurgeryService.getDTO(id);
     }
 
     @ApiOperation(value = "按多条件查询手术信息")
@@ -66,5 +69,13 @@ public class SysSurgeryController {
     @ResponseStatus(HttpStatus.OK)
     public boolean delete(@RequestBody List<Long> idList){
         return sysSurgeryService.delete(idList);
+    }
+
+
+    @ApiOperation(value ="探视、离开")
+    @RequestMapping(value = "/{id}/{visit_status}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean visit(@RequestAttribute long id,int visitStatus){
+        return sysSurgeryVisitService.updateVisit(id,visitStatus);
     }
 }

@@ -43,7 +43,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     private SysSurgeryDao sysSurgeryDao;
 
     @Override
-    public SysSurgeryDTO get(long id) {
+    public SysSurgeryDTO getDTO(long id) {
         SysSurgery result = sysSurgeryDao.selectByPrimaryKey(id);
         if (result == null) {
             throw new NoneGetException("没有此条信息！");
@@ -52,6 +52,15 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         sysSurgeryDTO.sethAreaStr(getAreaStr(result.gethArea()));
         sysSurgeryDTO.setSurgeryDatetime(getDateStr(result.getSurgeryDatetime()));
         return sysSurgeryDTO;
+    }
+
+    @Override
+    public SysSurgery get(long id) {
+        SysSurgery result = sysSurgeryDao.selectByPrimaryKey(id);
+        if (result == null) {
+            throw new NoneGetException("没有此条信息！");
+        }
+        return result;
     }
 
     @Override
@@ -110,6 +119,14 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         SysSurgery sysSurgery = convertToSysSurgery(sysSurgeryDTO);
 
         sysSurgery.setSurgeryDatetime(getDate(sysSurgeryDTO.getSurgeryDatetime()));
+        if (sysSurgeryDao.updateByPrimaryKeySelective(sysSurgery) > 0) {
+            return true;
+        }
+        throw new NoneUpdateException();
+    }
+
+    @Override
+    public boolean update(SysSurgery sysSurgery) {
         if (sysSurgeryDao.updateByPrimaryKeySelective(sysSurgery) > 0) {
             return true;
         }

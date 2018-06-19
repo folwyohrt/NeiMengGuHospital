@@ -1,5 +1,6 @@
 package com.system.service;
 
+import com.system.entity.SysSurgery;
 import com.system.pojo.SysSurgeryDTO;
 import com.system.pojo.SysSurgeryQuery;
 import org.springframework.stereotype.Service;
@@ -14,15 +15,19 @@ import java.util.List;
  * @Description:
  */
 public interface SysSurgeryService {
-    SysSurgeryDTO get(long id) ;
+    SysSurgeryDTO getDTO(long id);
 
-    List<SysSurgeryDTO> getList() ;
+    SysSurgery get(long id);
 
-    List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery)  ;
+    List<SysSurgeryDTO> getList();
 
-    boolean insert(SysSurgeryDTO createSysSurgeryInfo)  ;
+    List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery);
 
-    boolean update(SysSurgeryDTO sysUserDTO)  ;
+    boolean insert(SysSurgeryDTO createSysSurgeryInfo);
+
+    boolean update(SysSurgeryDTO sysUserDTO);
+
+    boolean update(SysSurgery sysUser);
 
     boolean delete(List<Long> idList);
 
