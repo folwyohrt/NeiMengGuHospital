@@ -1,6 +1,8 @@
 package com.system.controller;
 
 import com.system.entity.SysArea;
+import com.system.pojo.CreateSysAreaInfo;
+import com.system.pojo.SysAreaDTO;
 import com.system.pojo.SysUserDTO;
 import com.system.service.SysAreaService;
 import com.system.service.SysUserService;
@@ -42,4 +44,24 @@ public class SysAreaController {
         return sysAreaService.getList();
     }
 
+    @ApiOperation(value ="新增病区名")
+    @RequestMapping(value = "/",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean insert(@RequestBody CreateSysAreaInfo sysAreaInfo){
+        return sysAreaService.insert(sysAreaInfo);
+    }
+
+    @ApiOperation(value ="修改病区名")
+    @RequestMapping(value = "/",method = RequestMethod.PATCH)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean update(@RequestBody SysAreaDTO sysAreaDTO){
+        return sysAreaService.update(sysAreaDTO);
+    }
+
+    @ApiOperation(value ="删除病区名")
+    @RequestMapping(value = "/",method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean delete(@RequestBody List<Integer> idList){
+        return sysAreaService.delete(idList);
+    }
 }
