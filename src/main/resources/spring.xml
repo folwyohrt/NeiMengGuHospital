@@ -20,7 +20,7 @@
     <import resource="spring-beans.xml"/>
     <import resource="spring-mvc.xml"/>
 
-    <!-- 扫描注解，除去com.system注解，wcom.system层注解在mvc配置中扫描 -->
+    <!-- 扫描注解，除去com.system注解，com.system层注解在mvc配置中扫描 -->
     <context:component-scan
             base-package="com.system">
         <context:exclude-filter type="annotation"

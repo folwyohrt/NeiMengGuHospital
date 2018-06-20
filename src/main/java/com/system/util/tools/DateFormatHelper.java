@@ -13,13 +13,26 @@ import java.util.Properties;
  * @Description:
  */
 public class DateFormatHelper {
+
+    private static DateFormatHelper dateFormatHelper;
+    private static Properties prop = new Properties();
+
+    private DateFormatHelper(){
+        readProperties();
+    }
+
+    private static DateFormatHelper getSingle(){
+        if(dateFormatHelper==null){
+            dateFormatHelper=new DateFormatHelper();
+        }
+        return dateFormatHelper;
+    }
+
     public static String getDateFormatAll() {
         Properties prop = new Properties();
-        String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath() + "webCongfig.properties";
+        String filepath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         try {
-            // 将文件路径中含有的%20替换为空格，避免出现java.io.fileNotFoundException
-            String encodedPath = filePath.replaceAll("%20", " ");
-            prop.load(new FileInputStream(encodedPath));
+            prop.load(new FileInputStream(filepath + "webCongfig.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -27,15 +40,7 @@ public class DateFormatHelper {
     }
 
     public static String getDateFormat() {
-        Properties prop = new Properties();
-        String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath() + "webCongfig.properties";
-        try {
-            // 将文件路径中含有的%20替换为空格，避免出现java.io.fileNotFoundException
-            String encodedPath = filePath.replaceAll("%20", " ");
-            prop.load(new FileInputStream(encodedPath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        getSingle();
         return prop.getProperty("dateFormat");
     }
 
@@ -54,5 +59,16 @@ public class DateFormatHelper {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getDateFormat());
         String str = simpleDateFormat.format(date);
         return str;
+    }
+
+    private void readProperties(){
+        String filepath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        // 将文件路径中含有的%20替换为空格，避免出现java.io.fileNotFoundException
+        filepath = filepath.replaceAll("%20", " ");
+        try {
+            prop.load(new FileInputStream(filepath + "webCongfig.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

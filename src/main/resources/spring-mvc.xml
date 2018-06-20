@@ -22,6 +22,7 @@
                                 expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
     </context:component-scan>
 
+    <!--静态资源请求的处理-->
     <mvc:default-servlet-handler/>
 
     <!-- 设置对字符串的消息转换器 -->
@@ -49,6 +50,10 @@
             </list>
         </property>
     </bean>
+
+    <!-- 配置mvc注解驱动 -->
+    <!-- 例如@resquestmapping这类的 -->
+    <!--这个标签起作用的前提就是需要我们把静态资源放在webapp下，而非WEB-INF下，否则还是会无效-->
     <mvc:annotation-driven>
         <mvc:message-converters>
             <ref bean="stringHttpMessageConverter"/>
