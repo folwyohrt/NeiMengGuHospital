@@ -107,10 +107,10 @@ public class Checker {
             if(f.getName().length()>=2) {
                 char c = f.getName().substring(1, 2).charAt(0);
                 if (Character.isUpperCase(c)) {
-                    return o.getClass().getMethod("getDTO" + f.getName());
+                    return o.getClass().getMethod("get" + f.getName());
                 }
             }
-            return o.getClass().getMethod("getDTO" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1));
+            return o.getClass().getMethod("get" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1));
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();

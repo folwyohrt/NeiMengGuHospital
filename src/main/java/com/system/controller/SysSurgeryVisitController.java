@@ -30,5 +30,4 @@ public class SysSurgeryVisitController {
     public boolean update(@PathVariable long id,int visitStatus){
         return sysSurgeryVisitService.updateVisit(id,visitStatus);
     }
-
 }
