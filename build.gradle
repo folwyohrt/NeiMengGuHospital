@@ -67,6 +67,10 @@ dependencies {
     //log4j
     compile "log4j:log4j:1.2.17"
 
+    // https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp
+    compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4'
+
+
     mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.3.5'
     mybatisGenerator 'org.mybatis.generator:mybatis-generator-maven-plugin:1.3.5'
     mybatisGenerator 'mysql:mysql-connector-java:5.1.38'
@@ -85,14 +89,14 @@ def getDbProperties = {
 task mybatisGenerate  {
     def properties = getDbProperties()
     ant.properties['targetProject'] = projectDir.path
-    ant.properties['driverClass'] = properties.getProperty("jdbc_driver")
-    ant.properties['connectionURL'] = properties.getProperty("jdbc_url")
-    ant.properties['userId'] = properties.getProperty("jdbc_username")
-    ant.properties['password'] = properties.getProperty("jdbc_password")
+    ant.properties['driverClass'] = properties.getProperty("ds1.jdbc_driver")
+    ant.properties['connectionURL'] = properties.getProperty("ds1.jdbc_url")
+    ant.properties['userId'] = properties.getProperty("ds1.jdbc_username")
+    ant.properties['password'] = properties.getProperty("ds1.jdbc_password")
     ant.properties['src_main_java'] = sourceSets.main.java.srcDirs[0].path
-    ant.properties['modelPackage'] = properties.getProperty("model.package")
-    ant.properties['daoPackage'] = properties.getProperty("dao.package")
-    ant.properties['sqlMapperPackage'] = properties.getProperty("xml.sqlmapper.package")
+    ant.properties['modelPackage'] = properties.getProperty("ds1.model.package")
+    ant.properties['daoPackage'] = properties.getProperty("ds1.dao.package")
+    ant.properties['sqlMapperPackage'] = properties.getProperty("ds1.xml.sqlmapper.package")
     ant.taskdef(
             name: 'mbgenerator',
             classname: 'org.mybatis.generator.ant.GeneratorAntTask',
@@ -101,6 +105,40 @@ task mybatisGenerate  {
 
     ant.mbgenerator(overwrite: true,
             configfile: 'src/main/resources/generatorConfig.xml', verbose: true) {
+        propertyset {
+            propertyref(name: 'targetProject')
+            propertyref(name: 'userId')
+            propertyref(name: 'driverClass')
+            propertyref(name: 'connectionURL')
+            propertyref(name: 'password')
+            propertyref(name: 'src_main_java')
+            propertyref(name: 'src_main_resources')
+            propertyref(name: 'modelPackage')
+            propertyref(name: 'daoPackage')
+            propertyref(name: 'sqlMapperPackage')
+        }
+    }
+}
+
+task mybatisGenerateNM  {
+    def properties = getDbProperties()
+    ant.properties['targetProject'] = projectDir.path
+    ant.properties['driverClass'] = properties.getProperty("ds2.jdbc_driver")
+    ant.properties['connectionURL'] = properties.getProperty("ds2.jdbc_url")
+    ant.properties['userId'] = properties.getProperty("ds2.jdbc_username")
+    ant.properties['password'] = properties.getProperty("ds2.jdbc_password")
+    ant.properties['src_main_java'] = sourceSets.main.java.srcDirs[0].path
+    ant.properties['modelPackage'] = properties.getProperty("ds2.model.package")
+    ant.properties['daoPackage'] = properties.getProperty("ds2.dao.package")
+    ant.properties['sqlMapperPackage'] = properties.getProperty("ds2.xml.sqlmapper.package")
+    ant.taskdef(
+            name: 'mbgenerator',
+            classname: 'org.mybatis.generator.ant.GeneratorAntTask',
+            classpath: configurations.mybatisGenerator.asPath
+    )
+
+    ant.mbgenerator(overwrite: true,
+            configfile: 'src/main/resources/generatorConfig2.xml', verbose: true) {
         propertyset {
             propertyref(name: 'targetProject')
             propertyref(name: 'userId')

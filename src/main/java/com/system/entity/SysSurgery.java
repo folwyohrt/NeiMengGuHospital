@@ -62,7 +62,7 @@ public class SysSurgery implements Serializable {
      * 手术类型
      */
     @Column(name = "surgery_status")
-    private String surgeryStatus;
+    private Integer surgeryStatus;
 
     /**
      * 手术时间
@@ -253,7 +253,7 @@ public class SysSurgery implements Serializable {
      *
      * @return surgery_status - 手术类型
      */
-    public String getSurgeryStatus() {
+    public Integer getSurgeryStatus() {
         return surgeryStatus;
     }
 
@@ -262,8 +262,8 @@ public class SysSurgery implements Serializable {
      *
      * @param surgeryStatus 手术类型
      */
-    public void setSurgeryStatus(String surgeryStatus) {
-        this.surgeryStatus = surgeryStatus == null ? null : surgeryStatus.trim();
+    public void setSurgeryStatus(Integer surgeryStatus) {
+        this.surgeryStatus = surgeryStatus;
     }
 
     /**

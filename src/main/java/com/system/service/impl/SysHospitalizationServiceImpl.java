@@ -3,25 +3,24 @@ package com.system.service.impl;
 import com.system.dao.SysHospitalizationDao;
 import com.system.entity.SysArea;
 import com.system.entity.SysHospitalization;
+import com.system.entity.SysMedicalInsurance;
+import com.system.entity.SysPatientStatus;
 import com.system.pojo.SysHospitalizationDTO;
 import com.system.pojo.SysHospitalizationQuery;
 import com.system.service.SysAreaService;
 import com.system.service.SysHospitalizationService;
+import com.system.service.SysMedicalInsuranceService;
+import com.system.service.SysPatientStatusService;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
-import com.system.util.tools.DateFormatHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,22 +43,13 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         if (result == null) {
             throw new NoneGetException("没有此条信息！");
         }
-        SysHospitalizationDTO sysHospitalizationDTO = convertToSysHospitalizationDTO(result);
-        sysHospitalizationDTO.sethAreaStr(getAreaStr(result.gethArea()));
-        sysHospitalizationDTO.sethDate(getDateStr(result.gethDate()));
-        return sysHospitalizationDTO;
+        return getSysHospitalizationDTO(result);
     }
 
     @Override
     public List<SysHospitalizationDTO> getList()  {
         List<SysHospitalization> list = sysHospitalizationDao.selectAll().stream().sorted(Comparator.comparing(SysHospitalization::getGmtModified).reversed()).collect(Collectors.toList());
-        List<SysHospitalizationDTO> resultList = new ArrayList<>();
-        for (SysHospitalization item : list) {
-            SysHospitalizationDTO sysHospitalizationDTO = convertToSysHospitalizationDTO(item);
-            sysHospitalizationDTO.sethAreaStr(getAreaStr(item.gethArea()));
-            sysHospitalizationDTO.sethDate(getDateStr(item.gethDate()));
-            resultList.add(sysHospitalizationDTO);
-        }
+        List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
         if (resultList.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
@@ -76,13 +66,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
             }
             return true;
         }).collect(Collectors.toList());
-        List<SysHospitalizationDTO> resultList = new ArrayList<>();
-        for (SysHospitalization item : list) {
-            SysHospitalizationDTO sysHospitalizationDTO = convertToSysHospitalizationDTO(item);
-            sysHospitalizationDTO.sethAreaStr(getAreaStr(item.gethArea()));
-            sysHospitalizationDTO.sethDate(getDateStr(item.gethDate()));
-            resultList.add(sysHospitalizationDTO);
-        }
+        List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
         if (resultList.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
@@ -183,6 +167,20 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         return sysArea.getValue();
     }
 
+    @Resource
+    SysPatientStatusService sysPatientStatusService;
+    private String getPatientStatusStr(int id) {
+        SysPatientStatus sysPatientStatus=sysPatientStatusService.get(id);
+        return sysPatientStatus.getValue();
+    }
+
+    @Resource
+    SysMedicalInsuranceService sysMedicalInsuranceService;
+    private String getMedicalInsuranceStr(int id) {
+        SysMedicalInsurance sysPatientStatus=sysMedicalInsuranceService.get(id);
+        return sysPatientStatus.getValue();
+    }
+
     private SysHospitalization convertToSysHospitalization(Object inputObject) {
         if (null == inputObject) {
             return null;
@@ -190,6 +188,24 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         SysHospitalization result = new SysHospitalization();
         BeanUtils.copyProperties(inputObject, result);
         return result;
+    }
+
+    private List<SysHospitalizationDTO> getSysHospitalizationDTOS(List<SysHospitalization> list) {
+        List<SysHospitalizationDTO> resultList = new ArrayList<>();
+        for (SysHospitalization item : list) {
+            SysHospitalizationDTO sysHospitalizationDTO = getSysHospitalizationDTO(item);
+            resultList.add(sysHospitalizationDTO);
+        }
+        return resultList;
+    }
+
+    private SysHospitalizationDTO getSysHospitalizationDTO(SysHospitalization sysHospitalization) {
+        SysHospitalizationDTO sysHospitalizationDTO = convertToSysHospitalizationDTO(sysHospitalization);
+        sysHospitalizationDTO.sethAreaStr(getAreaStr(sysHospitalization.gethArea()));
+        sysHospitalizationDTO.setpStatusStr(getPatientStatusStr(sysHospitalization.getpStatus()));
+        sysHospitalizationDTO.setpInsurStr(getMedicalInsuranceStr(sysHospitalization.getpInsur()));
+        sysHospitalizationDTO.sethDate(getDateStr(sysHospitalization.gethDate()));
+        return sysHospitalizationDTO;
     }
 
 }

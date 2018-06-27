@@ -19,8 +19,12 @@ public class SysHospitalizationDTO {
     private Integer escortsNum;
     private String visitStatus;
     private String hDate;
-    private String pStatus;
-    private String pInsur;
+
+    private Integer pStatus;
+    private String pStatusStr;
+    private Integer pInsur;
+    private String pInsurStr;
+
     private String dcrName;
 
     public Long getId() {
@@ -103,19 +107,19 @@ public class SysHospitalizationDTO {
         this.hDate = hDate;
     }
 
-    public String getpStatus() {
+    public Integer getpStatus() {
         return pStatus;
     }
 
-    public void setpStatus(String pStatus) {
+    public void setpStatus(Integer pStatus) {
         this.pStatus = pStatus;
     }
 
-    public String getpInsur() {
+    public Integer getpInsur() {
         return pInsur;
     }
 
-    public void setpInsur(String pInsur) {
+    public void setpInsur(Integer pInsur) {
         this.pInsur = pInsur;
     }
 
@@ -133,5 +137,21 @@ public class SysHospitalizationDTO {
 
     public void sethAreaStr(String hAreaStr) {
         this.hAreaStr = hAreaStr;
+    }
+
+    public String getpStatusStr() {
+        return pStatusStr;
+    }
+
+    public void setpStatusStr(String pStatusStr) {
+        this.pStatusStr = pStatusStr;
+    }
+
+    public String getpInsurStr() {
+        return pInsurStr;
+    }
+
+    public void setpInsurStr(String pInsurStr) {
+        this.pInsurStr = pInsurStr;
     }
 }

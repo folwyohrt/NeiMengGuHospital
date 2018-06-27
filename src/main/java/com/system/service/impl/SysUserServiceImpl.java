@@ -1,24 +1,19 @@
 package com.system.service.impl;
 
-import com.google.gson.Gson;
 import com.system.dao.SysUserDao;
 import com.system.entity.SysUser;
 import com.system.pojo.*;
 import com.system.service.SysUserService;
-import com.system.util.exception.controller.input.NullArgumentException;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +30,7 @@ class SysUserServiceImpl implements SysUserService {
     @Override
     public SysUserDTO get(int id) {
         SysUser result = sysUserDao.selectByPrimaryKey(id);
-        if(result==null){
+        if (result == null) {
             throw new NoneGetException("没有该用户！");
         }
         return convertToSysUserDTO(result);
@@ -44,7 +39,7 @@ class SysUserServiceImpl implements SysUserService {
     public SysUserDTO login(SysUserQuery sysUserQuery) {
         List<SysUser> sysUserList = sysUserDao.selectByExample(getExample(sysUserQuery));
         if (sysUserList.size() != 0) {
-            SysUserDTO sysUserDTO=convertToSysUserDTO(sysUserList.get(0));
+            SysUserDTO sysUserDTO = convertToSysUserDTO(sysUserList.get(0));
             return sysUserDTO;
         }
         throw new NoneGetException();
@@ -62,7 +57,7 @@ class SysUserServiceImpl implements SysUserService {
 
     @Override
     public List<SysUserDTO> getList(String name) {
-        List<SysUserDTO> resultList = sysUserDao.selectAll().stream().filter(item->item.getUserName().equals(name)).sorted(Comparator.comparing
+        List<SysUserDTO> resultList = sysUserDao.selectAll().stream().filter(item -> item.getUserName().equals(name)).sorted(Comparator.comparing
                 (SysUser::getGmtModified).reversed()).map(this::convertToSysUserDTO).collect(Collectors.toList());
         if (resultList.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
@@ -70,14 +65,14 @@ class SysUserServiceImpl implements SysUserService {
         return resultList;
     }
 
-    public boolean insert(CreateSysUserInfo createSysUserInfo){
-        List<SysUser> sysUserList=sysUserDao.selectByExample(getExample(createSysUserInfo.getUserName()));
-        if(sysUserList!=null&&sysUserList.size()>0){
+    public boolean insert(CreateSysUserInfo createSysUserInfo) {
+        List<SysUser> sysUserList = sysUserDao.selectByExample(getExample(createSysUserInfo.getUserName()));
+        if (sysUserList != null && sysUserList.size() > 0) {
             throw new NoneSaveException("不能新增同一条记录");
         }
-        SysUser sysUser=convertToSysUser(createSysUserInfo);
+        SysUser sysUser = convertToSysUser(createSysUserInfo);
         sysUser.setUserRole("2");
-        return sysUserDao.insertSelective(sysUser)>0;
+        return sysUserDao.insertSelective(sysUser) > 0;
     }
 
     @Override
@@ -111,10 +106,10 @@ class SysUserServiceImpl implements SysUserService {
     private Example getExample(SysUserQuery sysUserQuery) {
         Example example = new Example(SysUser.class);
         Example.Criteria criteria = example.createCriteria();
-        if(sysUserQuery.getUserName()!=""){
+        if (sysUserQuery.getUserName() != "") {
             criteria.andEqualTo("userName", sysUserQuery.getUserName());
         }
-        if(sysUserQuery.getUserPwd()!=""){
+        if (sysUserQuery.getUserPwd() != "") {
             criteria.andEqualTo("userPwd", sysUserQuery.getUserPwd());
         }
         return example;
