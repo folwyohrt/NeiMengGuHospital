@@ -68,13 +68,13 @@ public class SysHospitalization implements Serializable {
      * 患者状态
      */
     @Column(name = "p_status")
-    private String pStatus;
+    private Integer pStatus;
 
     /**
      * 医保类型
      */
     @Column(name = "p_insur")
-    private String pInsur;
+    private Integer pInsur;
 
     /**
      * 责任医生
@@ -277,7 +277,7 @@ public class SysHospitalization implements Serializable {
      *
      * @return p_status - 患者状态
      */
-    public String getpStatus() {
+    public Integer getpStatus() {
         return pStatus;
     }
 
@@ -286,8 +286,8 @@ public class SysHospitalization implements Serializable {
      *
      * @param pStatus 患者状态
      */
-    public void setpStatus(String pStatus) {
-        this.pStatus = pStatus == null ? null : pStatus.trim();
+    public void setpStatus(Integer pStatus) {
+        this.pStatus = pStatus;
     }
 
     /**
@@ -295,7 +295,7 @@ public class SysHospitalization implements Serializable {
      *
      * @return p_insur - 医保类型
      */
-    public String getpInsur() {
+    public Integer getpInsur() {
         return pInsur;
     }
 
@@ -304,8 +304,8 @@ public class SysHospitalization implements Serializable {
      *
      * @param pInsur 医保类型
      */
-    public void setpInsur(String pInsur) {
-        this.pInsur = pInsur == null ? null : pInsur.trim();
+    public void setpInsur(Integer pInsur) {
+        this.pInsur = pInsur;
     }
 
     /**

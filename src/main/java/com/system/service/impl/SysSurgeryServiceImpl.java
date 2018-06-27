@@ -1,13 +1,12 @@
 package com.system.service.impl;
 
 import com.system.dao.SysSurgeryDao;
-import com.system.entity.SysArea;
+import com.system.entity.*;
 import com.system.entity.SysSurgery;
-import com.system.entity.SysSurgery;
-import com.system.entity.SysUser;
 import com.system.pojo.*;
 import com.system.service.SysAreaService;
 import com.system.service.SysSurgeryService;
+import com.system.service.SysSurgeryStatusService;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
@@ -48,8 +47,13 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         if (result == null) {
             throw new NoneGetException("没有此条信息！");
         }
+        return getSysSurgeryDTO(result);
+    }
+
+    private SysSurgeryDTO getSysSurgeryDTO(SysSurgery result) {
         SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(result);
         sysSurgeryDTO.sethAreaStr(getAreaStr(result.gethArea()));
+        sysSurgeryDTO.setSurgeryStatusStr(getSurgeryStatusStr(result.getSurgeryStatus()));
         sysSurgeryDTO.setSurgeryDatetime(getDateStr(result.getSurgeryDatetime()));
         return sysSurgeryDTO;
     }
@@ -66,21 +70,25 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     @Override
     public List<SysSurgeryDTO> getList() {
         List<SysSurgery> list = sysSurgeryDao.selectAll().stream().sorted(Comparator.comparing(SysSurgery::getGmtModified).reversed()).collect(Collectors.toList());
-        List<SysSurgeryDTO> resultList = new ArrayList<>();
-        for (SysSurgery item : list) {
-            SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(item);
-            sysSurgeryDTO.sethAreaStr(getAreaStr(item.gethArea()));
-            sysSurgeryDTO.setSurgeryDatetime(getDateStr(item.getSurgeryDatetime()));
-            resultList.add(sysSurgeryDTO);
-        }
+        List<SysSurgeryDTO> resultList = getSysSurgeryDTOS(list);
         if (resultList.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
         return resultList;
     }
 
+    private List<SysSurgeryDTO> getSysSurgeryDTOS(List<SysSurgery> list) {
+        List<SysSurgeryDTO> resultList = new ArrayList<>();
+        for (SysSurgery item : list) {
+            SysSurgeryDTO sysSurgeryDTO = getSysSurgeryDTO(item);
+            resultList.add(sysSurgeryDTO);
+        }
+        return resultList;
+    }
+
     @Override
     public List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery) {
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getDateFormat());
         List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(sysSurgeryQuery)).stream().sorted(Comparator.comparing
                 (SysSurgery::getGmtModified).reversed()).filter(item -> {
@@ -89,13 +97,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
             }
             return true;
         }).collect(Collectors.toList());
-        List<SysSurgeryDTO> resultList = new ArrayList<>();
-        for (SysSurgery item : list) {
-            SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(item);
-            sysSurgeryDTO.sethAreaStr(getAreaStr(item.gethArea()));
-            sysSurgeryDTO.setSurgeryDatetime(getDateStr(item.getSurgeryDatetime()));
-            resultList.add(sysSurgeryDTO);
-        }
+        List<SysSurgeryDTO> resultList = getSysSurgeryDTOS(list);
         if (resultList.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
@@ -199,13 +201,19 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
 
     @Resource
     SysAreaService sysAreaService;
-
     private String getAreaStr(int area) {
         SysArea sysArea = sysAreaService.get(area);
         if(sysArea == null){
             throw new NoneGetException("病区号：" + area + "在sys_area表中不存在！");
         }
         return sysArea.getValue();
+    }
+
+    @Resource
+    SysSurgeryStatusService sysSurgeryStatusService;
+    private String getSurgeryStatusStr(int id) {
+        SysSurgeryStatus sysSurgeryStatus = sysSurgeryStatusService.get(id);
+        return sysSurgeryStatus.getValue();
     }
 
     private SysSurgery convertToSysSurgery(Object inputObject) {

@@ -23,7 +23,10 @@ public class SysSurgeryDTO {
     private String hBed;
     private Integer escortsNum;
     private String visitStatus;
-    private String surgeryStatus;
+
+    private Integer surgeryStatus;
+    private String surgeryStatusStr;
+
     private String surgeryDatetime;
     private String surgeryPodx;
 
@@ -107,11 +110,11 @@ public class SysSurgeryDTO {
         this.visitStatus = visitStatus;
     }
 
-    public String getSurgeryStatus() {
+    public Integer getSurgeryStatus() {
         return surgeryStatus;
     }
 
-    public void setSurgeryStatus(String surgeryStatus) {
+    public void setSurgeryStatus(Integer surgeryStatus) {
         this.surgeryStatus = surgeryStatus;
     }
 
@@ -129,5 +132,13 @@ public class SysSurgeryDTO {
 
     public void setSurgeryPodx(String surgeryPodx) {
         this.surgeryPodx = surgeryPodx;
+    }
+
+    public String getSurgeryStatusStr() {
+        return surgeryStatusStr;
+    }
+
+    public void setSurgeryStatusStr(String surgeryStatusStr) {
+        this.surgeryStatusStr = surgeryStatusStr;
     }
 }

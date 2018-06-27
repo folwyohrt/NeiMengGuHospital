@@ -16,7 +16,6 @@
         </property>
     </bean>
 
-
     <!--配置druid监控拦截器-->
     <bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
         <property name="slowSqlMillis" value="10000"/>
@@ -34,12 +33,12 @@
     </bean>
 
     <!--配置druid连接池-->
-    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="dataSource1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- 基本属性 driver、url、user、password -->
-        <property name="driverClassName" value="${jdbc_driver}"/>
-        <property name="url" value="${jdbc_url}"/>
-        <property name="username" value="${jdbc_username}"/>
-        <property name="password" value="${jdbc_password}"/>
+        <property name="driverClassName" value="${ds1.jdbc_driver}"/>
+        <property name="url" value="${ds1.jdbc_url}"/>
+        <property name="username" value="${ds1.jdbc_username}"/>
+        <property name="password" value="${ds1.jdbc_password}"/>
 
         <!-- 配置初始化大小、最小、最大 -->
         <property name="initialSize" value="${initialSize}"/>
@@ -47,7 +46,7 @@
         <property name="maxActive" value="${maxActive}"/>
 
         <!-- 配置获取连接等待超时的时间 -->
-        <property name="maxWait" value="60000"/>
+        <property name="maxWait" value="${maxWait}"/>
 
         <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
         <property name="timeBetweenEvictionRunsMillis" value="60000"/>
@@ -79,9 +78,67 @@
         </property>
     </bean>
 
+    <!--配置druid连接池-->
+    <bean id="dataSource2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <!-- 基本属性 driver、url、user、password -->
+        <property name="driverClassName" value="${ds2.jdbc_driver}"/>
+        <property name="url" value="${ds2.jdbc_url}"/>
+        <property name="username" value="${ds2.jdbc_username}"/>
+        <property name="password" value="${ds2.jdbc_password}"/>
+
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="${initialSize}"/>
+        <property name="minIdle" value="${minIdle}"/>
+        <property name="maxActive" value="${maxActive}"/>
+
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${maxWait}"/>
+
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="poolPreparedStatements" value="false"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+
+        <!-- 连接泄漏监测 -->
+        <property name="removeAbandoned" value="true"/> <!-- 打开removeAbandoned功能 -->
+        <property name="removeAbandonedTimeout" value="1800"/> <!-- 1800秒，也就是30分钟 -->
+        <property name="logAbandoned" value="true"/> <!-- 关闭abandoned连接时输出错误日志 -->
+
+        <!--通过proxyFilters属性配置StatFilter-->
+        <property name="proxyFilters">
+            <list>
+                <ref bean="stat-filter"/>
+                <ref bean="log-filter"/>
+                <ref bean="wall-filter"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean class="com.system.util.database.MultipleDataSource" id="dynamicDataSource">
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry value-ref="dataSource1" key="dataSource1"></entry>
+                <entry value-ref="dataSource2" key="dataSource2"></entry>
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="dataSource1"></property>
+    </bean>
+
     <!--配置Mybatis插件通用mapper组件-->
     <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.system.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 
     <!--配置mybatis的sqlSession-->
@@ -89,8 +146,9 @@
           scope="prototype">
         <constructor-arg index="0" ref="sqlSessionFactory"/>
     </bean>
+
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
+        <property name="dataSource" ref="dynamicDataSource"/>
         <property name="configLocation" value="classpath:sqlMapConfig.xml"/>
         <property name="plugins">
             <array>
@@ -105,6 +163,5 @@
             </array>
         </property>
     </bean>
-
 
 </beans>

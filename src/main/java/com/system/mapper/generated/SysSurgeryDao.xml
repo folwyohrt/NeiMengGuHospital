@@ -14,7 +14,7 @@
     <result column="h_bed" jdbcType="VARCHAR" property="hBed" />
     <result column="escorts_num" jdbcType="INTEGER" property="escortsNum" />
     <result column="visit_status" jdbcType="VARCHAR" property="visitStatus" />
-    <result column="surgery_status" jdbcType="VARCHAR" property="surgeryStatus" />
+    <result column="surgery_status" jdbcType="INTEGER" property="surgeryStatus" />
     <result column="surgery_datetime" jdbcType="TIMESTAMP" property="surgeryDatetime" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
