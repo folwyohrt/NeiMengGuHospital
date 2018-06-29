@@ -47,26 +47,30 @@
 
         <!-- 配置获取连接等待超时的时间 -->
         <property name="maxWait" value="${maxWait}"/>
-
         <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
-        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
-
+        <property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}"/>
         <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
-        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        <property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}"/>
 
         <property name="validationQuery" value="SELECT 'x'"/>
         <property name="testWhileIdle" value="true"/>
         <property name="testOnBorrow" value="false"/>
         <property name="testOnReturn" value="false"/>
 
-        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <!-- MySQL不需要做PSCache,只有Oracle/DB2/SQL Server之类支持游标的数据库才需要配置成true -->
         <property name="poolPreparedStatements" value="false"/>
+        <!-- 如果是Oracle/DB2/SQL Server之类支持游标的数据库需要加上以下配置：指定每个连接上PSCache的大小 -->
         <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
 
-        <!-- 连接泄漏监测 -->
-        <property name="removeAbandoned" value="true"/> <!-- 打开removeAbandoned功能 -->
-        <property name="removeAbandonedTimeout" value="1800"/> <!-- 1800秒，也就是30分钟 -->
-        <property name="logAbandoned" value="true"/> <!-- 关闭abandoned连接时输出错误日志 -->
+        <!-- durib监控，否则不显示数据 -->
+        <property name="filters" value="stat"></property>
+
+        <!-- 打开removeAbandoned功能：连接泄漏监测 -->
+        <property name="removeAbandoned" value="true"/>
+        <!-- 1800秒，也就是30分钟 -->
+        <property name="removeAbandonedTimeout" value="1800"/>
+        <!-- 打开abandoned连接时输出错误日志 -->
+        <property name="logAbandoned" value="true"/>
 
         <!--通过proxyFilters属性配置StatFilter-->
         <property name="proxyFilters">
@@ -93,26 +97,81 @@
 
         <!-- 配置获取连接等待超时的时间 -->
         <property name="maxWait" value="${maxWait}"/>
-
         <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
-        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
-
+        <property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}"/>
         <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
-        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        <property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}"/>
 
+        <!-- 检测连接是否有效的SQL -->
         <property name="validationQuery" value="SELECT 'x'"/>
         <property name="testWhileIdle" value="true"/>
         <property name="testOnBorrow" value="false"/>
         <property name="testOnReturn" value="false"/>
 
-        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <!-- MySQL不需要做PSCache,只有Oracle/DB2/SQL Server之类支持游标的数据库才需要配置成true -->
         <property name="poolPreparedStatements" value="false"/>
+        <!-- 如果是Oracle/DB2/SQL Server之类支持游标的数据库需要加上以下配置：指定每个连接上PSCache的大小 -->
         <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
 
-        <!-- 连接泄漏监测 -->
-        <property name="removeAbandoned" value="true"/> <!-- 打开removeAbandoned功能 -->
-        <property name="removeAbandonedTimeout" value="1800"/> <!-- 1800秒，也就是30分钟 -->
-        <property name="logAbandoned" value="true"/> <!-- 关闭abandoned连接时输出错误日志 -->
+        <!-- durib监控，否则不显示数据 -->
+        <property name="filters" value="stat"></property>
+
+        <!-- 打开removeAbandoned功能：连接泄漏监测 -->
+        <property name="removeAbandoned" value="true"/>
+        <!-- 1800秒，也就是30分钟 -->
+        <property name="removeAbandonedTimeout" value="1800"/>
+        <!-- 打开abandoned连接时输出错误日志 -->
+        <property name="logAbandoned" value="true"/>
+
+        <!--通过proxyFilters属性配置StatFilter-->
+        <property name="proxyFilters">
+            <list>
+                <ref bean="stat-filter"/>
+                <ref bean="log-filter"/>
+                <ref bean="wall-filter"/>
+            </list>
+        </property>
+    </bean>
+
+    <!--配置druid连接池-->
+    <bean id="dataSource3" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <!-- 基本属性 driver、url、user、password -->
+        <property name="driverClassName" value="${ds3.jdbc_driver}"/>
+        <property name="url" value="${ds3.jdbc_url}"/>
+        <property name="username" value="${ds3.jdbc_username}"/>
+        <property name="password" value="${ds3.jdbc_password}"/>
+
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="${initialSize}"/>
+        <property name="minIdle" value="${minIdle}"/>
+        <property name="maxActive" value="${maxActive}"/>
+
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${maxWait}"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}"/>
+
+        <property name="validationQuery" value="select 1 from sysibm.sysdummy1"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+
+        <!-- MySQL不需要做PSCache,只有Oracle/DB2/SQL Server之类支持游标的数据库才需要配置成true -->
+        <property name="poolPreparedStatements" value="false"/>
+        <!-- 如果是Oracle/DB2/SQL Server之类支持游标的数据库需要加上以下配置：指定每个连接上PSCache的大小 -->
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+
+        <!-- durib监控，否则不显示数据 -->
+        <property name="filters" value="stat"></property>
+
+        <!-- 打开removeAbandoned功能：连接泄漏监测 -->
+        <property name="removeAbandoned" value="true"/>
+        <!-- 1800秒，也就是30分钟 -->
+        <property name="removeAbandonedTimeout" value="1800"/>
+        <!-- 打开abandoned连接时输出错误日志 -->
+        <property name="logAbandoned" value="true"/>
 
         <!--通过proxyFilters属性配置StatFilter-->
         <property name="proxyFilters">
@@ -130,6 +189,7 @@
             <map key-type="java.lang.String">
                 <entry value-ref="dataSource1" key="dataSource1"></entry>
                 <entry value-ref="dataSource2" key="dataSource2"></entry>
+                <entry value-ref="dataSource3" key="dataSource3"></entry>
             </map>
         </property>
         <property name="defaultTargetDataSource" ref="dataSource1"></property>
