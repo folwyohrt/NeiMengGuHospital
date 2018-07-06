@@ -1,5 +1,6 @@
 package com.system.service;
 
+import com.system.entity.SysHospitalization;
 import com.system.pojo.SysHospitalizationDTO;
 import com.system.pojo.SysHospitalizationQuery;
 
@@ -15,13 +16,22 @@ import java.util.List;
 public interface SysHospitalizationService {
     SysHospitalizationDTO get(long id);
 
-    List<SysHospitalizationDTO> getList() ;
+    SysHospitalization get(int times, String hId);
 
-    List<SysHospitalizationDTO> getList(SysHospitalizationQuery sysHospitalizationQuery)  ;
+    List<SysHospitalizationDTO> getList();
 
-    boolean insert(SysHospitalizationDTO createSysHospitalizationInfo)  ;
+    List<SysHospitalizationDTO> getList(SysHospitalizationQuery sysHospitalizationQuery);
 
-    boolean update(SysHospitalizationDTO sysUserDTO)  ;
+
+    List<SysHospitalization> getList(int pStatus);
+
+    boolean insert(SysHospitalizationDTO createSysHospitalizationInfo);
+
+    boolean insert(SysHospitalization sysHospitalization);
+
+    boolean update(SysHospitalizationDTO sysHospitalizationDTO);
+
+    boolean update(SysHospitalization sysHospitalization);
 
     boolean delete(List<Long> idList);
 }

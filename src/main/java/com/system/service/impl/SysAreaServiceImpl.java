@@ -5,6 +5,7 @@ import com.system.entity.SysArea;
 import com.system.pojo.CreateSysAreaInfo;
 import com.system.pojo.SysAreaDTO;
 import com.system.service.SysAreaService;
+import com.system.util.database.DataSwitch;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
@@ -28,6 +29,15 @@ import java.util.List;
 public class SysAreaServiceImpl implements SysAreaService {
     @Resource
     private SysAreaDao sysAreaDao;
+
+    @Override
+    public SysArea get(String areaStr) {
+        List<SysArea> list = sysAreaDao.selectByExample(getExample(areaStr));
+        if(list!=null&&list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
 
     @Override
     public SysArea get(int id) {
