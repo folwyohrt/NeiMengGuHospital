@@ -82,18 +82,14 @@ public class SynchronousDBController {
 
             @Override
             public void run() {
-                logger.info("第几次---" + ++num);
+                System.out.println("第几次---" + ++num);
                 //取db2数据的开始、截止时间
                 Date startTime = null;
                 Date endTime = new Date();
 
                 SyncLog lastSyncLog = synLogService.getLastSynLog("hspt");
                 if (lastSyncLog == null) {
-                    try {
-                        startTime = sdf.parse("1970-01-01 08:00:00");
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    startTime=new Date(0);
                 } else {
                     startTime = lastSyncLog.getsEndtime();
                 }
@@ -101,6 +97,7 @@ public class SynchronousDBController {
                 // 执行你的方法
                 List<PtsVwZyxx> list = zyxxAndCYXXToHosService.getZYXXList(startTime, endTime);
                 if (list != null && list.size() > 0) {
+                    System.out.println("获取 病人信息的总条数count---" + list.size());
                     for (PtsVwZyxx item : list) {
                         boolean bl = zyxxAndCYXXToHosService.insertHos(item);
                         if (bl == false) {
@@ -116,13 +113,13 @@ public class SynchronousDBController {
                     synLogService.insertSynLog(syncLog);
 
 
-                    logger.info("startTime---" + startTime);
-                    logger.info("endTime---" + endTime);
-                    logger.info("插入 病人信息count---" + list.size());
+                    System.out.println("startTime---" + startTime);
+                    System.out.println("endTime---" + endTime);
+                    System.out.println("插入 病人信息count---" + list.size());
                 } else {
-                    logger.info("startTime---" + startTime);
-                    logger.info("endTime---" + endTime);
-                    logger.info("暂无需要同步 插入 病人信息的数据");
+                    System.out.println("startTime---" + startTime);
+                    System.out.println("endTime---" + endTime);
+                    System.out.println("暂无需要同步 插入 病人信息的数据");
                 }
 
                 //修改 出院状态
@@ -202,11 +199,7 @@ public class SynchronousDBController {
 
                 SyncLog lastSyncLog = synLogService.getLastSynLog("user");
                 if (lastSyncLog == null) {
-                    try {
-                        startTime = sdf.parse("1970-01-01 08:00:00");
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    startTime=new Date(0);
                 } else {
                     startTime = lastSyncLog.getsEndtime();
                 }
