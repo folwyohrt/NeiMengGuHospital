@@ -34,6 +34,15 @@ public class SysSurgeryStatusServicempl implements SysSurgeryStatusService {
     }
 
     @Override
+    public SysSurgeryStatus get(String sslx) {
+        List<SysSurgeryStatus> list = sysSurgeryStatusDao.selectByExample(getExample(sslx));
+        if(list!=null&&list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public List<SysSurgeryStatus> getList() {
         List<SysSurgeryStatus> list= sysSurgeryStatusDao.selectAll();
         if(list==null||list.size()==0){

@@ -15,7 +15,7 @@
     <result column="h_bed" jdbcType="VARCHAR" property="hBed" />
     <result column="escorts_num" jdbcType="INTEGER" property="escortsNum" />
     <result column="visit_status" jdbcType="VARCHAR" property="visitStatus" />
-    <result column="h_date" jdbcType="DATE" property="hDate" />
+    <result column="h_date" jdbcType="TIMESTAMP" property="hDate" />
     <result column="p_status" jdbcType="INTEGER" property="pStatus" />
     <result column="p_insur" jdbcType="INTEGER" property="pInsur" />
     <result column="dcr_name" jdbcType="VARCHAR" property="dcrName" />

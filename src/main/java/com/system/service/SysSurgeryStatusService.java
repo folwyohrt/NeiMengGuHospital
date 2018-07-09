@@ -13,6 +13,7 @@ import java.util.List;
  */
 public interface SysSurgeryStatusService {
     SysSurgeryStatus get(int id);
+    SysSurgeryStatus get(String sslx);
     List<SysSurgeryStatus> getList();
     boolean insert(CreateSysSurgeryStatusInfo sysSurgeryStatusInfo);
     boolean update(SysSurgeryStatusDTO sysSurgeryStatusDTO);

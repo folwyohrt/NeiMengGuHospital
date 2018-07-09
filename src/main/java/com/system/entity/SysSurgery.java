@@ -23,6 +23,12 @@ public class SysSurgery implements Serializable {
     private Integer hTimes;
 
     /**
+     * 序号
+     */
+    @Column(name = "h_xh")
+    private String hXh;
+
+    /**
      * 姓名
      */
     @Column(name = "p_name")
@@ -144,6 +150,24 @@ public class SysSurgery implements Serializable {
      */
     public void sethTimes(Integer hTimes) {
         this.hTimes = hTimes;
+    }
+
+    /**
+     * 获取序号
+     *
+     * @return h_xh - 序号
+     */
+    public String gethXh() {
+        return hXh;
+    }
+
+    /**
+     * 设置序号
+     *
+     * @param hXh 序号
+     */
+    public void sethXh(String hXh) {
+        this.hXh = hXh == null ? null : hXh.trim();
     }
 
     /**
@@ -377,6 +401,7 @@ public class SysSurgery implements Serializable {
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.gethId() == null ? other.gethId() == null : this.gethId().equals(other.gethId()))
             && (this.gethTimes() == null ? other.gethTimes() == null : this.gethTimes().equals(other.gethTimes()))
+            && (this.gethXh() == null ? other.gethXh() == null : this.gethXh().equals(other.gethXh()))
             && (this.getpName() == null ? other.getpName() == null : this.getpName().equals(other.getpName()))
             && (this.getpSex() == null ? other.getpSex() == null : this.getpSex().equals(other.getpSex()))
             && (this.getpAge() == null ? other.getpAge() == null : this.getpAge().equals(other.getpAge()))
@@ -398,6 +423,7 @@ public class SysSurgery implements Serializable {
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((gethId() == null) ? 0 : gethId().hashCode());
         result = prime * result + ((gethTimes() == null) ? 0 : gethTimes().hashCode());
+        result = prime * result + ((gethXh() == null) ? 0 : gethXh().hashCode());
         result = prime * result + ((getpName() == null) ? 0 : getpName().hashCode());
         result = prime * result + ((getpSex() == null) ? 0 : getpSex().hashCode());
         result = prime * result + ((getpAge() == null) ? 0 : getpAge().hashCode());
@@ -422,6 +448,7 @@ public class SysSurgery implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", hId=").append(hId);
         sb.append(", hTimes=").append(hTimes);
+        sb.append(", hXh=").append(hXh);
         sb.append(", pName=").append(pName);
         sb.append(", pSex=").append(pSex);
         sb.append(", pAge=").append(pAge);

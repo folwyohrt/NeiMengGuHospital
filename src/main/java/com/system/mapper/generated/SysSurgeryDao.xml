@@ -8,6 +8,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="h_id" jdbcType="VARCHAR" property="hId" />
     <result column="h_times" jdbcType="INTEGER" property="hTimes" />
+    <result column="h_xh" jdbcType="VARCHAR" property="hXh" />
     <result column="p_name" jdbcType="VARCHAR" property="pName" />
     <result column="p_sex" jdbcType="VARCHAR" property="pSex" />
     <result column="p_age" jdbcType="VARCHAR" property="pAge" />
@@ -30,7 +31,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, h_id, h_times, p_name, p_sex, p_age, h_area, h_bed, escorts_num, visit_status, 
+    id, h_id, h_times, h_xh, p_name, p_sex, p_age, h_area, h_bed, escorts_num, visit_status, 
     surgery_status, surgery_datetime, gmt_create, gmt_modified
   </sql>
   <sql id="Blob_Column_List">
