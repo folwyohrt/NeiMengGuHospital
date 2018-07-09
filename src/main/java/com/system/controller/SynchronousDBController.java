@@ -3,10 +3,10 @@ package com.system.controller;
 
 import com.system.controller.util.ExceptionHandlerController;
 import com.system.dao.SysUserDao;
-import com.system.entity.DB2.test1.PtsTbSsxx;
 import com.system.entity.DB2.test1.PtsVwCyxx;
 import com.system.entity.DB2.test1.PtsVwRyxx;
 import com.system.entity.DB2.test1.PtsVwZyxx;
+import com.system.entity.SqlServer.PtsVwSsxx;
 import com.system.entity.SyncLog;
 import com.system.entity.SysHospitalization;
 import com.system.entity.SysUser;
@@ -141,28 +141,43 @@ public class SynchronousDBController {
 
     }
 
+    Timer syncSgTimer;
     @Resource
     private ZYXXAndSSXXToSurgeryService zyxxAndSSXXToSurgeryService;
 
-    @ApiOperation(value = "同步病人手术信息")
-    @RequestMapping(value = "/surgery/{surgery}", method = RequestMethod.GET)
+    @ApiOperation(value = "同步病人手术信息，多久一次，这是全部遍历插入")
+    @RequestMapping(value = "/syncSurgery/{period}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public boolean syncSurgery(@PathVariable Long surgery) {
-        System.out.println(surgery);
-        List<PtsVwZyxx> ptsVwZyxxList = zyxxAndSSXXToSurgeryService.getZYXXList(new Date());
-        for (PtsVwZyxx zyxx : ptsVwZyxxList) {
-            System.out.println(zyxx.getZyh());
+    public boolean syncSurgery(@PathVariable Long period) {
+        if (syncSgTimer != null) {
+            syncSgTimer.cancel();
         }
-        System.out.println("---------------");
-        PtsTbSsxx ssxx = new PtsTbSsxx();
-        ssxx.setSsrq(new Date());
-        ssxx.setSqzd("没啥事儿啊，回家歇着就行");
-        zyxxAndSSXXToSurgeryService.insertSurgery(ptsVwZyxxList.get(0), ssxx);
-        System.out.println("--------上面插入了一条记录-------");
-        PtsTbSsxx ssxx1 = zyxxAndSSXXToSurgeryService.getSsxx("1328146", 1);
-        System.out.println(ssxx1);
-        PtsTbSsxx ssxx2 = zyxxAndSSXXToSurgeryService.getSsxx("1328145", 1);
-        System.out.println(ssxx2);
+        syncSgTimer = new Timer();
+
+        //周期任务执行的开始时间
+        Date timerBeginTime = new Date();
+
+        logger.info("period(分钟)---" + period);
+        period = 1000 * 60 * period;
+
+        syncSgTimer.schedule(new TimerTask() {
+            int num=0;
+            @Override
+            public void run() {
+                logger.info("SSXX---times---" + ++num);
+                // 执行你的方法
+                List<PtsVwSsxx> list = zyxxAndSSXXToSurgeryService.getAllSSXXList();
+                for (PtsVwSsxx item : list) {
+                    PtsVwZyxx zyxx = zyxxAndSSXXToSurgeryService.getZyxx(item.getZYH(), item.getZYCS());
+                    PtsVwCyxx cyxx = null;
+                    if (zyxx == null) {
+                        cyxx = zyxxAndSSXXToSurgeryService.getCyxx(item.getZYH(), item.getZYCS());
+                    }
+                    zyxxAndSSXXToSurgeryService.insertOrUpdateSurgery(item, zyxx, cyxx);
+                }
+            }
+        },timerBeginTime, period);
+
         return true;
     }
 
