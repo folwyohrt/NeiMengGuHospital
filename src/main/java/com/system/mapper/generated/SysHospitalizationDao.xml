@@ -7,16 +7,17 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="h_id" jdbcType="VARCHAR" property="hId" />
+    <result column="h_times" jdbcType="INTEGER" property="hTimes" />
     <result column="p_name" jdbcType="VARCHAR" property="pName" />
     <result column="p_sex" jdbcType="VARCHAR" property="pSex" />
-    <result column="p_age" jdbcType="INTEGER" property="pAge" />
+    <result column="p_age" jdbcType="VARCHAR" property="pAge" />
     <result column="h_area" jdbcType="INTEGER" property="hArea" />
     <result column="h_bed" jdbcType="VARCHAR" property="hBed" />
     <result column="escorts_num" jdbcType="INTEGER" property="escortsNum" />
     <result column="visit_status" jdbcType="VARCHAR" property="visitStatus" />
-    <result column="h_date" jdbcType="DATE" property="hDate" />
-    <result column="p_status" jdbcType="VARCHAR" property="pStatus" />
-    <result column="p_insur" jdbcType="VARCHAR" property="pInsur" />
+    <result column="h_date" jdbcType="TIMESTAMP" property="hDate" />
+    <result column="p_status" jdbcType="INTEGER" property="pStatus" />
+    <result column="p_insur" jdbcType="INTEGER" property="pInsur" />
     <result column="dcr_name" jdbcType="VARCHAR" property="dcrName" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
@@ -25,7 +26,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, h_id, p_name, p_sex, p_age, h_area, h_bed, escorts_num, visit_status, h_date, 
-    p_status, p_insur, dcr_name, gmt_create, gmt_modified
+    id, h_id, h_times, p_name, p_sex, p_age, h_area, h_bed, escorts_num, visit_status, 
+    h_date, p_status, p_insur, dcr_name, gmt_create, gmt_modified
   </sql>
 </mapper>

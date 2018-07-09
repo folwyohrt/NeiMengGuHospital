@@ -27,17 +27,17 @@ public class DateFormatHelper {
         }
         return dateFormatHelper;
     }
-
-    public static String getDateFormatAll() {
-        Properties prop = new Properties();
-        String filepath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        try {
-            prop.load(new FileInputStream(filepath + "webCongfig.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return prop.getProperty("dateFormatAll");
-    }
+//
+//    public static String getDateFormatAll() {
+//        Properties prop = new Properties();
+//        String filepath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+//        try {
+//            prop.load(new FileInputStream(filepath + "webCongfig.properties"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return prop.getProperty("dateFormatAll");
+//    }
 
     public static String getDateFormat() {
         getSingle();
@@ -46,6 +46,9 @@ public class DateFormatHelper {
 
     public static Date getDate(String dateStr) {
         try {
+            if(dateStr==null||dateStr==""||dateStr=="-"){
+                return null;
+            }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getDateFormat());
             Date date = simpleDateFormat.parse(dateStr);
             return date;
@@ -56,6 +59,9 @@ public class DateFormatHelper {
     }
 
     public static String getDateStr(Date date) {
+        if(date==null){
+            return "-";
+        }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getDateFormat());
         String str = simpleDateFormat.format(date);
         return str;
