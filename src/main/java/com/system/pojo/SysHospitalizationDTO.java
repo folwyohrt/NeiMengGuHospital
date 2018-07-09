@@ -10,7 +10,8 @@ public class SysHospitalizationDTO {
     private String hId;
     private String pName;
     private String pSex;
-    private Integer pAge;
+    private String pAge;
+    private Integer hTimes;
 
     private Integer hArea;
     private String hAreaStr;
@@ -59,11 +60,11 @@ public class SysHospitalizationDTO {
         this.pSex = pSex;
     }
 
-    public Integer getpAge() {
+    public String getpAge() {
         return pAge;
     }
 
-    public void setpAge(Integer pAge) {
+    public void setpAge(String pAge) {
         this.pAge = pAge;
     }
 
@@ -153,5 +154,13 @@ public class SysHospitalizationDTO {
 
     public void setpInsurStr(String pInsurStr) {
         this.pInsurStr = pInsurStr;
+    }
+
+    public Integer gethTimes() {
+        return hTimes;
+    }
+
+    public void sethTimes(Integer hTimes) {
+        this.hTimes = hTimes;
     }
 }

@@ -14,6 +14,7 @@ import java.util.List;
  */
 public interface SysAreaService {
     SysArea get(int id);
+    SysArea get(String areaStr);
     List<SysArea> getList();
     boolean insert(CreateSysAreaInfo sysAreaInfo);
     boolean update(SysAreaDTO sysAreaDTO);

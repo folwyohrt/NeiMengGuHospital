@@ -5,9 +5,9 @@
 <generatorConfiguration>
 
     <!--数据库驱动 -->
-    <classPathEntry location="db2jcc_license_cu.jar"/>
-    <classPathEntry location="db2jcc4.jar"/>
-    <classPathEntry location="db2java.jar"/>
+    <classPathEntry location="db2jcc_license_cu.jar" />
+    <classPathEntry location="db2jcc4.jar" />
+    <classPathEntry location="db2java.jar" />
 
     <context id="DB2Tables" targetRuntime="tk.mybatis.mapper.generator.TkMyBatis3Impl" defaultModelType="flat">
 
@@ -56,23 +56,20 @@
         </sqlMapGenerator>
 
         <!--生成xml dao 的包名和位置 --><!-- mapper接口 -->
-        <javaClientGenerator targetPackage="${daoPackage}" targetProject="${src_main_java}" type="XMLMAPPER">
+        <javaClientGenerator targetPackage="${daoPackage}" targetProject="${src_main_java}"  type="XMLMAPPER">
             <property name="enableSubPackages" value="true"></property>
         </javaClientGenerator>
 
-        <table schema="test1" tableName="%" mapperName="{0}Dao"
+        <!-- db2占位符，表示所有的表 schema="%"? -->
+        <table schema="twhis1" tableName="%" mapperName="{0}Dao"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
             <generatedKey column="id" sqlStatement="DB2" identity="true"/>
+
+            <!-- 忽略该字段(可省略) -->
+            <!--<ignoreColumn column="name" />-->
+
         </table>
-
-        <!--<table schema="twhis" tableName="%" mapperName="{0}Dao"-->
-               <!--enableCountByExample="false" enableUpdateByExample="false"-->
-               <!--enableDeleteByExample="false" enableSelectByExample="false"-->
-               <!--selectByExampleQueryId="false">-->
-            <!--<generatedKey column="id" sqlStatement="DB2" identity="true"/>-->
-        <!--</table>-->
-
-        </context>
-    </generatorConfiguration>
+    </context>
+</generatorConfiguration>

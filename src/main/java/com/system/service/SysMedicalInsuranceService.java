@@ -13,6 +13,7 @@ import java.util.List;
  */
 public interface SysMedicalInsuranceService {
     SysMedicalInsurance get(int id);
+    SysMedicalInsurance get(String str);
     List<SysMedicalInsurance> getList();
     boolean insert(CreateSysMedicalInsuranceInfo sysMedicalInsuranceInfo);
     boolean update(SysMedicalInsuranceDTO sysMedicalInsuranceDTO);

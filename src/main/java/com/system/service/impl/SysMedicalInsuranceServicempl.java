@@ -1,10 +1,12 @@
 package com.system.service.impl;
 
 import com.system.dao.SysMedicalInsuranceDao;
+import com.system.entity.SysArea;
 import com.system.entity.SysMedicalInsurance;
 import com.system.pojo.CreateSysMedicalInsuranceInfo;
 import com.system.pojo.SysMedicalInsuranceDTO;
 import com.system.service.SysMedicalInsuranceService;
+import com.system.util.database.DataSwitch;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
@@ -33,6 +35,15 @@ public class SysMedicalInsuranceServicempl implements SysMedicalInsuranceService
     }
 
     @Override
+    public SysMedicalInsurance get(String str) {
+        List<SysMedicalInsurance> list = sysMedicalInsuranceDao.selectByExample(getExample(str));
+        if(list!=null&&list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public List<SysMedicalInsurance> getList() {
         List<SysMedicalInsurance> list= sysMedicalInsuranceDao.selectAll();
         if(list==null||list.size()==0){
@@ -45,7 +56,7 @@ public class SysMedicalInsuranceServicempl implements SysMedicalInsuranceService
     public boolean insert(CreateSysMedicalInsuranceInfo sysMedicalInsuranceInfo) {
         List<SysMedicalInsurance> sysMedicalInsuranceList = sysMedicalInsuranceDao.selectByExample(getExample(sysMedicalInsuranceInfo.getValue()));
         if(sysMedicalInsuranceList!=null&&sysMedicalInsuranceList.size()>0){
-            throw new NoneSaveException("不能新增相同的患者状态");
+            throw new NoneSaveException("不能新增相同的医保类型");
         }
 
         SysMedicalInsurance sysMedicalInsurance = convertToSysMedicalInsurance(sysMedicalInsuranceInfo);

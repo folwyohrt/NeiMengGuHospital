@@ -34,7 +34,7 @@ public class DataSwitchAop {
             data = method.getAnnotation(DataSwitch.class);
         }
         String dataSource = data.dataSource();
-        System.out.println("datasource...."+dataSource);
+        //System.out.println("datasource...."+dataSource);
         if(dataSource!=null){
             MultipleDataSource.setDataSourceKey(dataSource);
         }

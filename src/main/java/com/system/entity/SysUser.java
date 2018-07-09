@@ -34,6 +34,11 @@ public class SysUser implements Serializable {
     @Column(name = "gmt_modified")
     private Date gmtModified;
 
+    /**
+     * 工号
+     */
+    private String codeno;
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -142,6 +147,24 @@ public class SysUser implements Serializable {
         this.gmtModified = gmtModified;
     }
 
+    /**
+     * 获取工号
+     *
+     * @return codeno - 工号
+     */
+    public String getCodeno() {
+        return codeno;
+    }
+
+    /**
+     * 设置工号
+     *
+     * @param codeno 工号
+     */
+    public void setCodeno(String codeno) {
+        this.codeno = codeno == null ? null : codeno.trim();
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -160,7 +183,8 @@ public class SysUser implements Serializable {
             && (this.getUserRole() == null ? other.getUserRole() == null : this.getUserRole().equals(other.getUserRole()))
             && (this.getUserGroup() == null ? other.getUserGroup() == null : this.getUserGroup().equals(other.getUserGroup()))
             && (this.getGmtCreate() == null ? other.getGmtCreate() == null : this.getGmtCreate().equals(other.getGmtCreate()))
-            && (this.getGmtModified() == null ? other.getGmtModified() == null : this.getGmtModified().equals(other.getGmtModified()));
+            && (this.getGmtModified() == null ? other.getGmtModified() == null : this.getGmtModified().equals(other.getGmtModified()))
+            && (this.getCodeno() == null ? other.getCodeno() == null : this.getCodeno().equals(other.getCodeno()));
     }
 
     @Override
@@ -174,6 +198,7 @@ public class SysUser implements Serializable {
         result = prime * result + ((getUserGroup() == null) ? 0 : getUserGroup().hashCode());
         result = prime * result + ((getGmtCreate() == null) ? 0 : getGmtCreate().hashCode());
         result = prime * result + ((getGmtModified() == null) ? 0 : getGmtModified().hashCode());
+        result = prime * result + ((getCodeno() == null) ? 0 : getCodeno().hashCode());
         return result;
     }
 
@@ -190,6 +215,7 @@ public class SysUser implements Serializable {
         sb.append(", userGroup=").append(userGroup);
         sb.append(", gmtCreate=").append(gmtCreate);
         sb.append(", gmtModified=").append(gmtModified);
+        sb.append(", codeno=").append(codeno);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

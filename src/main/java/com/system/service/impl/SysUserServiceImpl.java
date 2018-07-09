@@ -4,6 +4,7 @@ import com.system.dao.SysUserDao;
 import com.system.entity.SysUser;
 import com.system.pojo.*;
 import com.system.service.SysUserService;
+import com.system.util.database.DataSwitch;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
@@ -36,6 +37,25 @@ class SysUserServiceImpl implements SysUserService {
         return convertToSysUserDTO(result);
     }
 
+    @Override
+    public SysUser get(String codeno){
+        List<SysUser> resultList = sysUserDao.selectByExample(getExample(codeno));
+        if (resultList != null&&resultList.size()>0) {
+            return resultList.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    @DataSwitch(dataSource="dataSource1")
+    public boolean isHave(String codeno){
+        SysUser sysUser=get(codeno);
+        if(sysUser==null){
+            return false;
+        }
+        return true;
+    }
+
     public SysUserDTO login(SysUserQuery sysUserQuery) {
         List<SysUser> sysUserList = sysUserDao.selectByExample(getExample(sysUserQuery));
         if (sysUserList.size() != 0) {
@@ -66,12 +86,15 @@ class SysUserServiceImpl implements SysUserService {
     }
 
     public boolean insert(CreateSysUserInfo createSysUserInfo) {
-        List<SysUser> sysUserList = sysUserDao.selectByExample(getExample(createSysUserInfo.getUserName()));
+        List<SysUser> sysUserList = sysUserDao.selectByExample(getExample(createSysUserInfo.getCodeno()));
         if (sysUserList != null && sysUserList.size() > 0) {
             throw new NoneSaveException("不能新增同一条记录");
         }
         SysUser sysUser = convertToSysUser(createSysUserInfo);
-        sysUser.setUserRole("2");
+        return sysUserDao.insertSelective(sysUser) > 0;
+    }
+
+    public boolean insert(SysUser sysUser){
         return sysUserDao.insertSelective(sysUser) > 0;
     }
 
@@ -96,18 +119,18 @@ class SysUserServiceImpl implements SysUserService {
         return true;
     }
 
-    private Example getExample(String userName) {
+    private Example getExample(String codeno) {
         Example example = new Example(SysUser.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("userName", userName);
+        criteria.andEqualTo("codeno", codeno);
         return example;
     }
 
     private Example getExample(SysUserQuery sysUserQuery) {
         Example example = new Example(SysUser.class);
         Example.Criteria criteria = example.createCriteria();
-        if (sysUserQuery.getUserName() != "") {
-            criteria.andEqualTo("userName", sysUserQuery.getUserName());
+        if (sysUserQuery.getCodeno() != "") {
+            criteria.andEqualTo("codeno", sysUserQuery.getCodeno());
         }
         if (sysUserQuery.getUserPwd() != "") {
             criteria.andEqualTo("userPwd", sysUserQuery.getUserPwd());
