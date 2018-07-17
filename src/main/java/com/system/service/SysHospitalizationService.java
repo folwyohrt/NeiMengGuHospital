@@ -1,6 +1,8 @@
 package com.system.service;
 
 import com.system.entity.SysHospitalization;
+import com.system.pojo.PagingRequest;
+import com.system.pojo.PagingResult;
 import com.system.pojo.SysHospitalizationDTO;
 import com.system.pojo.SysHospitalizationQuery;
 
@@ -18,11 +20,11 @@ public interface SysHospitalizationService {
 
     SysHospitalization get(int times, String hId);
 
-    List<SysHospitalizationDTO> getList();
+    PagingResult getPageList( int pageNum,int  pageSize,String sort, String sortOrder);
 
-    List<SysHospitalizationDTO> getList(SysHospitalizationQuery sysHospitalizationQuery);
+    PagingResult getPageList(SysHospitalizationQuery sysHospitalizationQuery,int pageNum, int pageSize,String sort, String sortOrder);
 
-
+    //用于 后台 修改 出院状态
     List<SysHospitalization> getList(int pStatus);
 
     boolean insert(SysHospitalizationDTO createSysHospitalizationInfo);

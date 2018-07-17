@@ -34,9 +34,6 @@ public class SysUser implements Serializable {
     @Column(name = "gmt_modified")
     private Date gmtModified;
 
-    /**
-     * 工号
-     */
     private String codeno;
 
     private static final long serialVersionUID = 1L;
@@ -148,18 +145,14 @@ public class SysUser implements Serializable {
     }
 
     /**
-     * 获取工号
-     *
-     * @return codeno - 工号
+     * @return codeno
      */
     public String getCodeno() {
         return codeno;
     }
 
     /**
-     * 设置工号
-     *
-     * @param codeno 工号
+     * @param codeno
      */
     public void setCodeno(String codeno) {
         this.codeno = codeno == null ? null : codeno.trim();

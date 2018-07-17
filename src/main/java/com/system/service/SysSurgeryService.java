@@ -1,6 +1,7 @@
 package com.system.service;
 
 import com.system.entity.SysSurgery;
+import com.system.pojo.PagingResult;
 import com.system.pojo.SysSurgeryDTO;
 import com.system.pojo.SysSurgeryQuery;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,9 @@ public interface SysSurgeryService {
 
     SysSurgery get(long id);
 
-    List<SysSurgeryDTO> getList();
+    PagingResult getList(int pageNum, int  pageSize, String sort, String sortOrder);
 
-    List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery);
+    PagingResult getList(SysSurgeryQuery sysSurgeryQuery,int pageNum, int pageSize, String sort, String sortOrder);
 
     boolean insert(SysSurgeryDTO createSysSurgeryInfo);
 
