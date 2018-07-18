@@ -31,10 +31,6 @@ public interface SysHospitalizationService {
 
     SysHospitalization getLatestRecordByhBed(String hBed);
 
-    List<String> getBedList(Integer areaId);
-
-    SysHospitalization getLatestRecordByhBed(String hBed);
-
     boolean insert(SysHospitalizationDTO createSysHospitalizationInfo);
 
     boolean insert(SysHospitalization sysHospitalization);
