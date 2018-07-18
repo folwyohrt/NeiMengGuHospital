@@ -1,10 +1,14 @@
 package com.system.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.system.dao.SysHospitalizationDao;
 import com.system.entity.SysArea;
 import com.system.entity.SysHospitalization;
 import com.system.entity.SysMedicalInsurance;
 import com.system.entity.SysPatientStatus;
+import com.system.pojo.PagingRequest;
+import com.system.pojo.PagingResult;
 import com.system.pojo.SysHospitalizationDTO;
 import com.system.pojo.SysHospitalizationQuery;
 import com.system.service.SysAreaService;
@@ -16,12 +20,14 @@ import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,37 +63,84 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     }
 
     @Override
-    public List<SysHospitalizationDTO> getList() {
-        List<SysHospitalization> list = sysHospitalizationDao.selectAll().stream().sorted(Comparator.comparing(SysHospitalization::getGmtModified).reversed()).collect(Collectors.toList());
-        List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
-        if (resultList.size() == 0) {
+    public PagingResult getPageList(PagingRequest pagingRequest) {
+        //设置分页参数
+        Page page = PageHelper.startPage(pagingRequest.getPageNum(), pagingRequest.getPageSize(), true);
+
+        List<SysHospitalization> list = sysHospitalizationDao.selectAll();
+        if (list.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
-        return resultList;
+        list = getOrderedSysHospitalizations(pagingRequest.getSort(), pagingRequest.getSortOrder(), list);
+        List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
+
+        //获取分页之后的信息
+        PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
+        return pagingResult;
     }
 
-    @Override
-    @DataSwitch(dataSource = "dataSource1")
-    public List<SysHospitalization> getList(int pStatus){
-        List<SysHospitalization> list = sysHospitalizationDao.selectAll().stream().filter(item->item.getpStatus()==1).collect(Collectors.toList());
+    private List<SysHospitalization> getOrderedSysHospitalizations(String sort, String sortOrder, List<SysHospitalization> list) {
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortOrder)) {
+            if (sort.equals("pName")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::getpName).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::getpName)).collect(Collectors.toList());
+                }
+            }
+            if (sort.equals("hId")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethId).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethId)).collect(Collectors.toList());
+                }
+            }
+            if (sort.equals("hBed")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethBed).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethBed)).collect(Collectors.toList());
+                }
+            }
+            if (sort.equals("visitStatus")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::getVisitStatus).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::getVisitStatus)).collect(Collectors.toList());
+                }
+            }
+            if (sort.equals("hDate")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethDate).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethDate)).collect(Collectors.toList());
+                }
+            }
+        }
         return list;
     }
 
     @Override
-    public List<SysHospitalizationDTO> getList(SysHospitalizationQuery sysHospitalizationQuery) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getDateFormat());
-        List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExample(sysHospitalizationQuery)).stream().sorted(Comparator.comparing
-                (SysHospitalization::getGmtModified).reversed()).filter(item -> {
-            if (sysHospitalizationQuery.gethDate() != "" && !simpleDateFormat.format(item.gethDate()).substring(0, 10).equals(sysHospitalizationQuery.gethDate())) {
-                return false;
-            }
-            return true;
-        }).collect(Collectors.toList());
-        List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
-        if (resultList.size() == 0) {
-            throw new NoneGetException("没有查询到用户相关记录！");
+    @DataSwitch(dataSource = "dataSource1")
+    //用于 后台 修改 出院状态
+    public List<SysHospitalization> getList(int pStatus) {
+        List<SysHospitalization> list = sysHospitalizationDao.selectAll().stream().filter(item -> item.getpStatus() == 1).collect(Collectors.toList());
+        return list;
+    }
+
+    @Override
+    public PagingResult getPageList(SysHospitalizationQuery query) {
+        //设置分页参数
+        Page page = PageHelper.startPage(query.getPageNum(), query.getPageSize(), true);
+        List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExample(query));
+        if (list != null && list.size() > 0) {
+            list = getOrderedSysHospitalizations(query.getSort(), query.getSortOrder(), list);
+            //获取分页之后的信息
+            List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
+            PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
+            return pagingResult;
         }
-        return resultList;
+        throw new NoneGetException("没有查询到用户相关记录！");
     }
 
     @Override
@@ -148,7 +201,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         Example.Criteria criteria = example.createCriteria();
 
         if (sysHospitalizationQuery.getpName() != "") {
-            criteria.andEqualTo("pName", sysHospitalizationQuery.getpName());
+            criteria.andLike("pName", "%" + sysHospitalizationQuery.getpName() + "%");
         }
         if (sysHospitalizationQuery.gethId() != "") {
             criteria.andEqualTo("hId", sysHospitalizationQuery.gethId());
@@ -157,18 +210,29 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
             criteria.andEqualTo("hArea", sysHospitalizationQuery.gethArea());
             ;
         }
-        //查不了时间
-//        if (sysHospitalizationQuery.gethDate() != "") {
-//            Date date = getDate(sysHospitalizationQuery.gethDate());
-//            criteria.andEqualTo("hDate", date);
-//        }
+        //筛选时间
+        if (sysHospitalizationQuery.gethDate() != "") {
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            Date dateBegin = null;
+            Date dateEnd=null;
+            try {
+                dateBegin = sdf.parse(sysHospitalizationQuery.gethDate());
+                dateEnd = sdf.parse(sysHospitalizationQuery.gethDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dateEnd);
+            cal.add(Calendar.DATE, 1);
+            criteria.andBetween("hDate",dateBegin,cal.getTime());
+        }
         return example;
     }
 
     private Example getExample(int times, String hId) {
         Example example = new Example(SysHospitalization.class);
         Example.Criteria criteria = example.createCriteria();
-
         criteria.andEqualTo("hId", hId);
         criteria.andEqualTo("hTimes", times);
 

@@ -5,7 +5,7 @@ package com.system.pojo;
  * @Date: 2018/6/13 09:51
  * @Description:
  */
-public class SysHospitalizationQuery {
+public class SysHospitalizationQuery extends PagingRequest {
     //病区
     private Integer hArea;
     //住院号

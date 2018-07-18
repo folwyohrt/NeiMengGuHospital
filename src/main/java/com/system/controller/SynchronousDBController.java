@@ -2,14 +2,12 @@ package com.system.controller;
 
 
 import com.system.controller.util.ExceptionHandlerController;
-import com.system.dao.SysUserDao;
 import com.system.entity.DB2.test1.PtsVwCyxx;
 import com.system.entity.DB2.test1.PtsVwRyxx;
 import com.system.entity.DB2.test1.PtsVwZyxx;
 import com.system.entity.SqlServer.PtsVwSsxx;
 import com.system.entity.SyncLog;
 import com.system.entity.SysHospitalization;
-import com.system.entity.SysUser;
 import com.system.facade.RYXXToUserService;
 import com.system.facade.ZYXXAndCYXXToHosService;
 import com.system.facade.ZYXXAndSSXXToSurgeryService;
@@ -27,7 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;

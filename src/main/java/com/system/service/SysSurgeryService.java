@@ -1,6 +1,8 @@
 package com.system.service;
 
 import com.system.entity.SysSurgery;
+import com.system.pojo.PagingRequest;
+import com.system.pojo.PagingResult;
 import com.system.pojo.SysSurgeryDTO;
 import com.system.pojo.SysSurgeryQuery;
 import org.springframework.stereotype.Service;
@@ -19,9 +21,9 @@ public interface SysSurgeryService {
 
     SysSurgery get(long id);
 
-    List<SysSurgeryDTO> getList();
+    PagingResult getList(PagingRequest pagingRequest);
 
-    List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery);
+    PagingResult getList(SysSurgeryQuery sysSurgeryQuery);
 
     boolean insert(SysSurgeryDTO createSysSurgeryInfo);
 
