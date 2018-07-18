@@ -5,21 +5,19 @@ import com.system.entity.SysArea;
 import com.system.pojo.CreateSysAreaInfo;
 import com.system.pojo.SysAreaDTO;
 import com.system.service.SysAreaService;
-import com.system.util.database.DataSwitch;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: 李景然
@@ -47,7 +45,10 @@ public class SysAreaServiceImpl implements SysAreaService {
 
     @Override
     public List<SysArea> getList() {
-        List<SysArea> list= sysAreaDao.selectAll();
+        List<SysArea> list= sysAreaDao.selectAll()
+                .stream()
+                .sorted(Comparator.comparing(sysArea -> sysArea.getValue()))
+                .collect(Collectors.toList());
         if(list==null||list.size()==0){
             throw new NoneGetException();
         }

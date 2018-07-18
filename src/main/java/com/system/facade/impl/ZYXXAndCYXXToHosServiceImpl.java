@@ -102,7 +102,7 @@ public class ZYXXAndCYXXToHosServiceImpl implements ZYXXAndCYXXToHosService {
         //住院次数
         result.sethTimes(ptsVwZyxx.getZycs());
         //陪人数
-        result.setEscortsNum(0);
+        result.setEscortsNum(1);
         //访视状态
         result.setVisitStatus("未探访");
 

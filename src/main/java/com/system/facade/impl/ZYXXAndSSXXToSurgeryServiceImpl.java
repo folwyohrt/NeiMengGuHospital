@@ -255,7 +255,7 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
         }
         sysSurgery.setSurgeryStatus(sysSurgeryStatus.getId());
         //陪人数
-        sysSurgery.setEscortsNum(0);
+        sysSurgery.setEscortsNum(1);
         //访视状态
         sysSurgery.setVisitStatus("未探访");
         return sysSurgery;
