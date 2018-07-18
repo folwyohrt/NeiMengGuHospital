@@ -1,5 +1,6 @@
 package com.system.controller;
 
+import com.system.entity.SysHospitalization;
 import com.system.facade.SysHospitalizationVisitStatusService;
 import com.system.pojo.PagingRequest;
 import com.system.pojo.PagingResult;
@@ -91,4 +92,32 @@ public class SysHospitalizationController {
     public void updateVisitStatus(@PathVariable Long id, @PathVariable Integer status) {
         sysHospitalizationVisitStatusService.updateHospitalizationVisitStatus(id, status);
     }
+
+
+
+    @ApiOperation(value = "根据病区获取到床号列表")
+    @RequestMapping(value = "/getBedList/{areaId}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getBedList(@PathVariable Integer areaId){
+        return sysHospitalizationService.getBedList(areaId);
+    }
+
+    @ApiOperation(value = "根据床号获取到病人信息")
+    @RequestMapping(value = "/get/{hBed}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public SysHospitalization getLatestRecordByhBed(@PathVariable String hBed){
+        return sysHospitalizationService.getLatestRecordByhBed(hBed);
+    }
+
+    @ApiOperation(value = "根据住院信息的id修改陪同人数")
+    @RequestMapping(value = "/update/{id}/{esortNum}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean updateEsortnumById(@PathVariable Long id, @PathVariable Integer esortNum){
+        SysHospitalizationDTO sysHospitalizationDTO = new SysHospitalizationDTO();
+        sysHospitalizationDTO.setId(id);
+        sysHospitalizationDTO.setEscortsNum(esortNum);
+        return sysHospitalizationService.update(sysHospitalizationDTO);
+    }
+
+
 }

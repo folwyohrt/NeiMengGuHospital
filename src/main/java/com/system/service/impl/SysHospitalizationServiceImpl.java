@@ -144,6 +144,54 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     }
 
     @Override
+    public List<String> getBedList(Integer areaId) {
+        List<SysHospitalization> sysHospitalizationList = sysHospitalizationDao.selectByExample(getExample(areaId));
+        HashSet<String> hashSet = sysHospitalizationList.stream()
+                .map(sysHospitalization -> sysHospitalization.gethBed())
+                .filter(str -> !str.equals("") && !str.equals(" "))
+                .collect(Collectors.toCollection(HashSet::new));
+        List<String> bedList = hashSet.stream()
+                .sorted((str1, str2) -> str1.compareTo(str2))
+                .collect(Collectors.toList());
+        return bedList;
+    }
+
+    @Override
+    public SysHospitalization getLatestRecordByhBed(String hBed) {
+        List<SysHospitalization> sysHospitalizationList = sysHospitalizationDao.selectByExample(getExample(hBed))
+                .stream()
+                .sorted(Comparator.comparing(SysHospitalization::getGmtModified).reversed())
+                .collect(Collectors.toList());
+        return sysHospitalizationList.get(0);
+    }
+
+
+
+    @Override
+    public List<String> getBedList(Integer areaId) {
+        List<SysHospitalization> sysHospitalizationList = sysHospitalizationDao.selectByExample(getExample(areaId));
+        HashSet<String> hashSet = sysHospitalizationList.stream()
+                .map(sysHospitalization -> sysHospitalization.gethBed())
+                .filter(str -> !str.equals("") && !str.equals(" "))
+                .collect(Collectors.toCollection(HashSet::new));
+        List<String> bedList = hashSet.stream()
+                .sorted((str1, str2) -> str1.compareTo(str2))
+                .collect(Collectors.toList());
+        return bedList;
+    }
+
+    @Override
+    public SysHospitalization getLatestRecordByhBed(String hBed) {
+        List<SysHospitalization> sysHospitalizationList = sysHospitalizationDao.selectByExample(getExample(hBed))
+                .stream()
+                .sorted(Comparator.comparing(SysHospitalization::getGmtModified).reversed())
+                .collect(Collectors.toList());
+        return sysHospitalizationList.get(0);
+    }
+
+
+
+    @Override
     public boolean insert(SysHospitalizationDTO sysHospitalizationDTO) {
         List<SysHospitalization> sysHospitalizationList = sysHospitalizationDao.selectByExample(getExample(sysHospitalizationDTO));
         if (sysHospitalizationList != null && sysHospitalizationList.size() > 0) {
@@ -238,6 +286,21 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
 
         return example;
     }
+
+    private Example getExample(int areaId) {
+        Example example = new Example(SysHospitalization.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("hArea", areaId);
+        return example;
+    }
+
+    private Example getExample(String hBed) {
+        Example example = new Example(SysHospitalization.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("hBed", hBed);
+        return example;
+    }
+
 
     private Example getExample(SysHospitalizationDTO sysHospitalizationDTO) {
         Example example = new Example(SysHospitalization.class);
