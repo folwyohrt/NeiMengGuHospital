@@ -1,7 +1,5 @@
 package com.system.controller;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.system.facade.SysHospitalizationVisitStatusService;
 import com.system.pojo.PagingRequest;
 import com.system.pojo.PagingResult;
@@ -42,15 +40,24 @@ public class SysHospitalizationController {
     @RequestMapping(value = "/getList", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public PagingResult getPagingList(@RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) {
-        PagingResult pagingResult = sysHospitalizationService.getPageList(pageNum, pageSize,sort,sortOrder);
+        PagingRequest pagingRequest=new PagingRequest(pageNum,pageSize,sort,sortOrder);
+        PagingResult pagingResult = sysHospitalizationService.getPageList(pagingRequest);
         return pagingResult;
     }
+//
+//    @ApiOperation(value = "按多条件查询病人在院信息--分页")
+//    @RequestMapping(value = "/getList", method = RequestMethod.POST)
+//    @ResponseStatus(HttpStatus.OK)
+//    public PagingResult getList(@RequestBody SysHospitalizationQuery query, @RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) throws ParseException, InterruptedException {
+//        PagingResult pagingResult=sysHospitalizationService.getPageList(query,pageNum,pageSize,sort,sortOrder);
+//        return pagingResult;
+//    }
 
     @ApiOperation(value = "按多条件查询病人在院信息--分页")
     @RequestMapping(value = "/getList", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public PagingResult getList(@RequestBody SysHospitalizationQuery sysHospitalizationQuery, @RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) throws ParseException, InterruptedException {
-        PagingResult pagingResult=sysHospitalizationService.getPageList(sysHospitalizationQuery,pageNum,pageSize,sort,sortOrder);
+    public PagingResult getList(@RequestBody SysHospitalizationQuery query) throws ParseException, InterruptedException {
+        PagingResult pagingResult=sysHospitalizationService.getPageList(query);
         return pagingResult;
     }
 

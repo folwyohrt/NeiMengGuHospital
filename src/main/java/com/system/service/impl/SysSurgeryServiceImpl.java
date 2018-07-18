@@ -9,7 +9,6 @@ import com.system.pojo.*;
 import com.system.service.SysAreaService;
 import com.system.service.SysSurgeryService;
 import com.system.service.SysSurgeryStatusService;
-import com.system.util.database.DataSwitch;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -67,9 +65,9 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     }
 
     @Override
-    public PagingResult getList(int pageNum, int pageSize, String sort, String sortOrder) {
+    public PagingResult getList(PagingRequest pagingRequest) {
         //设置分页参数
-        Page page = PageHelper.startPage(pageNum, pageSize, true);
+        Page page = PageHelper.startPage(pagingRequest.getPageNum(), pagingRequest.getPageSize(), true);
 
         Date todayDate = getTodayDate();
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
@@ -80,7 +78,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         sysSurgeryQuery.setpName("");
 
         List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(sysSurgeryQuery));
-        list = getOrderedSysSurgerys(sort, sortOrder, list);
+        list = getOrderedSysSurgerys(pagingRequest.getSort(), pagingRequest.getSortOrder(), list);
         List<SysSurgeryDTO> resultList = getSysSurgeryDTOS(list);
         if (resultList.size() == 0) {
             throw new NoneGetException("没有查询到手术相关记录！");
@@ -142,12 +140,12 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     }
 
     @Override
-    public PagingResult getList(SysSurgeryQuery sysSurgeryQuery,int pageNum, int pageSize, String sort, String sortOrder) {
+    public PagingResult getList(SysSurgeryQuery query) {
         //设置分页参数
-        Page page = PageHelper.startPage(pageNum, pageSize, true);
-        List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(sysSurgeryQuery)).stream().filter(item->item.gethArea()==1).collect(Collectors.toList());
+        Page page = PageHelper.startPage(query.getPageNum(), query.getPageSize(), true);
+        List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(query));
         if (list != null && list.size() > 0) {
-            list = getOrderedSysSurgerys(sort, sortOrder, list);
+            list = getOrderedSysSurgerys(query.getSort(), query.getSortOrder(), list);
             //获取分页之后的信息
             List<SysSurgeryDTO> resultList = getSysSurgeryDTOS(list);
             PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);

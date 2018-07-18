@@ -1,6 +1,7 @@
 package com.system.service;
 
 import com.system.entity.SysSurgery;
+import com.system.pojo.PagingRequest;
 import com.system.pojo.PagingResult;
 import com.system.pojo.SysSurgeryDTO;
 import com.system.pojo.SysSurgeryQuery;
@@ -20,9 +21,9 @@ public interface SysSurgeryService {
 
     SysSurgery get(long id);
 
-    PagingResult getList(int pageNum, int  pageSize, String sort, String sortOrder);
+    PagingResult getList(PagingRequest pagingRequest);
 
-    PagingResult getList(SysSurgeryQuery sysSurgeryQuery,int pageNum, int pageSize, String sort, String sortOrder);
+    PagingResult getList(SysSurgeryQuery sysSurgeryQuery);
 
     boolean insert(SysSurgeryDTO createSysSurgeryInfo);
 

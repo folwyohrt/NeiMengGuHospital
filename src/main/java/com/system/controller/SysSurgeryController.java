@@ -1,13 +1,7 @@
 package com.system.controller;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.system.entity.SysSurgery;
 import com.system.facade.SysSurgeryVisitService;
-import com.system.pojo.PagingResult;
-import com.system.pojo.SysHospitalizationDTO;
-import com.system.pojo.SysSurgeryDTO;
-import com.system.pojo.SysSurgeryQuery;
+import com.system.pojo.*;
 import com.system.service.SysSurgeryService;
 import com.system.util.CheckException;
 import io.swagger.annotations.Api;
@@ -40,12 +34,20 @@ public class SysSurgeryController {
     public SysSurgeryDTO get(@PathVariable long id) {
         return sysSurgeryService.getDTO(id);
     }
+//
+//    @ApiOperation(value = "按多条件查询手术信息--分页")
+//    @RequestMapping(value = "/getList", method = RequestMethod.POST)
+//    @ResponseStatus(HttpStatus.OK)
+//    public PagingResult getList(@RequestBody SysSurgeryQuery query, @RequestParam(value = "page") int pageNum, @RequestParam(value = "rows") int pageSize, @RequestParam(value = "sort") String sort, @RequestParam(value = "sortOrder") String sortOrder) {
+//        PagingResult pagingResult = sysSurgeryService.getList(query,pageNum,pageSize, sort, sortOrder);
+//        return pagingResult;
+//    }
 
     @ApiOperation(value = "按多条件查询手术信息--分页")
     @RequestMapping(value = "/getList", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public PagingResult getList(@RequestBody SysSurgeryQuery sysSurgeryQuery, @RequestParam(value = "page") int pageNum, @RequestParam(value = "rows") int pageSize, @RequestParam(value = "sort") String sort, @RequestParam(value = "sortOrder") String sortOrder) {
-        PagingResult pagingResult = sysSurgeryService.getList(sysSurgeryQuery,pageNum,pageSize, sort, sortOrder);
+    public PagingResult getList(@RequestBody SysSurgeryQuery query) {
+        PagingResult pagingResult = sysSurgeryService.getList(query);
         return pagingResult;
     }
 
@@ -53,7 +55,8 @@ public class SysSurgeryController {
     @RequestMapping(value = "/getList", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public PagingResult getList(@RequestParam(value = "page") int pageNum, @RequestParam(value = "rows") int pageSize, @RequestParam(value = "sort") String sort, @RequestParam(value = "sortOrder") String sortOrder) {
-        return sysSurgeryService.getList(pageNum, pageSize, sort, sortOrder);
+        PagingRequest pagingRequest=new PagingRequest(pageNum,pageSize,sort,sortOrder);
+        return sysSurgeryService.getList(pagingRequest);
     }
 
     @ApiOperation(value = "新增手术信息")

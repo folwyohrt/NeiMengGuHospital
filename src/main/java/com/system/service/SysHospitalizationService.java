@@ -20,10 +20,9 @@ public interface SysHospitalizationService {
 
     SysHospitalization get(int times, String hId);
 
-    PagingResult getPageList( int pageNum,int  pageSize,String sort, String sortOrder);
+    PagingResult getPageList( PagingRequest pagingRequest);
 
-    PagingResult getPageList(SysHospitalizationQuery sysHospitalizationQuery,int pageNum, int pageSize,String sort, String sortOrder);
-
+    PagingResult getPageList(SysHospitalizationQuery sysHospitalizationQuery);
     //用于 后台 修改 出院状态
     List<SysHospitalization> getList(int pStatus);
 

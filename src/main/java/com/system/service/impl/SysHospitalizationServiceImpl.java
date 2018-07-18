@@ -2,7 +2,6 @@ package com.system.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.system.dao.SysHospitalizationDao;
 import com.system.entity.SysArea;
 import com.system.entity.SysHospitalization;
@@ -64,15 +63,15 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     }
 
     @Override
-    public PagingResult getPageList(int pageNum, int pageSize, String sort, String sortOrder) {
+    public PagingResult getPageList(PagingRequest pagingRequest) {
         //设置分页参数
-        Page page = PageHelper.startPage(pageNum, pageSize, true);
+        Page page = PageHelper.startPage(pagingRequest.getPageNum(), pagingRequest.getPageSize(), true);
 
         List<SysHospitalization> list = sysHospitalizationDao.selectAll();
         if (list.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
-        list = getOrderedSysHospitalizations(sort, sortOrder, list);
+        list = getOrderedSysHospitalizations(pagingRequest.getSort(), pagingRequest.getSortOrder(), list);
         List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
 
         //获取分页之后的信息
@@ -130,12 +129,12 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     }
 
     @Override
-    public PagingResult getPageList(SysHospitalizationQuery sysHospitalizationQuery,int pageNum, int pageSize, String sort, String sortOrder) {
+    public PagingResult getPageList(SysHospitalizationQuery query) {
         //设置分页参数
-        Page page = PageHelper.startPage(pageNum, pageSize, true);
-        List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExample(sysHospitalizationQuery));
+        Page page = PageHelper.startPage(query.getPageNum(), query.getPageSize(), true);
+        List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExample(query));
         if (list != null && list.size() > 0) {
-            list = getOrderedSysHospitalizations(sort, sortOrder, list);
+            list = getOrderedSysHospitalizations(query.getSort(), query.getSortOrder(), list);
             //获取分页之后的信息
             List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
             PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
