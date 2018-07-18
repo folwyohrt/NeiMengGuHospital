@@ -5,9 +5,9 @@
 <generatorConfiguration>
 
     <!--数据库驱动 -->
-    <classPathEntry location="db2jcc_license_cu.jar"/>
-    <classPathEntry location="db2jcc4.jar"/>
-    <classPathEntry location="db2java.jar"/>
+    <classPathEntry location="libs/db2jcc_license_cu.jar"/>
+    <classPathEntry location="libs/db2jcc4.jar"/>
+    <classPathEntry location="libs/db2java.jar"/>
 
     <context id="DB2Tables" targetRuntime="tk.mybatis.mapper.generator.TkMyBatis3Impl" defaultModelType="flat">
 

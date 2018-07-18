@@ -9,6 +9,7 @@ import com.system.pojo.SysHospitalizationQuery;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Auther: 李景然
@@ -25,6 +26,14 @@ public interface SysHospitalizationService {
     PagingResult getPageList(SysHospitalizationQuery sysHospitalizationQuery);
     //用于 后台 修改 出院状态
     List<SysHospitalization> getList(int pStatus);
+
+    List<String> getBedList(Integer areaId);
+
+    SysHospitalization getLatestRecordByhBed(String hBed);
+
+    List<String> getBedList(Integer areaId);
+
+    SysHospitalization getLatestRecordByhBed(String hBed);
 
     boolean insert(SysHospitalizationDTO createSysHospitalizationInfo);
 

@@ -132,7 +132,7 @@
         </property>
     </bean>
 
-    <!--&lt;!&ndash;配置druid连接池&ndash;&gt;-->
+    <!--配置druid连接池-->
     <!--<bean id="dataSource5" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">-->
         <!--&lt;!&ndash; 基本属性 driver、url、user、password &ndash;&gt;-->
         <!--<property name="driverClassName" value="${ds5.jdbc_driver}"/>-->
@@ -193,7 +193,7 @@
         <property name="defaultTargetDataSource" ref="dataSource1"></property>
     </bean>
 
-    <!--配置Mybatis插件 通用mapper组件-->
+    <!--配置Mybatis插件通用mapper组件-->
     <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.system.dao"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
