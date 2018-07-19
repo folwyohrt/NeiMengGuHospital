@@ -110,7 +110,7 @@ public class SysHospitalizationController {
     }
 
     @ApiOperation(value = "根据住院信息的id修改陪同人数")
-    @RequestMapping(value = "/update/{id}/{esortNum}", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateEsortnum/{id}/{esortNum}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public boolean updateEsortnumById(@PathVariable Long id, @PathVariable Integer esortNum){
         SysHospitalizationDTO sysHospitalizationDTO = new SysHospitalizationDTO();
