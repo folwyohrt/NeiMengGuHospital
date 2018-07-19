@@ -62,9 +62,9 @@ public class SynchronousDBController {
     @ResponseStatus(HttpStatus.OK)
     public boolean synchronousHos(@PathVariable Long period) {
 
-//        if (syncHosTimer != null) {
-//            syncHosTimer.cancel();
-//        }
+       if (syncHosTimer != null) {
+           syncHosTimer.cancel();
+       }
         syncHosTimer = new Timer();
         //周期任务执行的开始时间
         Date beginTime = new Date();
@@ -164,6 +164,7 @@ public class SynchronousDBController {
                 logger.info("SSXX---times---" + ++num);
                 // 执行你的方法
                 List<PtsVwSsxx> list = zyxxAndSSXXToSurgeryService.getAllSSXXList();
+                logger.info("手术信息总数：" + list.size());
                 for (PtsVwSsxx item : list) {
                     PtsVwZyxx zyxx = zyxxAndSSXXToSurgeryService.getZyxx(item.getZYH(), item.getZYCS());
                     PtsVwCyxx cyxx = null;
@@ -193,7 +194,7 @@ public class SynchronousDBController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         if (syncUserTimer != null) {
-            syncHosTimer.cancel();
+            syncUserTimer.cancel();
         }
         syncUserTimer = new Timer();
         logger.info("period(分钟)---" + period);
