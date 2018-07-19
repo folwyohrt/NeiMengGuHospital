@@ -1,6 +1,9 @@
 package com.system.controller;
 
+import com.system.entity.SysHospitalization;
 import com.system.facade.SysHospitalizationVisitStatusService;
+import com.system.pojo.PagingRequest;
+import com.system.pojo.PagingResult;
 import com.system.pojo.SysHospitalizationDTO;
 import com.system.pojo.SysHospitalizationQuery;
 import com.system.service.SysHospitalizationService;
@@ -30,52 +33,91 @@ public class SysHospitalizationController {
     @ApiOperation(value = "根据id查询病人在院信息")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public SysHospitalizationDTO get(@PathVariable long id){
+    public SysHospitalizationDTO get(@PathVariable long id) {
         return sysHospitalizationService.get(id);
     }
 
-    @ApiOperation(value = "按多条件查询病人在院信息")
-    @RequestMapping(value = "/getList", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public List<SysHospitalizationDTO> getList(@RequestBody SysHospitalizationQuery sysHospitalizationQuery) throws ParseException {
-        return sysHospitalizationService.getList(sysHospitalizationQuery);
-    }
-
-    @ApiOperation(value = "获取所有病人在院信息")
+    @ApiOperation(value = "获取所有病人在院信息---分页")
     @RequestMapping(value = "/getList", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public List<SysHospitalizationDTO> getList() {
-        return sysHospitalizationService.getList();
+    public PagingResult getPagingList(@RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) {
+        PagingRequest pagingRequest=new PagingRequest(pageNum,pageSize,sort,sortOrder);
+        PagingResult pagingResult = sysHospitalizationService.getPageList(pagingRequest);
+        return pagingResult;
+    }
+//
+//    @ApiOperation(value = "按多条件查询病人在院信息--分页")
+//    @RequestMapping(value = "/getList", method = RequestMethod.POST)
+//    @ResponseStatus(HttpStatus.OK)
+//    public PagingResult getList(@RequestBody SysHospitalizationQuery query, @RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) throws ParseException, InterruptedException {
+//        PagingResult pagingResult=sysHospitalizationService.getPageList(query,pageNum,pageSize,sort,sortOrder);
+//        return pagingResult;
+//    }
+
+    @ApiOperation(value = "按多条件查询病人在院信息--分页")
+    @RequestMapping(value = "/getList", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public PagingResult getList(@RequestBody SysHospitalizationQuery query) throws ParseException, InterruptedException {
+        PagingResult pagingResult=sysHospitalizationService.getPageList(query);
+        return pagingResult;
     }
 
-    @ApiOperation(value ="新增病人在院信息")
-    @RequestMapping(value = "/",method = RequestMethod.POST)
+    @ApiOperation(value = "新增病人在院信息")
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public boolean insert(@RequestBody SysHospitalizationDTO sysHospitalizationDTO) throws ParseException {
         return sysHospitalizationService.insert(sysHospitalizationDTO);
     }
 
-    @ApiOperation(value ="修改病人在院信息")
-    @RequestMapping(value = "/",method = RequestMethod.PATCH)
+    @ApiOperation(value = "修改病人在院信息")
+    @RequestMapping(value = "/", method = RequestMethod.PATCH)
     @ResponseStatus(HttpStatus.OK)
     public boolean update(@RequestBody SysHospitalizationDTO sysHospitalizationDTO) throws ParseException {
         return sysHospitalizationService.update(sysHospitalizationDTO);
     }
 
-    @ApiOperation(value ="删除病人在院信息")
-    @RequestMapping(value = "/",method = RequestMethod.DELETE)
+    @ApiOperation(value = "删除病人在院信息")
+    @RequestMapping(value = "/", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public boolean delete(@RequestBody List<Long> idList){
+    public boolean delete(@RequestBody List<Long> idList) {
         return sysHospitalizationService.delete(idList);
     }
 
     @Resource
     private SysHospitalizationVisitStatusService sysHospitalizationVisitStatusService;
 
-    @ApiOperation(value ="修改病人探视信息")
-    @RequestMapping(value = "update/{id}/{status}",method = RequestMethod.PATCH)
+    @ApiOperation(value = "修改病人探视信息")
+    @RequestMapping(value = "update/{id}/{status}", method = RequestMethod.PATCH)
     @ResponseStatus(HttpStatus.OK)
-    public void updateVisitStatus(@PathVariable Long id, @PathVariable Integer status){
+    public void updateVisitStatus(@PathVariable Long id, @PathVariable Integer status) {
         sysHospitalizationVisitStatusService.updateHospitalizationVisitStatus(id, status);
     }
+
+
+
+    @ApiOperation(value = "根据病区获取到床号列表")
+    @RequestMapping(value = "/getBedList/{areaId}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getBedList(@PathVariable Integer areaId){
+        return sysHospitalizationService.getBedList(areaId);
+    }
+
+    @ApiOperation(value = "根据床号获取到病人信息")
+    @RequestMapping(value = "/get/{hBed}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public SysHospitalization getLatestRecordByhBed(@PathVariable String hBed){
+        return sysHospitalizationService.getLatestRecordByhBed(hBed);
+    }
+
+    @ApiOperation(value = "根据住院信息的id修改陪同人数")
+    @RequestMapping(value = "/update/{id}/{esortNum}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean updateEsortnumById(@PathVariable Long id, @PathVariable Integer esortNum){
+        SysHospitalizationDTO sysHospitalizationDTO = new SysHospitalizationDTO();
+        sysHospitalizationDTO.setId(id);
+        sysHospitalizationDTO.setEscortsNum(esortNum);
+        return sysHospitalizationService.update(sysHospitalizationDTO);
+    }
+
+
 }

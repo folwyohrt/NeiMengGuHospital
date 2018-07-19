@@ -9,18 +9,18 @@ public class SysUserQuery {
     public SysUserQuery(){}
 
     public SysUserQuery(String name){
-        this.userName =name;
+        this.codeno =name;
     }
 
-    private String userName;
+    private String codeno;
     private String userPwd;
 
-    public String getUserName() {
-        return userName;
+    public String getCodeno() {
+        return codeno;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setCodeno(String codeno) {
+        this.codeno = codeno;
     }
 
     public String getUserPwd() {

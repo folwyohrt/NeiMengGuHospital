@@ -7,7 +7,7 @@ import java.util.Date;
  * @Date: 2018/6/12 09:06
  * @Description:
  */
-public class SysSurgeryQuery {
+public class SysSurgeryQuery extends PagingRequest {
 
     private String hId;
     private String pName;

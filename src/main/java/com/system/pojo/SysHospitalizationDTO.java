@@ -10,7 +10,8 @@ public class SysHospitalizationDTO {
     private String hId;
     private String pName;
     private String pSex;
-    private Integer pAge;
+    private String pAge;
+    private Integer hTimes;
 
     private Integer hArea;
     private String hAreaStr;
@@ -19,8 +20,12 @@ public class SysHospitalizationDTO {
     private Integer escortsNum;
     private String visitStatus;
     private String hDate;
-    private String pStatus;
-    private String pInsur;
+
+    private Integer pStatus;
+    private String pStatusStr;
+    private Integer pInsur;
+    private String pInsurStr;
+
     private String dcrName;
 
     public Long getId() {
@@ -55,11 +60,11 @@ public class SysHospitalizationDTO {
         this.pSex = pSex;
     }
 
-    public Integer getpAge() {
+    public String getpAge() {
         return pAge;
     }
 
-    public void setpAge(Integer pAge) {
+    public void setpAge(String pAge) {
         this.pAge = pAge;
     }
 
@@ -103,19 +108,19 @@ public class SysHospitalizationDTO {
         this.hDate = hDate;
     }
 
-    public String getpStatus() {
+    public Integer getpStatus() {
         return pStatus;
     }
 
-    public void setpStatus(String pStatus) {
+    public void setpStatus(Integer pStatus) {
         this.pStatus = pStatus;
     }
 
-    public String getpInsur() {
+    public Integer getpInsur() {
         return pInsur;
     }
 
-    public void setpInsur(String pInsur) {
+    public void setpInsur(Integer pInsur) {
         this.pInsur = pInsur;
     }
 
@@ -133,5 +138,29 @@ public class SysHospitalizationDTO {
 
     public void sethAreaStr(String hAreaStr) {
         this.hAreaStr = hAreaStr;
+    }
+
+    public String getpStatusStr() {
+        return pStatusStr;
+    }
+
+    public void setpStatusStr(String pStatusStr) {
+        this.pStatusStr = pStatusStr;
+    }
+
+    public String getpInsurStr() {
+        return pInsurStr;
+    }
+
+    public void setpInsurStr(String pInsurStr) {
+        this.pInsurStr = pInsurStr;
+    }
+
+    public Integer gethTimes() {
+        return hTimes;
+    }
+
+    public void sethTimes(Integer hTimes) {
+        this.hTimes = hTimes;
     }
 }
