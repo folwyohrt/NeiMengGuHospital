@@ -1,10 +1,7 @@
 package com.system.service;
 
 import com.system.entity.SysHospitalization;
-import com.system.pojo.PagingRequest;
-import com.system.pojo.PagingResult;
-import com.system.pojo.SysHospitalizationDTO;
-import com.system.pojo.SysHospitalizationQuery;
+import com.system.pojo.*;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -21,7 +18,7 @@ public interface SysHospitalizationService {
 
     SysHospitalization get(int times, String hId);
 
-    PagingResult getPageList( PagingRequest pagingRequest);
+    PagingResult getPageList( SysHosPagingRequest request);
 
     PagingResult getPageList(SysHospitalizationQuery sysHospitalizationQuery);
     //用于 后台 修改 出院状态
