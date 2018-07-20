@@ -70,8 +70,8 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         Page page = PageHelper.startPage(pagingRequest.getPageNum(), pagingRequest.getPageSize(), true);
 
         Date todayDate = getTodayDate();
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-        SysSurgeryQuery sysSurgeryQuery=new SysSurgeryQuery();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SysSurgeryQuery sysSurgeryQuery = new SysSurgeryQuery();
         sysSurgeryQuery.setSurgeryDatetime(sdf.format(todayDate));
         sysSurgeryQuery.sethArea(0);
         sysSurgeryQuery.sethId("");
@@ -204,7 +204,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
             criteria.andLike("pName", "%" + sysSurgeryQuery.getpName() + "%");
         }
         if (sysSurgeryQuery.gethId() != "") {
-            criteria.andEqualTo("hId", sysSurgeryQuery.gethId());
+            criteria.andLike("hId", "%" + sysSurgeryQuery.gethId() + "%");
         }
         if (sysSurgeryQuery.gethArea() != 0) {
             criteria.andEqualTo("hArea", sysSurgeryQuery.gethArea());
@@ -225,7 +225,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
             cal.setTime(dateEnd);
             cal.add(Calendar.DATE, 1);
             criteria.andBetween("surgeryDatetime", dateBegin, cal.getTime());
-        }else{
+        } else {
             Date todayDate = getTodayDate();
             cal.setTime(todayDate);
             cal.add(Calendar.DATE, 1);
