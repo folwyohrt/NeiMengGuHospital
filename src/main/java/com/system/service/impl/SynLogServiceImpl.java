@@ -27,7 +27,7 @@ public class SynLogServiceImpl implements SynLogService {
     @Override
     @Transactional(rollbackFor = NoneSaveException.class)
     public SyncLog insertSynLog(SyncLog syncLog) {
-        syncLogDao.insert(syncLog);
+        syncLogDao.insertSelective(syncLog);
         return syncLog;
     }
 

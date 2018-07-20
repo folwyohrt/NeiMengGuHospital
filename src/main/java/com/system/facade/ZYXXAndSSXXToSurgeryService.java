@@ -17,5 +17,5 @@ public interface ZYXXAndSSXXToSurgeryService {
     PtsVwZyxx getZyxx(String zyh,  String zycs);
     PtsVwCyxx getCyxx(String zyh,  String zycs);
     // 往Sys_Surgery表中插入或更新
-    boolean insertOrUpdateSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx);
+    String insertOrUpdateSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx);
 }

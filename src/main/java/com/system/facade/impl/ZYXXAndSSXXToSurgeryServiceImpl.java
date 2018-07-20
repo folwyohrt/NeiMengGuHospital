@@ -97,7 +97,7 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
 
     @Override
     @DataSwitch(dataSource="dataSource1")
-    public boolean insertOrUpdateSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx) {
+    public String insertOrUpdateSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx) {
         if (ssxx == null) {
             throw new NoneSaveException("手术信息为空！");
         }
@@ -107,11 +107,18 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
         if (sysSurgeryList.size() > 0) {
             // 需要更新 && 有更新
             if (sysSurgeryList.get(0).getSurgeryDatetime() == null && ssxx.getSSRQ() != null) {
-                updateSurgery(ssxx);
+                if (updateSurgery(ssxx)) {
+                    return "update";
+                }
             }
-            return true;
         }
-        return insertSurgery(ssxx, zyxx, cyxx) > 0;
+        // 没有该信息，需要插入
+        else {
+            if (insertSurgery(ssxx, zyxx, cyxx) > 0) {
+                return "insert";
+            }
+        }
+        return "none";
     }
 
     @DataSwitch(dataSource="dataSource1")
