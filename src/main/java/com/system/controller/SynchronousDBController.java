@@ -151,30 +151,51 @@ public class SynchronousDBController {
         }
         syncSgTimer = new Timer();
 
-        //周期任务执行的开始时间
-        Date timerBeginTime = new Date();
-
         logger.info("period(分钟)---" + period);
         period = 1000 * 60 * period;
 
+        // 从pts_vw_ssxx视图中获取到所有手术信息，并获取到住院信息和出院信息（如果住院信息未获取到），
+        // 然后往sys_surgery中插入或更新数据；
+        // 同时记录本次同步的总数（也就是当前手术信息总数），更新的数目，新增的数目，未变化的数目，开始时间，结束时间
         syncSgTimer.schedule(new TimerTask() {
-            int num=0;
+            int num = 0;
             @Override
             public void run() {
                 logger.info("SSXX---times---" + ++num);
+                Date startTime = new Date();
+                Long updateNum = 0l;
+                Long insertNum = 0l;
+                Long noneNum = 0l;
                 // 执行你的方法
                 List<PtsVwSsxx> list = zyxxAndSSXXToSurgeryService.getAllSSXXList();
-                logger.info("手术信息总数：" + list.size());
+                Long totalNum = Long.valueOf(list.size());
+                logger.info("手术信息总数：" + totalNum);
                 for (PtsVwSsxx item : list) {
                     PtsVwZyxx zyxx = zyxxAndSSXXToSurgeryService.getZyxx(item.getZYH(), item.getZYCS());
                     PtsVwCyxx cyxx = null;
                     if (zyxx == null) {
                         cyxx = zyxxAndSSXXToSurgeryService.getCyxx(item.getZYH(), item.getZYCS());
                     }
-                    zyxxAndSSXXToSurgeryService.insertOrUpdateSurgery(item, zyxx, cyxx);
+                    String result = zyxxAndSSXXToSurgeryService.insertOrUpdateSurgery(item, zyxx, cyxx);
+                    // 记录本次同步的行为
+                    if (result.equals("insert")) insertNum ++;
+                    else if (result.equals("update")) updateNum ++;
+                    else noneNum ++;
                 }
+                // 往数据库中记录本次同步的详细信息
+                SyncLog syncLog = new SyncLog();
+                syncLog.setsCount(totalNum);
+                syncLog.setsStarttime(startTime);
+                syncLog.setsEndtime(new Date());
+                syncLog.setsSuccess(totalNum == (insertNum + updateNum + noneNum));
+                syncLog.setsInsert(insertNum);
+                syncLog.setsUpdate(updateNum);
+                syncLog.setsType("sg");
+                synLogService.insertSynLog(syncLog);
+
+                logger.info("SSXX---times--- 第 "+ num +" 次同步，新增数目：" + insertNum + "，更新数目：" + updateNum);
             }
-        },timerBeginTime, period);
+        },0, period); // delay为0，也就是立即执行
 
         return true;
     }
