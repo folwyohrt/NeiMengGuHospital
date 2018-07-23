@@ -206,6 +206,9 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         if (sysSurgeryQuery.gethId() != "") {
             criteria.andLike("hId", "%" + sysSurgeryQuery.gethId() + "%");
         }
+        if (sysSurgeryQuery.gethBed() != "") {
+            criteria.andLike("hBed", "%" + sysSurgeryQuery.gethBed() + "%");
+        }
         if (sysSurgeryQuery.gethArea() != 0) {
             criteria.andEqualTo("hArea", sysSurgeryQuery.gethArea());
         }
