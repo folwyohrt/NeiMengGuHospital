@@ -7,10 +7,7 @@ import com.system.entity.SysArea;
 import com.system.entity.SysHospitalization;
 import com.system.entity.SysMedicalInsurance;
 import com.system.entity.SysPatientStatus;
-import com.system.pojo.PagingRequest;
-import com.system.pojo.PagingResult;
-import com.system.pojo.SysHospitalizationDTO;
-import com.system.pojo.SysHospitalizationQuery;
+import com.system.pojo.*;
 import com.system.service.SysAreaService;
 import com.system.service.SysHospitalizationService;
 import com.system.service.SysMedicalInsuranceService;
@@ -63,15 +60,15 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     }
 
     @Override
-    public PagingResult getPageList(PagingRequest pagingRequest) {
+    public PagingResult getPageList(SysHosPagingRequest request) {
         //设置分页参数
-        Page page = PageHelper.startPage(pagingRequest.getPageNum(), pagingRequest.getPageSize(), true);
+        Page page = PageHelper.startPage(request.getPageNum(), request.getPageSize(), true);
 
-        List<SysHospitalization> list = sysHospitalizationDao.selectAll();
+        List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExampleBypStatus(request.getpStatus()));
         if (list.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
-        list = getOrderedSysHospitalizations(pagingRequest.getSort(), pagingRequest.getSortOrder(), list);
+        list = getOrderedSysHospitalizations(request.getSort(), request.getSortOrder(), list);
         List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
 
         //获取分页之后的信息
@@ -174,6 +171,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         SysHospitalization sysHospitalization = convertToSysHospitalization(sysHospitalizationDTO);
 
         sysHospitalization.sethDate(getDate(sysHospitalizationDTO.gethDate()));
+//        sysHospitalization.sethOutDate(getDate(sysHospitalizationDTO.gethOutDate()));
         return sysHospitalizationDao.insertSelective(sysHospitalization) > 0;
     }
 
@@ -192,6 +190,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         SysHospitalization sysHospitalization = convertToSysHospitalization(sysHospitalizationDTO);
 
         sysHospitalization.sethDate(getDate(sysHospitalizationDTO.gethDate()));
+//        sysHospitalization.sethOutDate(getDate(sysHospitalizationDTO.gethOutDate()));
         if (sysHospitalizationDao.updateByPrimaryKeySelective(sysHospitalization) > 0) {
             return true;
         }
@@ -226,17 +225,22 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
             criteria.andLike("pName", "%" + sysHospitalizationQuery.getpName() + "%");
         }
         if (sysHospitalizationQuery.gethId() != "") {
-            criteria.andEqualTo("hId", sysHospitalizationQuery.gethId());
+            criteria.andLike("hId", "%" + sysHospitalizationQuery.gethId() + "%");
         }
         if (sysHospitalizationQuery.gethArea() != 0) {
             criteria.andEqualTo("hArea", sysHospitalizationQuery.gethArea());
-            ;
+        }
+        if (sysHospitalizationQuery.gethBed() != "") {
+            criteria.andLike("hBed", "%" + sysHospitalizationQuery.gethBed() + "%");
+        }
+        if (sysHospitalizationQuery.getpStatus() != 0) {
+            criteria.andEqualTo("pStatus", sysHospitalizationQuery.getpStatus());
         }
         //筛选时间
         if (sysHospitalizationQuery.gethDate() != "") {
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date dateBegin = null;
-            Date dateEnd=null;
+            Date dateEnd = null;
             try {
                 dateBegin = sdf.parse(sysHospitalizationQuery.gethDate());
                 dateEnd = sdf.parse(sysHospitalizationQuery.gethDate());
@@ -247,7 +251,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
             Calendar cal = Calendar.getInstance();
             cal.setTime(dateEnd);
             cal.add(Calendar.DATE, 1);
-            criteria.andBetween("hDate",dateBegin,cal.getTime());
+            criteria.andBetween("hDate", dateBegin, cal.getTime());
         }
         return example;
     }
@@ -265,6 +269,15 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         Example example = new Example(SysHospitalization.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("hArea", areaId);
+        return example;
+    }
+
+    private Example getExampleBypStatus(int id) {
+        Example example = new Example(SysHospitalization.class);
+        Example.Criteria criteria = example.createCriteria();
+        if(id!=0){
+            criteria.andEqualTo("pStatus", id);
+        }
         return example;
     }
 
@@ -295,6 +308,9 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
 
         Date date = getDate(sysHospitalizationDTO.gethDate());
         criteria.andEqualTo("hDate", date);
+
+//        Date dateOut = getDate(sysHospitalizationDTO.gethOutDate());
+        criteria.andEqualTo("hOutDate", date);
         return example;
     }
 
@@ -311,8 +327,13 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     SysAreaService sysAreaService;
 
     private String getAreaStr(int area) {
-        SysArea sysArea = sysAreaService.get(area);
-        return sysArea.getValue();
+        try {
+            SysArea sysArea = sysAreaService.get(area);
+            return sysArea.getValue();
+        } catch (Exception e) {
+            throw new NoneGetException("areaId=" + area + "!not found value!");
+        }
+
     }
 
     @Resource
@@ -355,6 +376,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         sysHospitalizationDTO.setpStatusStr(getPatientStatusStr(sysHospitalization.getpStatus()));
         sysHospitalizationDTO.setpInsurStr(getMedicalInsuranceStr(sysHospitalization.getpInsur()));
         sysHospitalizationDTO.sethDate(getDateStr(sysHospitalization.gethDate()));
+//        sysHospitalizationDTO.sethOutDate(getDateStr(sysHospitalization.gethOutDate()));
         return sysHospitalizationDTO;
     }
 

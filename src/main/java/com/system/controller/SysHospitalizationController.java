@@ -2,10 +2,7 @@ package com.system.controller;
 
 import com.system.entity.SysHospitalization;
 import com.system.facade.SysHospitalizationVisitStatusService;
-import com.system.pojo.PagingRequest;
-import com.system.pojo.PagingResult;
-import com.system.pojo.SysHospitalizationDTO;
-import com.system.pojo.SysHospitalizationQuery;
+import com.system.pojo.*;
 import com.system.service.SysHospitalizationService;
 import com.system.util.CheckException;
 import io.swagger.annotations.Api;
@@ -36,23 +33,23 @@ public class SysHospitalizationController {
     public SysHospitalizationDTO get(@PathVariable long id) {
         return sysHospitalizationService.get(id);
     }
-
-    @ApiOperation(value = "获取所有病人在院信息---分页")
-    @RequestMapping(value = "/getList", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public PagingResult getPagingList(@RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) {
-        PagingRequest pagingRequest=new PagingRequest(pageNum,pageSize,sort,sortOrder);
-        PagingResult pagingResult = sysHospitalizationService.getPageList(pagingRequest);
-        return pagingResult;
-    }
 //
-//    @ApiOperation(value = "按多条件查询病人在院信息--分页")
-//    @RequestMapping(value = "/getList", method = RequestMethod.POST)
+//    @ApiOperation(value = "获取所有病人在院信息---分页")
+//    @RequestMapping(value = "/getList", method = RequestMethod.GET)
 //    @ResponseStatus(HttpStatus.OK)
-//    public PagingResult getList(@RequestBody SysHospitalizationQuery query, @RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) throws ParseException, InterruptedException {
-//        PagingResult pagingResult=sysHospitalizationService.getPageList(query,pageNum,pageSize,sort,sortOrder);
+//    public PagingResult getPagingList(@RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) {
+//        PagingRequest pagingRequest=new PagingRequest(pageNum,pageSize,sort,sortOrder);
+//        PagingResult pagingResult = sysHospitalizationService.getPageList(pagingRequest);
 //        return pagingResult;
 //    }
+
+    @ApiOperation(value = "获取所有病人在院信息---分页")
+    @RequestMapping(value = "/getAllList", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public PagingResult getPagingList(@RequestBody SysHosPagingRequest request) {
+        PagingResult pagingResult = sysHospitalizationService.getPageList(request);
+        return pagingResult;
+    }
 
     @ApiOperation(value = "按多条件查询病人在院信息--分页")
     @RequestMapping(value = "/getList", method = RequestMethod.POST)
