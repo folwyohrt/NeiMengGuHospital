@@ -64,7 +64,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         //设置分页参数
         Page page = PageHelper.startPage(request.getPageNum(), request.getPageSize(), true);
 
-        List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExampleBy(request.getpStatus(),"pStatus"));
+        List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExampleBypStatus(request.getpStatus()));
         if (list.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
@@ -171,6 +171,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         SysHospitalization sysHospitalization = convertToSysHospitalization(sysHospitalizationDTO);
 
         sysHospitalization.sethDate(getDate(sysHospitalizationDTO.gethDate()));
+//        sysHospitalization.sethOutDate(getDate(sysHospitalizationDTO.gethOutDate()));
         return sysHospitalizationDao.insertSelective(sysHospitalization) > 0;
     }
 
@@ -189,6 +190,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         SysHospitalization sysHospitalization = convertToSysHospitalization(sysHospitalizationDTO);
 
         sysHospitalization.sethDate(getDate(sysHospitalizationDTO.gethDate()));
+//        sysHospitalization.sethOutDate(getDate(sysHospitalizationDTO.gethOutDate()));
         if (sysHospitalizationDao.updateByPrimaryKeySelective(sysHospitalization) > 0) {
             return true;
         }
@@ -227,11 +229,12 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         }
         if (sysHospitalizationQuery.gethArea() != 0) {
             criteria.andEqualTo("hArea", sysHospitalizationQuery.gethArea());
-            ;
+        }
+        if (sysHospitalizationQuery.gethBed() != "") {
+            criteria.andLike("hBed", "%" + sysHospitalizationQuery.gethBed() + "%");
         }
         if (sysHospitalizationQuery.getpStatus() != 0) {
             criteria.andEqualTo("pStatus", sysHospitalizationQuery.getpStatus());
-            ;
         }
         //筛选时间
         if (sysHospitalizationQuery.gethDate() != "") {
@@ -269,10 +272,12 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         return example;
     }
 
-    private Example getExampleBy(int id,String col) {
+    private Example getExampleBypStatus(int id) {
         Example example = new Example(SysHospitalization.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo(col, id);
+        if(id!=0){
+            criteria.andEqualTo("pStatus", id);
+        }
         return example;
     }
 
@@ -303,6 +308,9 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
 
         Date date = getDate(sysHospitalizationDTO.gethDate());
         criteria.andEqualTo("hDate", date);
+
+//        Date dateOut = getDate(sysHospitalizationDTO.gethOutDate());
+        criteria.andEqualTo("hOutDate", date);
         return example;
     }
 
@@ -368,6 +376,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         sysHospitalizationDTO.setpStatusStr(getPatientStatusStr(sysHospitalization.getpStatus()));
         sysHospitalizationDTO.setpInsurStr(getMedicalInsuranceStr(sysHospitalization.getpInsur()));
         sysHospitalizationDTO.sethDate(getDateStr(sysHospitalization.gethDate()));
+//        sysHospitalizationDTO.sethOutDate(getDateStr(sysHospitalization.gethOutDate()));
         return sysHospitalizationDTO;
     }
 

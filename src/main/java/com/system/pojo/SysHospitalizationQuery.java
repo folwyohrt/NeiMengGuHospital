@@ -13,6 +13,7 @@ public class SysHospitalizationQuery extends SysHosPagingRequest {
     private String pName;
     //住院时间
     private String hDate;
+    private String hBed;
 
     public Integer gethArea() {
         return hArea;
@@ -44,5 +45,13 @@ public class SysHospitalizationQuery extends SysHosPagingRequest {
 
     public void sethDate(String hDate) {
         this.hDate = hDate;
+    }
+
+    public String gethBed() {
+        return hBed;
+    }
+
+    public void sethBed(String hBed) {
+        this.hBed = hBed;
     }
 }

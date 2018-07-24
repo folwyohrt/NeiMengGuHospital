@@ -13,6 +13,7 @@ public class SysSurgeryQuery extends PagingRequest {
     private String pName;
     private Integer hArea;
     private String surgeryDatetime;
+    private String hBed;
 
     public String gethId() {
         return hId;
@@ -44,5 +45,13 @@ public class SysSurgeryQuery extends PagingRequest {
 
     public void setSurgeryDatetime(String surgeryDatetime) {
         this.surgeryDatetime = surgeryDatetime;
+    }
+
+    public String gethBed() {
+        return hBed;
+    }
+
+    public void sethBed(String hBed) {
+        this.hBed = hBed;
     }
 }
