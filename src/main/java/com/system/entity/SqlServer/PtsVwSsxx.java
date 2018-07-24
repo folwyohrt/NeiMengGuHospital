@@ -31,6 +31,8 @@ public class PtsVwSsxx implements Serializable {
     private String SSYS;
     @Column(name = "ZYKS")
     private String ZYKS;
+    @Column(name = "PCSJ")
+    private Date PCSJ;
     
     private static final long serialVersionUID = 1L;
     
@@ -130,6 +132,14 @@ public class PtsVwSsxx implements Serializable {
         this.ZYKS = ZYKS;
     }
 
+    public Date getPCSJ() {
+        return PCSJ;
+    }
+
+    public void setPCSJ(Date PCSJ) {
+        this.PCSJ = PCSJ;
+    }
+
     @Override
     public String toString() {
         return "PtsVwSsxx{" +
@@ -145,8 +155,7 @@ public class PtsVwSsxx implements Serializable {
                 ", SSLX='" + SSLX + '\'' +
                 ", SSYS='" + SSYS + '\'' +
                 ", ZYKS='" + ZYKS + '\'' +
+                ", PCSJ=" + PCSJ +
                 '}';
     }
-
-
 }

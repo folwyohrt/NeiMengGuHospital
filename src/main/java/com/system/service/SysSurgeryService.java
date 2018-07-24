@@ -27,6 +27,8 @@ public interface SysSurgeryService {
 
     boolean insert(SysSurgeryDTO createSysSurgeryInfo);
 
+    boolean insert(SysSurgery sysSurgery);
+
     boolean update(SysSurgeryDTO sysUserDTO);
 
     boolean update(SysSurgery sysUser);
