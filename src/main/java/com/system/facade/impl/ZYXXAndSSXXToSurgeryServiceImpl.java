@@ -15,6 +15,7 @@ import com.system.facade.ZYXXAndSSXXToSurgeryService;
 import com.system.pojo.CreateSysAreaInfo;
 import com.system.pojo.CreateSysSurgeryStatusInfo;
 import com.system.service.SysAreaService;
+import com.system.service.SysSurgeryService;
 import com.system.service.SysSurgeryStatusService;
 import com.system.util.database.DataSwitch;
 import com.system.util.exception.controller.result.NoneGetException;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 
@@ -47,6 +49,9 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
     private SysSurgeryDao sysSurgeryDao;
 
     @Resource
+    private SysSurgeryService sysSurgeryService;
+
+    @Resource
     private SysAreaService sysAreaService;
 
     @Resource
@@ -63,8 +68,17 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
     }
 
     @Override
+    public List<PtsVwSsxx> getSSXXListBySgDate(Date fromDate, Date toDate) {
+        List<PtsVwSsxx> ssxxes = ptsVwSsxxDao.selectByExample(getSsxxExample(fromDate, toDate));
+        if (ssxxes == null || ssxxes.size() == 0) {
+            throw new NoneGetException("获取手术信息失败");
+        }
+        return ssxxes;
+    }
+
+    @Override
     @DataSwitch(dataSource = "dataSource5")
-    public PtsVwSsxx getSSXX(String zyh, String zycs, String xh) {
+    public synchronized PtsVwSsxx getSSXX(String zyh, String zycs, String xh) {
         List<PtsVwSsxx> ssxxes = ptsVwSsxxDao.selectByExample(getSsxxExample(zyh, zycs, xh));
         if (ssxxes == null || ssxxes.size() == 0) {
             //System.out.printf("住院号：%s，住院次数：%s\n", zyh, zycs);
@@ -75,7 +89,7 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
 
     @Override
     @DataSwitch(dataSource = "dataSource3")
-    public PtsVwZyxx getZyxx(String zyh, String zycs) {
+    public synchronized PtsVwZyxx getZyxx(String zyh, String zycs) {
         List<PtsVwZyxx> zyxxList = ptsVwZyxxDao.selectByExample(getZyxxExample(zyh, zycs));
         if (zyxxList == null || zyxxList.size() == 0) {
             //System.out.printf("住院号：%s，住院次数：%s\n", zyh, zycs);
@@ -97,57 +111,57 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
 
     @Override
     @DataSwitch(dataSource="dataSource1")
-    public String insertOrUpdateSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx) {
+    public synchronized String insertOrUpdateSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx) {
         if (ssxx == null) {
             throw new NoneSaveException("手术信息为空！");
         }
-        // mysql中的手术信息列表
+        // 查询mysql中的手术信息列表
         List<SysSurgery> sysSurgeryList = sysSurgeryDao.selectByExample(getSgExample(ssxx));
-        // 已经存在该信息，无需插入，但可能需要更新
+        // 已经存在该信息，无需插入，但可能需要更新手术日期
         if (sysSurgeryList.size() > 0) {
             // 需要更新 && 有更新
-            if (sysSurgeryList.get(0).getSurgeryDatetime() == null && ssxx.getSSRQ() != null) {
-                if (updateSurgery(ssxx)) {
+            if (sysSurgeryList.get(0).getSurgeryDatetime() == null && ssxx.getPCSJ() != null) {
+                if (updateSurgeryDate(ssxx)) {
                     return "update";
                 }
             }
         }
         // 没有该信息，需要插入
         else {
-            if (insertSurgery(ssxx, zyxx, cyxx) > 0) {
+            if (insertSurgery(ssxx, zyxx, cyxx)) {
                 return "insert";
             }
         }
         return "none";
     }
 
+    @Override
     @DataSwitch(dataSource="dataSource1")
-    public boolean updateSurgery(PtsVwSsxx ssxx) {
+    public synchronized boolean updateSurgeryDate(PtsVwSsxx ssxx) {
         SysSurgery sysSurgery = new SysSurgery();
-        sysSurgery.setSurgeryDatetime(ssxx.getSSRQ());
+        sysSurgery.setSurgeryDatetime(ssxx.getPCSJ());
         return sysSurgeryDao.updateByExampleSelective(sysSurgery, getSgExample(ssxx)) > 0;
     }
 
+    @Override
     @DataSwitch(dataSource="dataSource1")
-    public int insertSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx) {
+    public synchronized boolean insertSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx) {
         SysSurgery sysSurgery = new SysSurgery();
+        // 填充来自手术视图的信息
         supplySSXX(sysSurgery, ssxx);
-        if (zyxx == null) {
-            //logger.info("Zyxx is empty!");
-        }
-        if (cyxx == null) {
-            //logger.info("Cyxx is empty!");
-        }
+        // 填充来自住院视图的信息
         if (zyxx != null) {
             supplyWithZyxx(sysSurgery, zyxx);
         }
+        // 填充来自出院视图的信息
         else if (cyxx != null) {
             supplyWithCyxx(sysSurgery, cyxx);
         }
+        // 填充默认信息
         else {
             supplyWithEmpty(sysSurgery);
         }
-        return sysSurgeryDao.insertSelective(sysSurgery);
+        return sysSurgeryService.insert(sysSurgery);
     }
 
 
@@ -166,6 +180,13 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
         criteria.andEqualTo("zyh", zyh);
         criteria.andEqualTo("zycs", zycs);
         criteria.andEqualTo("xh", xh);
+        return example;
+    }
+
+    private Example getSsxxExample(Date fromDate, Date toDate) {
+        Example example = new Example(PtsVwSsxx.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andBetween("PCSJ", fromDate, toDate);
         return example;
     }
 
@@ -246,8 +267,8 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
         sysSurgery.setpSex(ssxx.getXB());
         sysSurgery.sethXh(ssxx.getXH());
         // 手术日期
-        if (ssxx.getSSRQ() != null)
-            sysSurgery.setSurgeryDatetime(ssxx.getSSRQ());
+        if (ssxx.getPCSJ() != null)
+            sysSurgery.setSurgeryDatetime(ssxx.getPCSJ());
         // 术前诊断
         if (ssxx.getSQZD() != null)
             sysSurgery.setSurgeryPodx(ssxx.getSQZD());

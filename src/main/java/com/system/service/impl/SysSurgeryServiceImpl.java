@@ -167,6 +167,15 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     }
 
     @Override
+    public boolean insert(SysSurgery sysSurgery) {
+        List<SysSurgery> sysSurgeryList = sysSurgeryDao.selectByExample(getSgExample(sysSurgery));
+        if (sysSurgeryList != null && sysSurgeryList.size() > 0) {
+            throw new NoneSaveException("不能新增同一条记录");
+        }
+        return sysSurgeryDao.insertSelective(sysSurgery) > 0;
+    }
+
+    @Override
     public boolean update(SysSurgeryDTO sysSurgeryDTO) {
         SysSurgery sysSurgery = convertToSysSurgery(sysSurgeryDTO);
 
@@ -256,6 +265,15 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
 
         Date date = getDate(sysSurgeryDTO.getSurgeryDatetime());
         criteria.andEqualTo("surgeryDatetime", date);
+        return example;
+    }
+
+    private Example getSgExample(SysSurgery sysSurgery) {
+        Example example = new Example(SysSurgery.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("hId", sysSurgery.gethId());
+        criteria.andEqualTo("hTimes", sysSurgery.gethTimes());
+        criteria.andEqualTo("hXh", sysSurgery.gethXh());
         return example;
     }
 
