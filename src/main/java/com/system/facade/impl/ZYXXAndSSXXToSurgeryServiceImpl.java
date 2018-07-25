@@ -68,6 +68,7 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
     }
 
     @Override
+    @DataSwitch(dataSource = "dataSource5")
     public List<PtsVwSsxx> getSSXXListBySgDate(Date fromDate, Date toDate) {
         List<PtsVwSsxx> ssxxes = ptsVwSsxxDao.selectByExample(getSsxxExample(fromDate, toDate));
         if (ssxxes == null || ssxxes.size() == 0) {
