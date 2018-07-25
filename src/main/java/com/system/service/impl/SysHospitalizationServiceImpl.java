@@ -18,6 +18,7 @@ import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,11 +61,11 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     }
 
     @Override
-    public PagingResult getPageList(SysHosPagingRequest request) {
+    public PagingResult getPageList(PagingRequest request) {
         //设置分页参数
         Page page = PageHelper.startPage(request.getPageNum(), request.getPageSize(), true);
 
-        List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExampleBypStatus(request.getpStatus()));
+        List<SysHospitalization> list = sysHospitalizationDao.selectAll();
         if (list.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
         }
@@ -171,7 +172,6 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         SysHospitalization sysHospitalization = convertToSysHospitalization(sysHospitalizationDTO);
 
         sysHospitalization.sethDate(getDate(sysHospitalizationDTO.gethDate()));
-//        sysHospitalization.sethOutDate(getDate(sysHospitalizationDTO.gethOutDate()));
         return sysHospitalizationDao.insertSelective(sysHospitalization) > 0;
     }
 
@@ -190,7 +190,6 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         SysHospitalization sysHospitalization = convertToSysHospitalization(sysHospitalizationDTO);
 
         sysHospitalization.sethDate(getDate(sysHospitalizationDTO.gethDate()));
-//        sysHospitalization.sethOutDate(getDate(sysHospitalizationDTO.gethOutDate()));
         if (sysHospitalizationDao.updateByPrimaryKeySelective(sysHospitalization) > 0) {
             return true;
         }
@@ -217,6 +216,13 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         return true;
     }
 
+    @Override
+    @DataSwitch(dataSource = "dataSource1")
+    public boolean truncate() {
+        sysHospitalizationDao.truncate();
+        return true;
+    }
+
     private Example getExample(SysHospitalizationQuery sysHospitalizationQuery) {
         Example example = new Example(SysHospitalization.class);
         Example.Criteria criteria = example.createCriteria();
@@ -232,9 +238,6 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         }
         if (sysHospitalizationQuery.gethBed() != "") {
             criteria.andLike("hBed", "%" + sysHospitalizationQuery.gethBed() + "%");
-        }
-        if (sysHospitalizationQuery.getpStatus() != 0) {
-            criteria.andEqualTo("pStatus", sysHospitalizationQuery.getpStatus());
         }
         //筛选时间
         if (sysHospitalizationQuery.gethDate() != "") {
@@ -298,7 +301,6 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
 
         criteria.andEqualTo("escortsNum", sysHospitalizationDTO.getEscortsNum());
         criteria.andEqualTo("hBed", sysHospitalizationDTO.gethBed());
-        criteria.andEqualTo("hId", sysHospitalizationDTO.gethId());
         criteria.andEqualTo("pAge", sysHospitalizationDTO.getpAge());
         criteria.andEqualTo("pSex", sysHospitalizationDTO.getpSex());
         criteria.andEqualTo("pStatus", sysHospitalizationDTO.getpStatus());
@@ -308,9 +310,6 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
 
         Date date = getDate(sysHospitalizationDTO.gethDate());
         criteria.andEqualTo("hDate", date);
-
-//        Date dateOut = getDate(sysHospitalizationDTO.gethOutDate());
-        criteria.andEqualTo("hOutDate", date);
         return example;
     }
 
@@ -376,7 +375,6 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         sysHospitalizationDTO.setpStatusStr(getPatientStatusStr(sysHospitalization.getpStatus()));
         sysHospitalizationDTO.setpInsurStr(getMedicalInsuranceStr(sysHospitalization.getpInsur()));
         sysHospitalizationDTO.sethDate(getDateStr(sysHospitalization.gethDate()));
-//        sysHospitalizationDTO.sethOutDate(getDateStr(sysHospitalization.gethOutDate()));
         return sysHospitalizationDTO;
     }
 

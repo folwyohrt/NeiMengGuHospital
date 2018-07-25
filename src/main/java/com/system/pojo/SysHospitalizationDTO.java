@@ -20,7 +20,6 @@ public class SysHospitalizationDTO {
     private Integer escortsNum;
     private String visitStatus;
     private String hDate;
-//    private String hOutDate;
 
     private Integer pStatus;
     private String pStatusStr;
@@ -164,12 +163,4 @@ public class SysHospitalizationDTO {
     public void sethTimes(Integer hTimes) {
         this.hTimes = hTimes;
     }
-//
-//    public String gethOutDate() {
-//        return hOutDate;
-//    }
-//
-//    public void sethOutDate(String hOutDate) {
-//        this.hOutDate = hOutDate;
-//    }
 }

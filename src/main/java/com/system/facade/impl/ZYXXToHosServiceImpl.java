@@ -3,29 +3,22 @@ package com.system.facade.impl;
 import com.system.controller.util.ExceptionHandlerController;
 import com.system.dao.DB2.test1.PtsVwCyxxDao;
 import com.system.dao.DB2.test1.PtsVwZyxxDao;
-import com.system.dao.SyncLogDao;
-import com.system.dao.SysHospitalizationDao;
-import com.system.dao.SysMedicalInsuranceDao;
 import com.system.entity.*;
 import com.system.entity.DB2.test1.PtsVwCyxx;
 import com.system.entity.DB2.test1.PtsVwZyxx;
-import com.system.facade.ZYXXAndCYXXToHosService;
+import com.system.facade.ZYXXToHosService;
 import com.system.pojo.CreateSysAreaInfo;
 import com.system.pojo.CreateSysMedicalInsuranceInfo;
 import com.system.service.SysAreaService;
 import com.system.service.SysHospitalizationService;
 import com.system.service.SysMedicalInsuranceService;
 import com.system.util.database.DataSwitch;
-import com.system.util.exception.controller.result.NoneRemoveException;
-import com.system.util.exception.controller.result.NoneSaveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +29,7 @@ import java.util.stream.Collectors;
  * @Description:
  */
 @Service("zyxxAndCYXXToHosService")
-public class ZYXXAndCYXXToHosServiceImpl implements ZYXXAndCYXXToHosService {
+public class ZYXXToHosServiceImpl implements ZYXXToHosService {
     private Logger logger = LoggerFactory.getLogger(ExceptionHandlerController.class);
     @Resource
     private SysHospitalizationService sysHospitalizationService;
@@ -56,8 +49,14 @@ public class ZYXXAndCYXXToHosServiceImpl implements ZYXXAndCYXXToHosService {
     @Override
     @DataSwitch(dataSource = "dataSource3")
     public List<PtsVwZyxx> getZYXXList(Date startTime, Date endTime) {
-        List<PtsVwZyxx> list = ptsVwZyxxDao.selectAll().stream().filter(item -> item.getRyrq().after(startTime) && item.getRyrq().before(endTime)).collect(Collectors.toList());
+        List<PtsVwZyxx> list = ptsVwZyxxDao.selectAll().stream().filter(item -> (item.getRyrq().after(startTime) && item.getRyrq().before(endTime))||(item.getRyrq().equals(startTime))||(item.getRyrq().equals(endTime))).collect(Collectors.toList());
+        return list;
+    }
 
+    @Override
+    @DataSwitch(dataSource = "dataSource3")
+    public List<PtsVwZyxx> getZYXXList() {
+        List<PtsVwZyxx> list = ptsVwZyxxDao.selectAll();
         return list;
     }
 

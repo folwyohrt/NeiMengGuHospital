@@ -46,7 +46,7 @@ public class SysHospitalizationController {
     @ApiOperation(value = "获取所有病人在院信息---分页")
     @RequestMapping(value = "/getAllList", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public PagingResult getPagingList(@RequestBody SysHosPagingRequest request) {
+    public PagingResult getPagingList(@RequestBody PagingRequest request) {
         PagingResult pagingResult = sysHospitalizationService.getPageList(request);
         return pagingResult;
     }
