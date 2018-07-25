@@ -1,35 +1,31 @@
 package com.system.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.system.dao.SysSurgeryDao;
-import com.system.entity.SysArea;
+import com.system.entity.*;
 import com.system.entity.SysSurgery;
-import com.system.entity.SysSurgery;
-import com.system.entity.SysUser;
 import com.system.pojo.*;
 import com.system.service.SysAreaService;
 import com.system.service.SysSurgeryService;
+import com.system.service.SysSurgeryStatusService;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.system.util.tools.DateFormatHelper.getDate;
-import static com.system.util.tools.DateFormatHelper.getDateFormat;
-import static com.system.util.tools.DateFormatHelper.getDateStr;
+import static com.system.util.tools.DateFormatHelper.*;
 
 /**
  * @Auther: 李景然
@@ -48,8 +44,13 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         if (result == null) {
             throw new NoneGetException("没有此条信息！");
         }
+        return getSysSurgeryDTO(result);
+    }
+
+    private SysSurgeryDTO getSysSurgeryDTO(SysSurgery result) {
         SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(result);
         sysSurgeryDTO.sethAreaStr(getAreaStr(result.gethArea()));
+        sysSurgeryDTO.setSurgeryStatusStr(getSurgeryStatusStr(result.getSurgeryStatus()));
         sysSurgeryDTO.setSurgeryDatetime(getDateStr(result.getSurgeryDatetime()));
         return sysSurgeryDTO;
     }
@@ -64,42 +65,93 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     }
 
     @Override
-    public List<SysSurgeryDTO> getList() {
-        List<SysSurgery> list = sysSurgeryDao.selectAll().stream().sorted(Comparator.comparing(SysSurgery::getGmtModified).reversed()).collect(Collectors.toList());
+    public PagingResult getList(PagingRequest pagingRequest) {
+        //设置分页参数
+        Page page = PageHelper.startPage(pagingRequest.getPageNum(), pagingRequest.getPageSize(), true);
+
+        Date todayDate = getTodayDate();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SysSurgeryQuery sysSurgeryQuery = new SysSurgeryQuery();
+        sysSurgeryQuery.setSurgeryDatetime(sdf.format(todayDate));
+        sysSurgeryQuery.sethArea(0);
+        sysSurgeryQuery.sethId("");
+        sysSurgeryQuery.setpName("");
+
+        List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(sysSurgeryQuery));
+        list = getOrderedSysSurgerys(pagingRequest.getSort(), pagingRequest.getSortOrder(), list);
+        List<SysSurgeryDTO> resultList = getSysSurgeryDTOS(list);
+        if (resultList.size() == 0) {
+            throw new NoneGetException("没有查询到手术相关记录！");
+        }
+
+        //获取分页之后的信息
+        PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
+        return pagingResult;
+    }
+
+    private List<SysSurgery> getOrderedSysSurgerys(String sort, String sortOrder, List<SysSurgery> list) {
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortOrder)) {
+            if (sort.equals("pName")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getpName).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getpName)).collect(Collectors.toList());
+                }
+            }
+            if (sort.equals("hId")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::gethId).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::gethId)).collect(Collectors.toList());
+                }
+            }
+            if (sort.equals("hBed")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::gethBed).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::gethBed)).collect(Collectors.toList());
+                }
+            }
+            if (sort.equals("visitStatus")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getVisitStatus).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getVisitStatus)).collect(Collectors.toList());
+                }
+            }
+            if (sort.equals("surgeryDatetime")) {
+                if (sortOrder.equals("desc")) {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getSurgeryDatetime).reversed()).collect(Collectors.toList());
+                } else {
+                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getSurgeryDatetime)).collect(Collectors.toList());
+                }
+            }
+        }
+        return list;
+    }
+
+    private List<SysSurgeryDTO> getSysSurgeryDTOS(List<SysSurgery> list) {
         List<SysSurgeryDTO> resultList = new ArrayList<>();
         for (SysSurgery item : list) {
-            SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(item);
-            sysSurgeryDTO.sethAreaStr(getAreaStr(item.gethArea()));
-            sysSurgeryDTO.setSurgeryDatetime(getDateStr(item.getSurgeryDatetime()));
+            SysSurgeryDTO sysSurgeryDTO = getSysSurgeryDTO(item);
             resultList.add(sysSurgeryDTO);
-        }
-        if (resultList.size() == 0) {
-            throw new NoneGetException("没有查询到用户相关记录！");
         }
         return resultList;
     }
 
     @Override
-    public List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getDateFormat());
-        List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(sysSurgeryQuery)).stream().sorted(Comparator.comparing
-                (SysSurgery::getGmtModified).reversed()).filter(item -> {
-            if (sysSurgeryQuery.getSurgeryDatetime() != ""&&!simpleDateFormat.format(item.getSurgeryDatetime()).substring(0, 10).equals(sysSurgeryQuery.getSurgeryDatetime())) {
-            return false;
-            }
-            return true;
-        }).collect(Collectors.toList());
-        List<SysSurgeryDTO> resultList = new ArrayList<>();
-        for (SysSurgery item : list) {
-            SysSurgeryDTO sysSurgeryDTO = convertToSysSurgeryDTO(item);
-            sysSurgeryDTO.sethAreaStr(getAreaStr(item.gethArea()));
-            sysSurgeryDTO.setSurgeryDatetime(getDateStr(item.getSurgeryDatetime()));
-            resultList.add(sysSurgeryDTO);
+    public PagingResult getList(SysSurgeryQuery query) {
+        //设置分页参数
+        Page page = PageHelper.startPage(query.getPageNum(), query.getPageSize(), true);
+        List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(query));
+        if (list != null && list.size() > 0) {
+            list = getOrderedSysSurgerys(query.getSort(), query.getSortOrder(), list);
+            //获取分页之后的信息
+            List<SysSurgeryDTO> resultList = getSysSurgeryDTOS(list);
+            PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
+            return pagingResult;
         }
-        if (resultList.size() == 0) {
-            throw new NoneGetException("没有查询到用户相关记录！");
-        }
-        return resultList;
+        throw new NoneGetException("没有查询到手术相关记录！");
     }
 
     @Override
@@ -111,6 +163,15 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         SysSurgery sysSurgery = convertToSysSurgery(sysSurgeryDTO);
 
         sysSurgery.setSurgeryDatetime(getDate(sysSurgeryDTO.getSurgeryDatetime()));
+        return sysSurgeryDao.insertSelective(sysSurgery) > 0;
+    }
+
+    @Override
+    public boolean insert(SysSurgery sysSurgery) {
+        List<SysSurgery> sysSurgeryList = sysSurgeryDao.selectByExample(getSgExample(sysSurgery));
+        if (sysSurgeryList != null && sysSurgeryList.size() > 0) {
+            throw new NoneSaveException("不能新增同一条记录");
+        }
         return sysSurgeryDao.insertSelective(sysSurgery) > 0;
     }
 
@@ -149,20 +210,39 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         Example.Criteria criteria = example.createCriteria();
 
         if (sysSurgeryQuery.getpName() != "") {
-            criteria.andEqualTo("pName", sysSurgeryQuery.getpName());
+            criteria.andLike("pName", "%" + sysSurgeryQuery.getpName() + "%");
         }
         if (sysSurgeryQuery.gethId() != "") {
-            criteria.andEqualTo("hId", sysSurgeryQuery.gethId());
+            criteria.andLike("hId", "%" + sysSurgeryQuery.gethId() + "%");
+        }
+        if (sysSurgeryQuery.gethBed() != "") {
+            criteria.andLike("hBed", "%" + sysSurgeryQuery.gethBed() + "%");
         }
         if (sysSurgeryQuery.gethArea() != 0) {
             criteria.andEqualTo("hArea", sysSurgeryQuery.gethArea());
-            ;
         }
-        //不能查找时间
-//        if(sysSurgeryQuery.getSurgeryDatetime()!=""){
-//            Date date = getDate(sysSurgeryQuery. getSurgeryDatetime());
-//            criteria.andEqualTo("surgeryDatetime", date);
-//        }
+        //筛选时间
+        Calendar cal = Calendar.getInstance();
+        if (sysSurgeryQuery.getSurgeryDatetime() != "") {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date dateBegin = null;
+            Date dateEnd = null;
+            try {
+                dateBegin = sdf.parse(sysSurgeryQuery.getSurgeryDatetime());
+                dateEnd = sdf.parse(sysSurgeryQuery.getSurgeryDatetime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            cal.setTime(dateEnd);
+            cal.add(Calendar.DATE, 1);
+            criteria.andBetween("surgeryDatetime", dateBegin, cal.getTime());
+        } else {
+            Date todayDate = getTodayDate();
+            cal.setTime(todayDate);
+            cal.add(Calendar.DATE, 1);
+            criteria.andBetween("surgeryDatetime", todayDate, cal.getTime());
+        }
         return example;
     }
 
@@ -188,6 +268,15 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         return example;
     }
 
+    private Example getSgExample(SysSurgery sysSurgery) {
+        Example example = new Example(SysSurgery.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("hId", sysSurgery.gethId());
+        criteria.andEqualTo("hTimes", sysSurgery.gethTimes());
+        criteria.andEqualTo("hXh", sysSurgery.gethXh());
+        return example;
+    }
+
     private SysSurgeryDTO convertToSysSurgeryDTO(Object inputObject) {
         if (null == inputObject) {
             return null;
@@ -202,10 +291,18 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
 
     private String getAreaStr(int area) {
         SysArea sysArea = sysAreaService.get(area);
-        if(sysArea == null){
+        if (sysArea == null) {
             throw new NoneGetException("病区号：" + area + "在sys_area表中不存在！");
         }
         return sysArea.getValue();
+    }
+
+    @Resource
+    SysSurgeryStatusService sysSurgeryStatusService;
+
+    private String getSurgeryStatusStr(int id) {
+        SysSurgeryStatus sysSurgeryStatus = sysSurgeryStatusService.get(id);
+        return sysSurgeryStatus.getValue();
     }
 
     private SysSurgery convertToSysSurgery(Object inputObject) {

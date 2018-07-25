@@ -1,5 +1,6 @@
 package com.system.controller;
 
+import com.system.entity.SysUser;
 import com.system.pojo.*;
 import com.system.service.SysUserService;
 import com.system.util.CheckException;
@@ -30,6 +31,13 @@ public class SysUserController {
     @ResponseStatus(HttpStatus.OK)
     public SysUserDTO get(@PathVariable int id){
         return sysUserService.get(id);
+    }
+
+    @ApiOperation(value = "根据codeno查询用户")
+    @RequestMapping(value = "/getByCodeno", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public SysUser get(@RequestBody String codeno){
+        return sysUserService.get(codeno);
     }
 
     @ApiOperation(value ="登录")

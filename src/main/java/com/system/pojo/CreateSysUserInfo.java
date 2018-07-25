@@ -9,6 +9,8 @@ public class CreateSysUserInfo {
     private String userName;
     private String userPwd;
     private String userGroup;
+    private String codeno;
+    private String userRole;
 
     public String getUserName() {
         return userName;
@@ -32,5 +34,21 @@ public class CreateSysUserInfo {
 
     public void setUserGroup(String userGroup) {
         this.userGroup = userGroup;
+    }
+
+    public String getCodeno() {
+        return codeno;
+    }
+
+    public void setCodeno(String codeno) {
+        this.codeno = codeno;
+    }
+
+    public String getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
     }
 }

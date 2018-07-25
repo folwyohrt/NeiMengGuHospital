@@ -1,6 +1,5 @@
 package com.system.service.impl;
 
-import com.system.controller.util.ExceptionHandlerController;
 import com.system.dao.SysAreaDao;
 import com.system.entity.SysArea;
 import com.system.pojo.CreateSysAreaInfo;
@@ -10,15 +9,15 @@ import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: 李景然
@@ -31,13 +30,25 @@ public class SysAreaServiceImpl implements SysAreaService {
     private SysAreaDao sysAreaDao;
 
     @Override
+    public SysArea get(String areaStr) {
+        List<SysArea> list = sysAreaDao.selectByExample(getExample(areaStr));
+        if(list!=null&&list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public SysArea get(int id) {
         return sysAreaDao.selectByPrimaryKey(id);
     }
 
     @Override
     public List<SysArea> getList() {
-        List<SysArea> list= sysAreaDao.selectAll();
+        List<SysArea> list= sysAreaDao.selectAll()
+                .stream()
+                .sorted(Comparator.comparing(sysArea -> sysArea.getValue()))
+                .collect(Collectors.toList());
         if(list==null||list.size()==0){
             throw new NoneGetException();
         }

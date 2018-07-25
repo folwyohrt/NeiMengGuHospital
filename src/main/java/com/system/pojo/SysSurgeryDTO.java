@@ -15,7 +15,7 @@ public class SysSurgeryDTO {
     private String hId;
     private String pName;
     private String pSex;
-    private Integer pAge;
+    private String pAge;
     //病区key
     private Integer hArea;
     //病区value
@@ -23,7 +23,11 @@ public class SysSurgeryDTO {
     private String hBed;
     private Integer escortsNum;
     private String visitStatus;
-    private String surgeryStatus;
+    private Integer hTimes;
+
+    private Integer surgeryStatus;
+    private String surgeryStatusStr;
+
     private String surgeryDatetime;
     private String surgeryPodx;
 
@@ -59,11 +63,11 @@ public class SysSurgeryDTO {
         this.pSex = pSex;
     }
 
-    public Integer getpAge() {
+    public String getpAge() {
         return pAge;
     }
 
-    public void setpAge(Integer pAge) {
+    public void setpAge(String pAge) {
         this.pAge = pAge;
     }
 
@@ -107,11 +111,11 @@ public class SysSurgeryDTO {
         this.visitStatus = visitStatus;
     }
 
-    public String getSurgeryStatus() {
+    public Integer getSurgeryStatus() {
         return surgeryStatus;
     }
 
-    public void setSurgeryStatus(String surgeryStatus) {
+    public void setSurgeryStatus(Integer surgeryStatus) {
         this.surgeryStatus = surgeryStatus;
     }
 
@@ -129,5 +133,21 @@ public class SysSurgeryDTO {
 
     public void setSurgeryPodx(String surgeryPodx) {
         this.surgeryPodx = surgeryPodx;
+    }
+
+    public String getSurgeryStatusStr() {
+        return surgeryStatusStr;
+    }
+
+    public void setSurgeryStatusStr(String surgeryStatusStr) {
+        this.surgeryStatusStr = surgeryStatusStr;
+    }
+
+    public Integer gethTimes() {
+        return hTimes;
+    }
+
+    public void sethTimes(Integer hTimes) {
+        this.hTimes = hTimes;
     }
 }

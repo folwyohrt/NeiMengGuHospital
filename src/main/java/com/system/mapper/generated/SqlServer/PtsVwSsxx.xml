@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.SqlServer.PtsVwSsxxDao">
+    <resultMap id="BaseResultMap" type="com.system.entity.SqlServer.PtsVwSsxx">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="ZYH" jdbcType="VARCHAR" property="ZYH" />
+        <result column="ZYCS" jdbcType="VARCHAR" property="ZYCS" />
+        <result column="XM" jdbcType="VARCHAR" property="XM" />
+        <result column="XB" jdbcType="VARCHAR" property="XB" />
+        <result column="XH" jdbcType="VARCHAR" property="XH" />
+        <result column="SSBM" jdbcType="VARCHAR" property="SSBM" />
+        <result column="SSMC" jdbcType="VARCHAR" property="SSMC" />
+        <result column="SSRQ" jdbcType="DATE" property="SSRQ" />
+        <result column="SQZD" jdbcType="VARCHAR" property="SQZD" />
+        <result column="SSLX" jdbcType="VARCHAR" property="SSLX" />
+        <result column="SSYS" jdbcType="VARCHAR" property="SSYS" />
+        <result column="ZYKS" jdbcType="VARCHAR" property="ZYKS" />
+        <result column="PCSJ" jdbcType="DATE" property="PCSJ" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        ZYH, ZYCS, XM, XB, XH, SSBM, SSMC, SSRQ, SQZD, SSLX, SSYS, ZYKS, PCSJ
+    </sql>
+
+</mapper>

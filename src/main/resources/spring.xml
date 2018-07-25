@@ -34,13 +34,12 @@
     <!-- 定义单事务管理器（声明式的事务） -->
     <bean id="transactionManager"
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
+        <property name="dataSource" ref="dynamicDataSource"/>
     </bean>
 
     <!-- 基于注解的事务配置-->
-    <tx:annotation-driven/>
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-
 
 </beans>
