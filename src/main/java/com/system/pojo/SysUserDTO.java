@@ -14,6 +14,7 @@ public class SysUserDTO {
     private String userPwd;
     private String userRole;
     private String userGroup;
+    private String codeno;
 
     public Integer getUserId() {
         return userId;
@@ -54,4 +55,13 @@ public class SysUserDTO {
     public void setUserGroup(String userGroup) {
         this.userGroup = userGroup;
     }
+
+    public String getCodeno() {
+        return codeno;
+    }
+
+    public void setCodeno(String codeno) {
+        this.codeno = codeno;
+    }
+
 }

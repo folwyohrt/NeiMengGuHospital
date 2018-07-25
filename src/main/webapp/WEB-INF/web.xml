@@ -71,6 +71,14 @@
         <servlet-name>mvc-dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+
+    <!--<listener>-->
+
+        <!--<listener-class> com.system.util.database_update.user_update</listener-class>-->
+
+    <!--</listener>-->
+
     <!-- *****************************************出错界面定义******************************************************* -->
     <error-page>
         <error-code>500</error-code>
