@@ -7,37 +7,25 @@ import com.system.entity.DB2.test1.PtsVwRyxx;
 import com.system.entity.DB2.test1.PtsVwZyxx;
 import com.system.entity.SqlServer.PtsVwSsxx;
 import com.system.entity.SyncLog;
-import com.system.entity.SysHospitalization;
 import com.system.facade.RYXXToUserService;
 import com.system.facade.ZYXXAndSSXXToSurgeryService;
 import com.system.service.SynLogService;
 import com.system.service.SysHospitalizationService;
 import com.system.service.SysUserService;
 import com.system.util.CheckException;
-import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
-import com.system.util.exception.controller.result.NoneUpdateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.system.util.tools.DateFormatHelper.getTodayDate;
-
-//import com.system.facade.RYXXToUserService;
 
 /**
  * @Auther: 李景然
@@ -155,113 +143,53 @@ public class SynchronousDBController {
     private ZYXXAndSSXXToSurgeryService zyxxAndSSXXToSurgeryService;
 
     @ApiOperation(value = "同步病人手术信息，period时间间隔，delay延迟，syncType同步类型（1.当天 2.所有带日期（还未实现） 3.所有）")
-    @RequestMapping(value = {"/syncSurgery/{period}", "/syncSurgery/{period}/{delay}", "/syncSurgery/{period}/{delay}/{syncType}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/syncSurgery/{period}/{delay}"}, method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public boolean syncSurgery(@PathVariable Long period, @PathVariable(required = false) Long delay, @PathVariable(required = false) Integer syncType) {
-        if (delay == null) {
-            logger.info("delay == null");
-            delay = 0l;
-        }
-        if (syncType == null) {
-            logger.info("syncType == null");
-            syncType = 3;
-        }
-        String syncTypeStr = syncType == 1 ? "syncToday" : syncType == 2 ? "syncDate" : syncType == 3 ? "syncAll" : "error";
+    public boolean syncSurgery(@PathVariable Long period, @PathVariable Long delay) {
         if (syncSgTimer != null) {
             syncSgTimer.cancel();
         }
         syncSgTimer = new Timer();
 
-        logger.info("SSXX_ALL period(分钟)---" + period);
-        logger.info("SSXX_ALL delay(分钟)---" + delay);
+        logger.info("- SSXX-- period(分钟)---" + period);
+        logger.info("- SSXX-- delay(分钟)---" + delay);
         period = 1000 * 60 * period;
         delay =  1000 * 60 * delay;
-        final int syncTypeFinal = syncType;
+        final String syncTypeStr = "sgToday";
 
         syncSgTimer.schedule(new TimerTask() {
             int num = 0;
             @Override
             public void run() {
                 logger.info("SSXX---times---" + ++num);
+                // 获取今天和明天的时间（格式：2018-08-01 00:00:00）
                 Date startTime = new Date();
-
-                final LongAdder update = new LongAdder();
-                final LongAdder insert = new LongAdder();
-                final LongAdder none = new LongAdder();
-                List<PtsVwSsxx> list = null;
-                // 根据同步类型确定需要同步的数据
-                if (syncTypeFinal == 1) { // 当天的手术信息
-                    Calendar cal = Calendar.getInstance();
-                    Date todayDate = getTodayDate();
-                    cal.setTime(todayDate);
-                    cal.add(Calendar.DATE, 1);
-                    list = zyxxAndSSXXToSurgeryService.getSSXXListBySgDate(todayDate, cal.getTime());
-                }
-                else if (syncTypeFinal == 2) { // 从上次同步的手术日期开始同步
-                    throw new NoneUpdateException("同步方法未实现");
-                }
-                else if (syncTypeFinal == 3) { // 同步所有数据
-                    list = zyxxAndSSXXToSurgeryService.getAllSSXXList();
-                }
-                else {
-                    throw new NoneUpdateException("同步方法参数不对");
-                }
+                Calendar cal = Calendar.getInstance();
+                Date todayDate = getTodayDate();
+                cal.setTime(todayDate);
+                cal.add(Calendar.DATE, 1);
+                // 当天的手术信息
+                List<PtsVwSsxx> list = zyxxAndSSXXToSurgeryService.getSSXXListBySgDate(todayDate, cal.getTime());
                 long totalNum = Long.valueOf(list.size());
                 logger.info("手术信息总数：" + totalNum);
-                // 多线程同步 分3个线程，并最先处理总量的后面的1/9
-                // 线程总数
-                int threadCount = 0;
-                // 根据手术信息的总数确定线程数目
-                if (totalNum < 500) {
-                    threadCount = 1;
+                long insertNum = 0;
+                long updateNum = 0;
+                long noneNum = 0;
+                // 从pts_vw_ssxx视图中获取到所有手术信息，并获取到住院信息和出院信息（如果住院信息未获取到），
+                // 然后往sys_surgery中插入或更新数据；
+                // 同时记录本次同步的总数（也就是当前手术信息总数），更新的数目，新增的数目，未变化的数目，开始时间，结束时间
+                for (PtsVwSsxx item : list) {
+                    PtsVwZyxx zyxx = zyxxAndSSXXToSurgeryService.getZyxx(item.getZYH(), item.getZYCS());
+                    PtsVwCyxx cyxx = null;
+                    if (zyxx == null) {
+                        cyxx = zyxxAndSSXXToSurgeryService.getCyxx(item.getZYH(), item.getZYCS());
+                    }
+                    String result = zyxxAndSSXXToSurgeryService.insertOrUpdateSurgery(item, zyxx, cyxx);
+                    // 记录本次同步的行为
+                    if (result.equals("insert")) insertNum++;
+                    else if (result.equals("update")) updateNum++;
+                    else noneNum++;
                 }
-                else if (totalNum < 1000) {
-                    threadCount = 2;
-                }
-                else {
-                    threadCount = 3;
-                }
-                // 数据的份数，设为线程总数的平方
-                int pieceNum = threadCount * threadCount;
-                // 每份数据的大小
-                int pieceSize = (int)(totalNum / pieceNum);
-                ExecutorService fixedThreadPool = Executors.newFixedThreadPool(threadCount);
-                // 每一份数据都是后面的优先进行同步
-                for (int i = pieceNum; i >= 1; i--) {
-                    List<PtsVwSsxx> subList = list.subList(
-                            (i-1) * pieceSize,
-                            (int)(i * pieceSize > totalNum ? totalNum : i * pieceSize));
-                    fixedThreadPool.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 从pts_vw_ssxx视图中获取到所有手术信息，并获取到住院信息和出院信息（如果住院信息未获取到），
-                            // 然后往sys_surgery中插入或更新数据；
-                            // 同时记录本次同步的总数（也就是当前手术信息总数），更新的数目，新增的数目，未变化的数目，开始时间，结束时间
-                            for (PtsVwSsxx item : subList) {
-                                PtsVwZyxx zyxx = zyxxAndSSXXToSurgeryService.getZyxx(item.getZYH(), item.getZYCS());
-                                PtsVwCyxx cyxx = null;
-                                if (zyxx == null) {
-                                    cyxx = zyxxAndSSXXToSurgeryService.getCyxx(item.getZYH(), item.getZYCS());
-                                }
-                                String result = zyxxAndSSXXToSurgeryService.insertOrUpdateSurgery(item, zyxx, cyxx);
-                                // 记录本次同步的行为
-                                if (result.equals("insert")) insert.increment();
-                                else if (result.equals("update")) update.increment();
-                                else none.increment();
-                            }
-                        }
-                    });
-                }
-                fixedThreadPool.shutdown();
-                try {//等待直到所有任务完成
-                    fixedThreadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                long insertNum = insert.sum();
-                long updateNum = update.sum();
-                long noneNum = none.sum();
                 // 往数据库中记录本次同步的详细信息
                 SyncLog syncLog = new SyncLog();
                 syncLog.setsCount(totalNum);
@@ -272,11 +200,9 @@ public class SynchronousDBController {
                 syncLog.setsUpdate(updateNum);
                 syncLog.setsType(syncTypeStr);
                 synLogService.insertSynLog(syncLog);
-
                 logger.info("SSXX---times--- 第 "+ num +" 次同步，新增数目：" + insertNum + "，更新数目：" + updateNum);
             }
         },delay, period); // delay为0，是立即执行
-        // 处理逻辑：
         return true;
     }
 

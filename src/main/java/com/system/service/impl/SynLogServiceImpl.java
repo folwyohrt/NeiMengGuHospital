@@ -25,6 +25,7 @@ public class SynLogServiceImpl implements SynLogService {
     private SyncLogDao syncLogDao;
 
     @Override
+    @DataSwitch(dataSource = "dataSource1")
     @Transactional(rollbackFor = NoneSaveException.class)
     public SyncLog insertSynLog(SyncLog syncLog) {
         syncLogDao.insertSelective(syncLog);
