@@ -17,13 +17,12 @@
         <result column="SSLX" jdbcType="VARCHAR" property="SSLX" />
         <result column="SSYS" jdbcType="VARCHAR" property="SSYS" />
         <result column="ZYKS" jdbcType="VARCHAR" property="ZYKS" />
-        <result column="PCSJ" jdbcType="DATE" property="PCSJ" />
     </resultMap>
     <sql id="Base_Column_List">
         <!--
           WARNING - @mbg.generated
         -->
-        ZYH, ZYCS, XM, XB, XH, SSBM, SSMC, SSRQ, SQZD, SSLX, SSYS, ZYKS, PCSJ
+        ZYH, ZYCS, XM, XB, XH, SSBM, SSMC, SSRQ, SQZD, SSLX, SSYS, ZYKS
     </sql>
 
 </mapper>

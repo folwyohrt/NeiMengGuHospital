@@ -18,7 +18,7 @@ public interface SysHospitalizationService {
 
     SysHospitalization get(int times, String hId);
 
-    PagingResult getPageList( SysHosPagingRequest request);
+    PagingResult getPageList( PagingRequest request);
 
     PagingResult getPageList(SysHospitalizationQuery sysHospitalizationQuery);
     //用于 后台 修改 出院状态
@@ -37,4 +37,6 @@ public interface SysHospitalizationService {
     boolean update(SysHospitalization sysHospitalization);
 
     boolean delete(List<Long> idList);
+
+    boolean truncate();
 }

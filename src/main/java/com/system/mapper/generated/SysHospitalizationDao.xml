@@ -16,7 +16,6 @@
     <result column="escorts_num" jdbcType="INTEGER" property="escortsNum" />
     <result column="visit_status" jdbcType="VARCHAR" property="visitStatus" />
     <result column="h_date" jdbcType="TIMESTAMP" property="hDate" />
-    <!--<result column="h_out_date" jdbcType="TIMESTAMP" property="hOutDate" />-->
     <result column="p_status" jdbcType="INTEGER" property="pStatus" />
     <result column="p_insur" jdbcType="INTEGER" property="pInsur" />
     <result column="dcr_name" jdbcType="VARCHAR" property="dcrName" />
@@ -28,6 +27,9 @@
       WARNING - @mbg.generated
     -->
     id, h_id, h_times, p_name, p_sex, p_age, h_area, h_bed, escorts_num, visit_status, 
-    h_date, h_out_date, p_status, p_insur, dcr_name, gmt_create, gmt_modified
+    h_date, p_status, p_insur, dcr_name, gmt_create, gmt_modified
   </sql>
+  <update id="truncateTable">
+    truncate table ${tableName}
+  </update>
 </mapper>

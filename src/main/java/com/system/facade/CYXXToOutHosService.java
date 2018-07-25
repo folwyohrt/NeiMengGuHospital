@@ -3,7 +3,6 @@ package com.system.facade;
 
 import com.system.entity.DB2.test1.PtsVwCyxx;
 import com.system.entity.DB2.test1.PtsVwZyxx;
-import com.system.entity.SyncLog;
 
 import java.util.Date;
 import java.util.List;
@@ -13,9 +12,8 @@ import java.util.List;
  * @Date: 2018/7/2 09:29
  * @Description:
  */
-public interface ZYXXAndCYXXToHosService {
-    List<PtsVwZyxx> getZYXXList(Date startTime,Date endTime);
+public interface CYXXToOutHosService {
     List<PtsVwCyxx> getCYXXList(Date startTime, Date endTime);
-    PtsVwCyxx getCYXX(String zyh,int times);
+    PtsVwCyxx getCYXX(String zyh, int times);
     boolean insertHos(PtsVwZyxx ptsVwZyxx);
 }
