@@ -142,10 +142,10 @@ public class SynchronousDBController {
     @Resource
     private ZYXXAndSSXXToSurgeryService zyxxAndSSXXToSurgeryService;
 
-    @ApiOperation(value = "同步病人手术信息，period时间间隔，delay延迟，syncType同步类型（1.当天 2.所有带日期（还未实现） 3.所有）")
-    @RequestMapping(value = {"/syncSurgery/{period}/{delay}"}, method = RequestMethod.GET)
+    @ApiOperation(value = "同步病人手术信息，period时间间隔，delay延迟，syncType同步类型（1.当天 2.所有带日期（未实现） 3.所有（未实现） ）")
+    @RequestMapping(value = {"/syncSurgery/{period}/{delay}/{syncType}"}, method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public boolean syncSurgery(@PathVariable Long period, @PathVariable Long delay) {
+    public boolean syncSurgery(@PathVariable Long period, @PathVariable Long delay, @PathVariable Long syncType) {
         if (syncSgTimer != null) {
             syncSgTimer.cancel();
         }
