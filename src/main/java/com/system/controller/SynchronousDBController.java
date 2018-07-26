@@ -129,23 +129,14 @@ public class SynchronousDBController {
 //
 //    }
 
-    // 手术信息同步分析：
-    // 因为pts_vw_ssxx视图里的手术日期可能为空（还没有排上手术），可能不为空；
-    // 一种同步方式是完全跟踪视图的变化，没有的数据进行新增，有了的数据可能需要更新；
-    // 还有一种同步方式是因为系统目前显示的只有当天的数据，那么我只同步手术日期是当天的数据就OK咯；
-    // 第二种同步操作，只插入不需要更新，因为每天的手术数据也就100-200条，所以同步起来毫不费力
-    // 缺点就是数据库中只存在今天以及以前的数据，万一前台想看以后的手术信息就看不到
-    // 所以中和一下就是同步所有手术日期大于上次同步日期的信息，这个数据量并不大；这种方法跟住院和用户的同步方式相似
-    // 但是万一有手术日期新增并且在上次同步之前呢？
-    // 同时因为后两种同步方式没有更新操作，第一种同步插入一个没有手术日期的信息之后，别的就插入不进去！
     Timer syncSgTimer;
     @Resource
     private ZYXXAndSSXXToSurgeryService zyxxAndSSXXToSurgeryService;
 
-    @ApiOperation(value = "同步病人手术信息，period时间间隔，delay延迟，syncType同步类型（1.当天 2.所有带日期（还未实现） 3.所有）")
-    @RequestMapping(value = {"/syncSurgery/{period}/{delay}"}, method = RequestMethod.GET)
+    @ApiOperation(value = "同步病人手术信息，period时间间隔，delay延迟，syncType同步类型（1.当天 2.所有带日期（未实现） 3.所有（未实现））")
+    @RequestMapping(value = {"/syncSurgery/{period}/{delay}/{syncType}"}, method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public boolean syncSurgery(@PathVariable Long period, @PathVariable Long delay) {
+    public boolean syncSurgery(@PathVariable Long period, @PathVariable Long delay, @PathVariable Long syncType) {
         if (syncSgTimer != null) {
             syncSgTimer.cancel();
         }
