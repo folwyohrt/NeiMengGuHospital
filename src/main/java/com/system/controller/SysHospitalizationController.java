@@ -33,15 +33,6 @@ public class SysHospitalizationController {
     public SysHospitalizationDTO get(@PathVariable long id) {
         return sysHospitalizationService.get(id);
     }
-//
-//    @ApiOperation(value = "获取所有病人在院信息---分页")
-//    @RequestMapping(value = "/getList", method = RequestMethod.GET)
-//    @ResponseStatus(HttpStatus.OK)
-//    public PagingResult getPagingList(@RequestParam(value="page") int pageNum, @RequestParam(value="rows") int pageSize,@RequestParam(value="sort") String sort, @RequestParam(value="sortOrder") String sortOrder) {
-//        PagingRequest pagingRequest=new PagingRequest(pageNum,pageSize,sort,sortOrder);
-//        PagingResult pagingResult = sysHospitalizationService.getPageList(pagingRequest);
-//        return pagingResult;
-//    }
 
     @ApiOperation(value = "获取所有病人在院信息---分页")
     @RequestMapping(value = "/getAllList", method = RequestMethod.POST)
@@ -90,8 +81,6 @@ public class SysHospitalizationController {
         sysHospitalizationVisitStatusService.updateHospitalizationVisitStatus(id, status);
     }
 
-
-
     @ApiOperation(value = "根据病区获取到床号列表")
     @RequestMapping(value = "/getBedList/{areaId}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
@@ -115,6 +104,5 @@ public class SysHospitalizationController {
         sysHospitalizationDTO.setEscortsNum(esortNum);
         return sysHospitalizationService.update(sysHospitalizationDTO);
     }
-
 
 }

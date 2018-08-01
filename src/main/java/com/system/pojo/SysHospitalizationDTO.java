@@ -13,6 +13,9 @@ public class SysHospitalizationDTO {
     private String pAge;
     private Integer hTimes;
 
+    private Integer nursingLevel;
+    private String nursingLevelStr;
+
     private Integer hArea;
     private String hAreaStr;
 
@@ -25,7 +28,6 @@ public class SysHospitalizationDTO {
     private String pStatusStr;
     private Integer pInsur;
     private String pInsurStr;
-
     private String dcrName;
 
     public Long getId() {
@@ -162,5 +164,21 @@ public class SysHospitalizationDTO {
 
     public void sethTimes(Integer hTimes) {
         this.hTimes = hTimes;
+    }
+
+    public Integer getNursingLevel() {
+        return nursingLevel;
+    }
+
+    public void setNursingLevel(Integer nursingLevel) {
+        this.nursingLevel = nursingLevel;
+    }
+
+    public String getNursingLevelStr() {
+        return nursingLevelStr;
+    }
+
+    public void setNursingLevelStr(String nursingLevelStr) {
+        this.nursingLevelStr = nursingLevelStr;
     }
 }

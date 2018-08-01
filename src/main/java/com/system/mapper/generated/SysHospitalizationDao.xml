@@ -21,12 +21,13 @@
     <result column="dcr_name" jdbcType="VARCHAR" property="dcrName" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+    <result column="nursing_level" jdbcType="INTEGER" property="nursingLevel" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, h_id, h_times, p_name, p_sex, p_age, h_area, h_bed, escorts_num, visit_status, 
-    h_date, p_status, p_insur, dcr_name, gmt_create, gmt_modified
+    h_date, p_status, p_insur, dcr_name, gmt_create, gmt_modified, nursing_level
   </sql>
 </mapper>

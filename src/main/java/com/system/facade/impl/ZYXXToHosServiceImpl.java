@@ -9,9 +9,11 @@ import com.system.entity.DB2.test1.PtsVwZyxx;
 import com.system.facade.ZYXXToHosService;
 import com.system.pojo.CreateSysAreaInfo;
 import com.system.pojo.CreateSysMedicalInsuranceInfo;
+import com.system.pojo.CreateSysNursingLevelInfo;
 import com.system.service.SysAreaService;
 import com.system.service.SysHospitalizationService;
 import com.system.service.SysMedicalInsuranceService;
+import com.system.service.SysNursingLevelService;
 import com.system.util.database.DataSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,9 @@ public class ZYXXToHosServiceImpl implements ZYXXToHosService {
     private SysAreaService sysAreaService;
 
     @Resource
+    private SysNursingLevelService sysNursingLevelService;
+
+    @Resource
     private SysMedicalInsuranceService sysMedicalInsuranceService;
 
     @Override
@@ -63,9 +68,15 @@ public class ZYXXToHosServiceImpl implements ZYXXToHosService {
     @Override
     @DataSwitch(dataSource = "dataSource3")
     public List<PtsVwCyxx> getCYXXList(Date startTime, Date endTime) {
-        List<PtsVwCyxx> list = ptsVwCyxxDao.selectAll().stream().filter(item -> item.getCyrq().after(startTime) && item.getCyrq().before(endTime)).collect(Collectors.toList());
-
+        List<PtsVwCyxx> list = ptsVwCyxxDao.selectByExample(getExample(startTime,endTime));
         return list;
+    }
+
+    private Example getExample(Date startTime, Date endTime) {
+        Example example = new Example(PtsVwCyxx.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andBetween("cyrq",startTime,endTime);
+        return example;
     }
 
     @Override
@@ -124,6 +135,16 @@ public class ZYXXToHosServiceImpl implements ZYXXToHosService {
             sysArea = sysAreaService.get(ptsVwZyxx.getRyks());
         }
         result.sethArea(sysArea.getId());
+
+        //处理护理
+        SysNursingLevel sysNursingLevel = sysNursingLevelService.get(ptsVwZyxx.getHljb());
+        if (sysNursingLevel == null) {
+            CreateSysNursingLevelInfo createSysNursingLevelInfo = new CreateSysNursingLevelInfo();
+            createSysNursingLevelInfo.setValue(ptsVwZyxx.getHljb());
+            sysNursingLevelService.insert(createSysNursingLevelInfo);
+            sysNursingLevel = sysNursingLevelService.get(ptsVwZyxx.getHljb());
+        }
+        result.setNursingLevel(sysNursingLevel.getId());
 
         //待确认,先统一设置成“住院”了
         result.setpStatus(1);

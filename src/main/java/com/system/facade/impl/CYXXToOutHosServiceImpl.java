@@ -7,12 +7,11 @@ import com.system.entity.DB2.test1.PtsVwZyxx;
 import com.system.entity.SysArea;
 import com.system.entity.SysHospitalization;
 import com.system.entity.SysMedicalInsurance;
+import com.system.entity.SysOutHospital;
 import com.system.facade.CYXXToOutHosService;
 import com.system.pojo.CreateSysAreaInfo;
 import com.system.pojo.CreateSysMedicalInsuranceInfo;
-import com.system.service.SysAreaService;
-import com.system.service.SysHospitalizationService;
-import com.system.service.SysMedicalInsuranceService;
+import com.system.service.*;
 import com.system.util.database.DataSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +35,9 @@ public class CYXXToOutHosServiceImpl implements CYXXToOutHosService {
     private SysHospitalizationService sysHospitalizationService;
 
     @Resource
+    private SysOutHospitalService sysOutHospitalService;
+
+    @Resource
     private PtsVwCyxxDao ptsVwCyxxDao;
 
     @Resource
@@ -47,7 +49,7 @@ public class CYXXToOutHosServiceImpl implements CYXXToOutHosService {
     @Override
     @DataSwitch(dataSource = "dataSource3")
     public List<PtsVwCyxx> getCYXXList(Date startTime, Date endTime) {
-        List<PtsVwCyxx> list = ptsVwCyxxDao.selectAll().stream().filter(item -> item.getCyrq().after(startTime) && item.getCyrq().before(endTime)||(item.getCyrq().equals(startTime))||(item.getCyrq().equals(endTime))).collect(Collectors.toList());
+        List<PtsVwCyxx> list = ptsVwCyxxDao.selectByExample(getExample(startTime,endTime));
         return list;
     }
 
@@ -63,54 +65,35 @@ public class CYXXToOutHosServiceImpl implements CYXXToOutHosService {
 
     @Override
     @DataSwitch(dataSource = "dataSource1")
-    public boolean insertHos(PtsVwZyxx ptsVwZyxx) {
-        SysHospitalization sysHospitalization = convertToSysHospitalization(ptsVwZyxx);
-        return sysHospitalizationService.insert(sysHospitalization);
+    public boolean insertOutHos(PtsVwCyxx ptsVwCyxx) {
+        SysOutHospital sysOutHospital = convertToOutSysHospital(ptsVwCyxx);
+        return sysOutHospitalService.insert(sysOutHospital);
     }
 
-    private SysHospitalization convertToSysHospitalization(PtsVwZyxx ptsVwZyxx) {
-        if (null == ptsVwZyxx) {
+    private SysOutHospital convertToOutSysHospital(PtsVwCyxx ptsVwCyxx) {
+        if (null == ptsVwCyxx) {
             return null;
         }
-        SysHospitalization result = new SysHospitalization();
-        result.sethDate(ptsVwZyxx.getRyrq());
-        result.setDcrName(ptsVwZyxx.getZzys());
-        result.setpAge(ptsVwZyxx.getNl());
-        result.sethId(ptsVwZyxx.getZyh());
-        result.setpName(ptsVwZyxx.getXm());
-        result.setpSex(ptsVwZyxx.getXb());
-        result.sethBed(ptsVwZyxx.getRybch());
-
+        SysOutHospital result = new SysOutHospital();
+        result.sethOutDate(ptsVwCyxx.getCyrq());
+        result.sethReckoningDate(ptsVwCyxx.getCyrq());
+        result.setpBirthday(ptsVwCyxx.getCsrq());
+        result.setpAge(ptsVwCyxx.getNl());
+        result.sethId(ptsVwCyxx.getZyh());
+        result.setpName(ptsVwCyxx.getXm());
+        result.setpSex(ptsVwCyxx.getXb());
         //住院次数
-        result.sethTimes(ptsVwZyxx.getZycs());
-        //陪人数
-        result.setEscortsNum(1);
-        //访视状态
-        result.setVisitStatus("未探访");
-
-        //处理医保类型
-        SysMedicalInsurance sysMedicalInsurance = sysMedicalInsuranceService.get(ptsVwZyxx.getYlfkfs());
-        if (sysMedicalInsurance == null) {
-            CreateSysMedicalInsuranceInfo createSysMedicalInsuranceInfo = new CreateSysMedicalInsuranceInfo();
-            createSysMedicalInsuranceInfo.setValue(ptsVwZyxx.getYlfkfs());
-            sysMedicalInsuranceService.insert(createSysMedicalInsuranceInfo);
-            sysMedicalInsurance = sysMedicalInsuranceService.get(ptsVwZyxx.getYlfkfs());
-        }
-        result.setpInsur(sysMedicalInsurance.getId());
-
+        result.sethTimes(ptsVwCyxx.getZycs());
+        result.sethDays(ptsVwCyxx.getZyts());
         //处理病区
-        SysArea sysArea = sysAreaService.get(ptsVwZyxx.getRyks());
+        SysArea sysArea = sysAreaService.get(ptsVwCyxx.getRyks());
         if (sysArea == null) {
             CreateSysAreaInfo createSysAreaInfo = new CreateSysAreaInfo();
-            createSysAreaInfo.setValue(ptsVwZyxx.getRyks());
+            createSysAreaInfo.setValue(ptsVwCyxx.getRyks());
             sysAreaService.insert(createSysAreaInfo);
-            sysArea = sysAreaService.get(ptsVwZyxx.getRyks());
+            sysArea = sysAreaService.get(ptsVwCyxx.getRyks());
         }
         result.sethArea(sysArea.getId());
-
-        //待确认,先统一设置成“住院”了
-        result.setpStatus(1);
-
         return result;
     }
 
@@ -121,6 +104,13 @@ public class CYXXToOutHosServiceImpl implements CYXXToOutHosService {
         criteria.andEqualTo("zyh", zyh);
         criteria.andEqualTo("zycs", times);
 
+        return example;
+    }
+
+    private Example getExample(Date startTime, Date endTime) {
+        Example example = new Example(PtsVwCyxx.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andBetween("cyrq",startTime,endTime);
         return example;
     }
 

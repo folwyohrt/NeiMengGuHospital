@@ -15,7 +15,7 @@ public interface SysOutHospitalService {
 
     SysOutHospital get(int times, String hId);
 
-    PagingResult getPageList(PagingRequest request);
+    //PagingResult getPageList(PagingRequest request);
 
     PagingResult getPageList(SysOutHospitalQuery sysOutHospitalQuery);
 

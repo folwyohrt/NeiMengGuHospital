@@ -36,8 +36,15 @@ public class SysUserController {
     @ApiOperation(value = "根据codeno查询用户")
     @RequestMapping(value = "/getByCodeno", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public SysUser get(@RequestBody String codeno){
+    public SysUserDTO get(@RequestBody String codeno){
         return sysUserService.get(codeno);
+    }
+
+    @ApiOperation(value = "根据codeno查询用户")
+    @RequestMapping(value = "/getByCodeno/{codeno}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<SysUserDTO> getByCodeno(@PathVariable String codeno){
+        return sysUserService.getByCodenoList(codeno);
     }
 
     @ApiOperation(value ="登录")
@@ -82,5 +89,11 @@ public class SysUserController {
         return sysUserService.delete(idList);
     }
 
+    @ApiOperation(value ="获取用户角色")
+    @RequestMapping(value = "/getRoleList",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getRoleList(){
+        return sysUserService.getRoleList();
+    }
 
 }

@@ -78,7 +78,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         sysSurgeryQuery.setpName("");
 
         List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(sysSurgeryQuery));
-        list = getOrderedSysSurgerys(pagingRequest.getSort(), pagingRequest.getSortOrder(), list);
+        //list = getOrderedSysSurgerys(pagingRequest.getSort(), pagingRequest.getSortOrder(), list);
         List<SysSurgeryDTO> resultList = getSysSurgeryDTOS(list);
         if (resultList.size() == 0) {
             throw new NoneGetException("没有查询到手术相关记录！");
@@ -145,7 +145,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         Page page = PageHelper.startPage(query.getPageNum(), query.getPageSize(), true);
         List<SysSurgery> list = sysSurgeryDao.selectByExample(getExample(query));
         if (list != null && list.size() > 0) {
-            list = getOrderedSysSurgerys(query.getSort(), query.getSortOrder(), list);
+            //list = getOrderedSysSurgerys(query.getSort(), query.getSortOrder(), list);
             //获取分页之后的信息
             List<SysSurgeryDTO> resultList = getSysSurgeryDTOS(list);
             PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
@@ -205,31 +205,42 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         return true;
     }
 
-    private Example getExample(SysSurgeryQuery sysSurgeryQuery) {
+    private Example getExample(SysSurgeryQuery query) {
         Example example = new Example(SysSurgery.class);
+
+        String sort = query.getSort();
+        for (int i = 0; i < sort.length(); i++) {
+            if (Character.isUpperCase(sort.charAt(i))) {
+                sort = sort.substring(0, i) + "_" + sort.substring(i, sort.length());
+                break;
+            }
+        }
+        String orderStr = sort + " " + query.getSortOrder();
+        example.setOrderByClause(orderStr);
+
         Example.Criteria criteria = example.createCriteria();
 
-        if (sysSurgeryQuery.getpName() != "") {
-            criteria.andLike("pName", "%" + sysSurgeryQuery.getpName() + "%");
+        if (query.getpName() != "") {
+            criteria.andLike("pName", "%" + query.getpName() + "%");
         }
-        if (sysSurgeryQuery.gethId() != "") {
-            criteria.andLike("hId", "%" + sysSurgeryQuery.gethId() + "%");
+        if (query.gethId() != "") {
+            criteria.andLike("hId", "%" + query.gethId() + "%");
         }
-        if (sysSurgeryQuery.gethBed() != "") {
-            criteria.andLike("hBed", "%" + sysSurgeryQuery.gethBed() + "%");
+        if (query.gethBed() != "") {
+            criteria.andLike("hBed", "%" + query.gethBed() + "%");
         }
-        if (sysSurgeryQuery.gethArea() != 0) {
-            criteria.andEqualTo("hArea", sysSurgeryQuery.gethArea());
+        if (query.gethArea() != 0) {
+            criteria.andEqualTo("hArea", query.gethArea());
         }
         //筛选时间
         Calendar cal = Calendar.getInstance();
-        if (sysSurgeryQuery.getSurgeryDatetime() != "") {
+        if (query.getSurgeryDatetime() != "") {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date dateBegin = null;
             Date dateEnd = null;
             try {
-                dateBegin = sdf.parse(sysSurgeryQuery.getSurgeryDatetime());
-                dateEnd = sdf.parse(sysSurgeryQuery.getSurgeryDatetime());
+                dateBegin = sdf.parse(query.getSurgeryDatetime());
+                dateEnd = sdf.parse(query.getSurgeryDatetime());
             } catch (ParseException e) {
                 e.printStackTrace();
             }

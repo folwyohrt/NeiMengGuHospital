@@ -100,6 +100,9 @@ public class SysHospitalization implements Serializable {
     @Column(name = "gmt_modified")
     private Date gmtModified;
 
+    @Column(name = "nursing_level")
+    private Integer nursingLevel;
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -386,6 +389,20 @@ public class SysHospitalization implements Serializable {
         this.gmtModified = gmtModified;
     }
 
+    /**
+     * @return nursing_level
+     */
+    public Integer getNursingLevel() {
+        return nursingLevel;
+    }
+
+    /**
+     * @param nursingLevel
+     */
+    public void setNursingLevel(Integer nursingLevel) {
+        this.nursingLevel = nursingLevel;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -413,7 +430,8 @@ public class SysHospitalization implements Serializable {
             && (this.getpInsur() == null ? other.getpInsur() == null : this.getpInsur().equals(other.getpInsur()))
             && (this.getDcrName() == null ? other.getDcrName() == null : this.getDcrName().equals(other.getDcrName()))
             && (this.getGmtCreate() == null ? other.getGmtCreate() == null : this.getGmtCreate().equals(other.getGmtCreate()))
-            && (this.getGmtModified() == null ? other.getGmtModified() == null : this.getGmtModified().equals(other.getGmtModified()));
+            && (this.getGmtModified() == null ? other.getGmtModified() == null : this.getGmtModified().equals(other.getGmtModified()))
+            && (this.getNursingLevel() == null ? other.getNursingLevel() == null : this.getNursingLevel().equals(other.getNursingLevel()));
     }
 
     @Override
@@ -436,6 +454,7 @@ public class SysHospitalization implements Serializable {
         result = prime * result + ((getDcrName() == null) ? 0 : getDcrName().hashCode());
         result = prime * result + ((getGmtCreate() == null) ? 0 : getGmtCreate().hashCode());
         result = prime * result + ((getGmtModified() == null) ? 0 : getGmtModified().hashCode());
+        result = prime * result + ((getNursingLevel() == null) ? 0 : getNursingLevel().hashCode());
         return result;
     }
 
@@ -461,6 +480,7 @@ public class SysHospitalization implements Serializable {
         sb.append(", dcrName=").append(dcrName);
         sb.append(", gmtCreate=").append(gmtCreate);
         sb.append(", gmtModified=").append(gmtModified);
+        sb.append(", nursingLevel=").append(nursingLevel);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

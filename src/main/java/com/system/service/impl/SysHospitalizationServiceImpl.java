@@ -3,15 +3,9 @@ package com.system.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.system.dao.SysHospitalizationDao;
-import com.system.entity.SysArea;
-import com.system.entity.SysHospitalization;
-import com.system.entity.SysMedicalInsurance;
-import com.system.entity.SysPatientStatus;
+import com.system.entity.*;
 import com.system.pojo.*;
-import com.system.service.SysAreaService;
-import com.system.service.SysHospitalizationService;
-import com.system.service.SysMedicalInsuranceService;
-import com.system.service.SysPatientStatusService;
+import com.system.service.*;
 import com.system.util.database.DataSwitch;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
@@ -132,7 +126,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         Page page = PageHelper.startPage(query.getPageNum(), query.getPageSize(), true);
         List<SysHospitalization> list = sysHospitalizationDao.selectByExample(getExample(query));
         if (list != null && list.size() > 0) {
-            list = getOrderedSysHospitalizations(query.getSort(), query.getSortOrder(), list);
+            //list = getOrderedSysHospitalizations(query.getSort(), query.getSortOrder(), list);
             //获取分页之后的信息
             List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
             PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
@@ -223,30 +217,39 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         return true;
     }
 
-    private Example getExample(SysHospitalizationQuery sysHospitalizationQuery) {
+    private Example getExample(SysHospitalizationQuery query) {
         Example example = new Example(SysHospitalization.class);
+        String sort=query.getSort();
+        for (int i=0;i<sort.length();i++){
+            if(Character.isUpperCase(sort.charAt(i))){
+                sort=sort.substring(0,i)+"_"+sort.substring(i,sort.length());
+                break;
+            }
+        }
+        String orderStr=sort+" "+query.getSortOrder();
+        example.setOrderByClause(orderStr);
         Example.Criteria criteria = example.createCriteria();
 
-        if (sysHospitalizationQuery.getpName() != "") {
-            criteria.andLike("pName", "%" + sysHospitalizationQuery.getpName() + "%");
+        if (query.getpName() != "") {
+            criteria.andLike("pName", "%" + query.getpName() + "%");
         }
-        if (sysHospitalizationQuery.gethId() != "") {
-            criteria.andLike("hId", "%" + sysHospitalizationQuery.gethId() + "%");
+        if (query.gethId() != "") {
+            criteria.andLike("hId", "%" + query.gethId() + "%");
         }
-        if (sysHospitalizationQuery.gethArea() != 0) {
-            criteria.andEqualTo("hArea", sysHospitalizationQuery.gethArea());
+        if (query.gethArea() != 0) {
+            criteria.andEqualTo("hArea", query.gethArea());
         }
-        if (sysHospitalizationQuery.gethBed() != "") {
-            criteria.andLike("hBed", "%" + sysHospitalizationQuery.gethBed() + "%");
+        if (query.gethBed() != "") {
+            criteria.andLike("hBed", "%" + query.gethBed() + "%");
         }
         //筛选时间
-        if (sysHospitalizationQuery.gethDate() != "") {
+        if (query.gethDate() != "") {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date dateBegin = null;
             Date dateEnd = null;
             try {
-                dateBegin = sdf.parse(sysHospitalizationQuery.gethDate());
-                dateEnd = sdf.parse(sysHospitalizationQuery.gethDate());
+                dateBegin = sdf.parse(query.gethDate());
+                dateEnd = sdf.parse(query.gethDate());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -298,6 +301,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         criteria.andEqualTo("pName", sysHospitalizationDTO.getpName());
         criteria.andEqualTo("hId", sysHospitalizationDTO.gethId());
         criteria.andEqualTo("hArea", sysHospitalizationDTO.gethArea());
+        criteria.andEqualTo("nursingLevel", sysHospitalizationDTO.getNursingLevel());
 
         criteria.andEqualTo("escortsNum", sysHospitalizationDTO.getEscortsNum());
         criteria.andEqualTo("hBed", sysHospitalizationDTO.gethBed());
@@ -332,7 +336,18 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         } catch (Exception e) {
             throw new NoneGetException("areaId=" + area + "!not found value!");
         }
+    }
 
+    @Resource
+    SysNursingLevelService sysNursingLevelService;
+
+    private String getNursingLevelStr(int nursingLevel) {
+        try {
+            SysNursingLevel sysnursingLevel = sysNursingLevelService.get(nursingLevel);
+            return sysnursingLevel.getValue();
+        } catch (Exception e) {
+            throw new NoneGetException("nursingLevelId=" + nursingLevel + "!not found value!");
+        }
     }
 
     @Resource
@@ -372,6 +387,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     private SysHospitalizationDTO getSysHospitalizationDTO(SysHospitalization sysHospitalization) {
         SysHospitalizationDTO sysHospitalizationDTO = convertToSysHospitalizationDTO(sysHospitalization);
         sysHospitalizationDTO.sethAreaStr(getAreaStr(sysHospitalization.gethArea()));
+        sysHospitalizationDTO.setNursingLevelStr(getNursingLevelStr(sysHospitalization.getNursingLevel()));
         sysHospitalizationDTO.setpStatusStr(getPatientStatusStr(sysHospitalization.getpStatus()));
         sysHospitalizationDTO.setpInsurStr(getMedicalInsuranceStr(sysHospitalization.getpInsur()));
         sysHospitalizationDTO.sethDate(getDateStr(sysHospitalization.gethDate()));

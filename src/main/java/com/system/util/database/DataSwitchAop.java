@@ -21,14 +21,13 @@ import java.lang.reflect.Method;
 @Aspect
 @Component
 public class DataSwitchAop {
-    private Logger logger = LoggerFactory.getLogger(ExceptionHandlerController.class);
     //@Pointcut()
     //@Pointcut("execution(public * com.system.service.impl..*(..))")
     public void execute(){
     }
 
     @Before("@annotation(com.system.util.database.DataSwitch)")
-    public synchronized void dataSwitch(JoinPoint joinPoint){
+    public void dataSwitch(JoinPoint joinPoint){
         Signature signature = joinPoint.getSignature();
 
         MethodSignature methodSignature =(MethodSignature) signature;
@@ -38,7 +37,6 @@ public class DataSwitchAop {
             data = method.getAnnotation(DataSwitch.class);
         }
         String dataSource = data.dataSource();
-        // logger.info(joinPoint.getSignature().getName() + "---> datasource...."+dataSource);
         if(dataSource!=null){
             MultipleDataSource.setDataSourceKey(dataSource);
         }
