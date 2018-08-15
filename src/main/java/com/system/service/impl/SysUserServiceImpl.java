@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,10 +39,23 @@ class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public SysUser get(String codeno){
+    public SysUserDTO get(String codeno){
         List<SysUser> resultList = sysUserDao.selectByExample(getExample(codeno));
         if (resultList != null&&resultList.size()>0) {
-            return resultList.get(0);
+            return convertToSysUserDTO(resultList.get(0));
+        }
+        return null;
+    }
+
+    @Override
+    public List<SysUserDTO> getByCodenoList(String codeno){
+        List<SysUser> resultList = sysUserDao.selectByExample(getExample(codeno));
+        if (resultList != null&&resultList.size()>0) {
+            List<SysUserDTO> list=new ArrayList<>();
+            for (SysUser item: resultList){
+                list.add(convertToSysUserDTO(item));
+            }
+            return list;
         }
         return null;
     }
@@ -49,7 +63,7 @@ class SysUserServiceImpl implements SysUserService {
     @Override
     @DataSwitch(dataSource="dataSource1")
     public boolean isHave(String codeno){
-        SysUser sysUser=get(codeno);
+        SysUserDTO sysUser=get(codeno);
         if(sysUser==null){
             return false;
         }
@@ -117,6 +131,13 @@ class SysUserServiceImpl implements SysUserService {
             }
         }
         return true;
+    }
+
+    @Override
+    @DataSwitch(dataSource="dataSource1")
+    public List<String> getRoleList(){
+        List<String> list=sysUserDao.getRoleList();
+        return list;
     }
 
     private Example getExample(String codeno) {

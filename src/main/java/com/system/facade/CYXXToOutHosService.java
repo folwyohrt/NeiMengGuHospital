@@ -15,5 +15,5 @@ import java.util.List;
 public interface CYXXToOutHosService {
     List<PtsVwCyxx> getCYXXList(Date startTime, Date endTime);
     PtsVwCyxx getCYXX(String zyh, int times);
-    boolean insertHos(PtsVwZyxx ptsVwZyxx);
+    boolean insertOutHos(PtsVwCyxx ptsVwCyxx);
 }

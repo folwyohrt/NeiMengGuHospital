@@ -53,23 +53,23 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
         }
         return null;
     }
-
-    @Override
-    public PagingResult getPageList(PagingRequest request) {
-        //设置分页参数
-        Page page = PageHelper.startPage(request.getPageNum(), request.getPageSize(), true);
-
-        List<SysOutHospital> list = sysOutHospitalDao.selectAll();
-        if (list.size() == 0) {
-            throw new NoneGetException("没有查询到出院病人相关记录！");
-        }
-        list = getOrderedSysOutHospitals(request.getSort(), request.getSortOrder(), list);
-        List<SysOutHospitalDTO> resultList = getSysOutHospitalDTOS(list);
-
-        //获取分页之后的信息
-        PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
-        return pagingResult;
-    }
+//
+//    @Override
+//    public PagingResult getPageList(PagingRequest request) {
+//        //设置分页参数
+//        Page page = PageHelper.startPage(request.getPageNum(), request.getPageSize(), true);
+//
+//        List<SysOutHospital> list = sysOutHospitalDao.selectAll();
+//        if (list.size() == 0) {
+//            throw new NoneGetException("没有查询到出院病人相关记录！");
+//        }
+//        list = getOrderedSysOutHospitals(request.getSort(), request.getSortOrder(), list);
+//        List<SysOutHospitalDTO> resultList = getSysOutHospitalDTOS(list);
+//
+//        //获取分页之后的信息
+//        PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
+//        return pagingResult;
+//    }
 
     @Override
     public PagingResult getPageList(SysOutHospitalQuery query) {
@@ -77,7 +77,7 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
         Page page = PageHelper.startPage(query.getPageNum(), query.getPageSize(), true);
         List<SysOutHospital> list = sysOutHospitalDao.selectByExample(getExample(query));
         if (list != null && list.size() > 0) {
-            list = getOrderedSysOutHospitals(query.getSort(), query.getSortOrder(), list);
+            //list = getOrderedSysOutHospitals(query.getSort(), query.getSortOrder(), list);
             //获取分页之后的信息
             List<SysOutHospitalDTO> resultList = getSysOutHospitalDTOS(list);
             PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
@@ -163,27 +163,37 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
         return true;
     }
 
-    private Example getExample(SysOutHospitalQuery sysOutHospitalQuery) {
+    private Example getExample(SysOutHospitalQuery query) {
         Example example = new Example(SysOutHospital.class);
-        Example.Criteria criteria = example.createCriteria();
 
-        if (sysOutHospitalQuery.getpName() != "") {
-            criteria.andLike("pName", "%" + sysOutHospitalQuery.getpName() + "%");
+        String sort=query.getSort();
+        for (int i=0;i<sort.length();i++){
+            if(Character.isUpperCase(sort.charAt(i))){
+                sort=sort.substring(0,i)+"_"+sort.substring(i,sort.length());
+                break;
+            }
         }
-        if (sysOutHospitalQuery.gethId() != "") {
-            criteria.andLike("hId", "%" + sysOutHospitalQuery.gethId() + "%");
+        String orderStr=sort+" "+query.getSortOrder();
+        example.setOrderByClause(orderStr);
+
+        Example.Criteria criteria = example.createCriteria();
+        if (query.getpName() != "") {
+            criteria.andLike("pName", "%" + query.getpName() + "%");
         }
-        if (sysOutHospitalQuery.gethArea() != 0) {
-            criteria.andEqualTo("hArea", sysOutHospitalQuery.gethArea());
+        if (query.gethId() != "") {
+            criteria.andLike("hId", "%" + query.gethId() + "%");
+        }
+        if (query.gethArea() != 0) {
+            criteria.andEqualTo("hArea", query.gethArea());
         }
         //筛选时间
-        if (sysOutHospitalQuery.gethOutDate() != "") {
+        if (query.gethOutDate() != "") {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date dateBegin = null;
             Date dateEnd = null;
             try {
-                dateBegin = sdf.parse(sysOutHospitalQuery.gethOutDate());
-                dateEnd = sdf.parse(sysOutHospitalQuery.gethOutDate());
+                dateBegin = sdf.parse(query.gethOutDate());
+                dateEnd = sdf.parse(query.gethOutDate());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -191,7 +201,7 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
             Calendar cal = Calendar.getInstance();
             cal.setTime(dateEnd);
             cal.add(Calendar.DATE, 1);
-            criteria.andBetween("hDate", dateBegin, cal.getTime());
+            criteria.andBetween("hOutDate", dateBegin, cal.getTime());
         }
         return example;
     }
@@ -201,7 +211,6 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("hId", hId);
         criteria.andEqualTo("hTimes", times);
-
         return example;
     }
 

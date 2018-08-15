@@ -34,14 +34,6 @@ public class SysSurgeryController {
     public SysSurgeryDTO get(@PathVariable long id) {
         return sysSurgeryService.getDTO(id);
     }
-//
-//    @ApiOperation(value = "按多条件查询手术信息--分页")
-//    @RequestMapping(value = "/getList", method = RequestMethod.POST)
-//    @ResponseStatus(HttpStatus.OK)
-//    public PagingResult getList(@RequestBody SysSurgeryQuery query, @RequestParam(value = "page") int pageNum, @RequestParam(value = "rows") int pageSize, @RequestParam(value = "sort") String sort, @RequestParam(value = "sortOrder") String sortOrder) {
-//        PagingResult pagingResult = sysSurgeryService.getList(query,pageNum,pageSize, sort, sortOrder);
-//        return pagingResult;
-//    }
 
     @ApiOperation(value = "按多条件查询手术信息--分页")
     @RequestMapping(value = "/getList", method = RequestMethod.POST)

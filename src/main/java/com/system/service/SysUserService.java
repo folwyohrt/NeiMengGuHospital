@@ -18,7 +18,9 @@ public interface SysUserService {
 
     SysUserDTO get(int id);
 
-    SysUser get(String codeno);
+    SysUserDTO get(String codeno);
+
+    List<SysUserDTO> getByCodenoList(String codeno);
 
     boolean isHave(String codeno);
 
@@ -34,5 +36,5 @@ public interface SysUserService {
 
     boolean delete(List<Integer> idList);
 
-
+    List<String> getRoleList();
 }

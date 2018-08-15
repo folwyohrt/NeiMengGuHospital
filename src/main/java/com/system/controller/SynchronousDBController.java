@@ -7,13 +7,16 @@ import com.system.entity.DB2.test1.PtsVwRyxx;
 import com.system.entity.DB2.test1.PtsVwZyxx;
 import com.system.entity.SqlServer.PtsVwSsxx;
 import com.system.entity.SyncLog;
+import com.system.facade.CYXXToOutHosService;
 import com.system.facade.RYXXToUserService;
 import com.system.facade.ZYXXAndSSXXToSurgeryService;
+import com.system.facade.ZYXXToHosService;
 import com.system.service.SynLogService;
 import com.system.service.SysHospitalizationService;
 import com.system.service.SysUserService;
 import com.system.util.CheckException;
 import com.system.util.exception.controller.result.NoneSaveException;
+import com.system.util.tools.DateFormatHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -40,6 +43,7 @@ public class SynchronousDBController {
 
     private Logger logger = LoggerFactory.getLogger(ExceptionHandlerController.class);
     Timer syncHosTimer;
+    Timer syncOutHosTimer;
     Timer syncUserTimer;
 
     @Resource
@@ -47,91 +51,202 @@ public class SynchronousDBController {
 
     @Resource
     private SynLogService synLogService;
-//
-//    @ApiOperation(value = "同步病人在院信息(分钟)")
-//    @RequestMapping(value = "/syncHos/{period}", method = RequestMethod.GET)
-//    @ResponseStatus(HttpStatus.OK)
-//    public boolean synchronousHos(@PathVariable Long period) {
-//
-//       if (syncHosTimer != null) {
-//           syncHosTimer.cancel();
-//       }
-//        syncHosTimer = new Timer();
-//        //周期任务执行的开始时间
-//        Date beginTime = new Date();
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//
-//
-//        logger.info("period(分钟)---" + period);
-//        period = 1000 * 60 * period;
-//
-//        syncHosTimer.schedule(new TimerTask() {
-//            int num = 0;
-//
-//            @Override
-//            public void run() {
-//                System.out.println("第几次---" + ++num);
-//                //取db2数据的开始、截止时间
-//                Date startTime = null;
-//                Date endTime = new Date();
-//
-//                SyncLog lastSyncLog = synLogService.getLastSynLog("hspt");
-//                if (lastSyncLog == null) {
-//                    startTime=new Date(0);
-//                } else {
-//                    startTime = lastSyncLog.getsEndtime();
-//                }
-//
-//                // 执行你的方法
-//                List<PtsVwZyxx> list = zyxxAndCYXXToHosService.getZYXXList(startTime, endTime);
-//                if (list != null && list.size() > 0) {
-//                    System.out.println("获取 病人信息的总条数count---" + list.size());
-//                    for (PtsVwZyxx item : list) {
-//                        boolean bl = zyxxAndCYXXToHosService.insertHos(item);
-//                        if (bl == false) {
-//                            throw new NoneRemoveException();
-//                        }
-//                    }
-//                    SyncLog syncLog = new SyncLog();
-//                    syncLog.setsCount((long) list.size());
-//                    syncLog.setsEndtime(endTime);
-//                    syncLog.setsStarttime(startTime);
-//                    syncLog.setsSuccess(true);
-//                    syncLog.setsType("hspt");
-//                    synLogService.insertSynLog(syncLog);
-//
-//
-//                    System.out.println("startTime---" + startTime);
-//                    System.out.println("endTime---" + endTime);
-//                    System.out.println("插入 病人信息count---" + list.size());
-//                } else {
-//                    System.out.println("startTime---" + startTime);
-//                    System.out.println("endTime---" + endTime);
-//                    System.out.println("暂无需要同步 插入 病人信息的数据");
-//                }
-//
-//                //修改 出院状态
-//                List<SysHospitalization> zaiyuanList= sysHospitalizationService.getList(1);
-//                if(zaiyuanList!=null&&zaiyuanList.size()>0){
-//                    for (SysHospitalization item :zaiyuanList){
-//                        PtsVwCyxx ptsVwCyxx=zyxxAndCYXXToHosService.getCYXX(item.gethId(),item.gethTimes());
-//                        if(ptsVwCyxx!=null){
-//                            item.setpStatus(3);
-//                            sysHospitalizationService.update(item);
-//                        }
-//                    }
-//                }
-//            }
-//        }, beginTime, period);
-//
-//        return true;
-//
-//
-//    }
 
     Timer syncSgTimer;
     @Resource
     private ZYXXAndSSXXToSurgeryService zyxxAndSSXXToSurgeryService;
+
+    @Resource
+    private ZYXXToHosService zyxxToHosService;
+
+    @ApiOperation(value = "同步在院病人在院信息(分钟)")
+    @RequestMapping(value = "/syncHos/{period}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean synchronousHos(@PathVariable Long period) {
+        if (syncHosTimer != null) {
+            syncHosTimer.cancel();
+        }
+        syncHosTimer = new Timer();
+        //周期任务执行的开始时间
+        Date beginTime = new Date();
+        period = 1000 * 60 * period;
+
+        syncHosTimer.schedule(new TimerTask() {
+            int num = 0;
+
+            @Override
+            public void run() {
+                System.out.println("在院 第几次---" + ++num);
+                //取db2数据的开始、截止时间
+                Date startTime = new Date(0);
+                Date endTime = new Date();
+
+                List<PtsVwZyxx> list = zyxxToHosService.getZYXXList();
+                if (list != null && list.size() > 0) {
+                    System.out.println("获取 病人在院信息的总条数count---" + list.size());
+                    sysHospitalizationService.truncate();
+                    for (PtsVwZyxx item : list) {
+                        boolean bl = zyxxToHosService.insertHos(item);
+                        if (bl == false) {
+                            throw new NoneSaveException();
+                        }
+                    }
+                    SyncLog syncLog = new SyncLog();
+                    syncLog.setsCount((long) list.size());
+                    syncLog.setsEndtime(endTime);
+                    syncLog.setsStarttime(startTime);
+                    syncLog.setsSuccess(true);
+                    syncLog.setsType("hspt");
+                    synLogService.insertSynLog(syncLog);
+
+                    System.out.println("在院 startTime---" + startTime);
+                    System.out.println("在院 endTime---" + endTime);
+                    System.out.println("插入 病人在院信息count---" + list.size());
+                } else {
+                    System.out.println("在院 startTime---" + startTime);
+                    System.out.println("在院 endTime---" + endTime);
+                    System.out.println("暂无需要同步 的病人在院信息的数据");
+                }
+            }
+        }, beginTime, period);
+        return true;
+    }
+
+    Date getEndTime(Date startTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startTime);
+        calendar.add(Calendar.MONTH, 1);
+        Date endTime = calendar.getTime();
+        return endTime;
+    }
+
+    Date getStartTime(Date time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        calendar.add(Calendar.SECOND, 1);
+        Date startTime = calendar.getTime();
+        return startTime;
+    }
+
+    Date getBeforeStartTime(Date time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        //calendar.add(Calendar.DATE, -15);
+        calendar.add(Calendar.MONTH, -1);
+        Date startTime = calendar.getTime();
+        return startTime;
+    }
+
+    @Resource
+    CYXXToOutHosService cyxxToOutHosService;
+
+    @ApiOperation(value = "同步病人出院信息(分钟)---全部的数据同步！")
+    @RequestMapping(value = "/syncOutHos2/{period}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean synchronousOutHos2(@PathVariable Long period) {
+
+        if (syncOutHosTimer != null) {
+            syncOutHosTimer.cancel();
+        }
+        syncOutHosTimer = new Timer();
+        //周期任务执行的开始时间
+        Date beginTime = new Date();
+        System.out.println("出院 beginTime=" + beginTime + ";period=" + period);
+
+        period = 1000 * 60 * period;
+
+        syncOutHosTimer.schedule(new TimerTask() {
+            int num = 0;
+
+            @Override
+            public void run() {
+                num++;
+                System.out.println("出院同步--第几次" + num + ";beginTime=" + beginTime);
+                //取db2数据的开始、截止时间
+                Date startTime = getStartDate();
+                System.out.println("同步开始时间=" + startTime + "");
+                Date endTime = getEndTime(startTime);
+                System.out.println("同步结束时间=" + endTime + "");
+                insertOutHos(startTime, endTime);
+            }
+        }, beginTime, period);
+        return true;
+    }
+
+    @ApiOperation(value = "同步病人出院信息(分钟)")
+    @RequestMapping(value = "/syncOutHos/{period}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean synchronousOutHos(@PathVariable Long period) {
+
+        if (syncOutHosTimer != null) {
+            syncOutHosTimer.cancel();
+        }
+        syncOutHosTimer = new Timer();
+        //周期任务执行的开始时间
+        Date beginTime = new Date();
+        System.out.println("出院执行时间 beginTime=" + beginTime + ";period=" + period);
+
+        period = 1000 * 60 * period;
+
+        syncOutHosTimer.schedule(new TimerTask() {
+            int num = 0;
+
+            @Override
+            public void run() {
+                num++;
+                System.out.println("出院同步--第几次" + num + ";beginTime=" + beginTime);
+                //取db2数据的开始、截止时间
+                Date startTime = getStartDate();
+                System.out.println("同步开始时间=" + startTime + "");
+                Date endTime = new Date();
+                System.out.println("同步结束时间=" + endTime + "");
+                insertOutHos(startTime, endTime);
+            }
+        }, beginTime, period);
+        return true;
+    }
+
+    private void insertOutHos(Date startTime, Date endTime) {
+        // 执行你的方法
+        List<PtsVwCyxx> list = cyxxToOutHosService.getCYXXList(startTime, endTime);
+        if (list != null && list.size() > 0) {
+            //病人出院信息总条数
+            int totalCount = list.size();
+            System.out.println("出院同步--总条数" + totalCount + "");
+            for (PtsVwCyxx item : list) {
+                boolean bl = cyxxToOutHosService.insertOutHos(item);
+                if (bl == false) {
+                    throw new NoneSaveException();
+                }
+            }
+            SyncLog syncLog = new SyncLog();
+            syncLog.setsCount((long) totalCount);
+            syncLog.setsEndtime(endTime);
+            syncLog.setsStarttime(startTime);
+            syncLog.setsSuccess(true);
+            syncLog.setsType("outhspt");
+            synLogService.insertSynLog(syncLog);
+            System.out.println("插入 病人出院信息count---" + totalCount);
+        } else {
+            System.out.println("暂无需要同步 的病人出院信息的数据");
+        }
+    }
+
+    private Date getStartDate() {
+        //取db2数据的开始、截止时间
+        Date startTime = null;
+        SyncLog lastSyncLog = synLogService.getLastSynLog("outhspt");
+        if (lastSyncLog == null) {
+            String startTimeStr = "2018-01-01 00:00:00";
+            startTime = DateFormatHelper.getDate(startTimeStr);
+        } else {
+            startTime = lastSyncLog.getsEndtime();
+            //startTime = getStartTime(startTime);
+            //向前推一个月，就开始比对数据库中有没有
+            startTime = getBeforeStartTime(startTime);
+        }
+        return startTime;
+    }
 
     @ApiOperation(value = "同步病人手术信息，period时间间隔，delay延迟，syncType同步类型（1.当天 2.所有带日期（未实现） 3.所有（未实现））")
     @RequestMapping(value = {"/syncSurgery/{period}/{delay}/{syncType}"}, method = RequestMethod.GET)
@@ -145,11 +260,12 @@ public class SynchronousDBController {
         logger.info("- SSXX-- period(分钟)---" + period);
         logger.info("- SSXX-- delay(分钟)---" + delay);
         period = 1000 * 60 * period;
-        delay =  1000 * 60 * delay;
+        delay = 1000 * 60 * delay;
         final String syncTypeStr = "sgToday";
 
         syncSgTimer.schedule(new TimerTask() {
             int num = 0;
+
             @Override
             public void run() {
                 logger.info("SSXX---times---" + ++num);
@@ -191,9 +307,9 @@ public class SynchronousDBController {
                 syncLog.setsUpdate(updateNum);
                 syncLog.setsType(syncTypeStr);
                 synLogService.insertSynLog(syncLog);
-                logger.info("SSXX---times--- 第 "+ num +" 次同步，新增数目：" + insertNum + "，更新数目：" + updateNum);
+                logger.info("SSXX---times--- 第 " + num + " 次同步，新增数目：" + insertNum + "，更新数目：" + updateNum);
             }
-        },delay, period); // delay为0，是立即执行
+        }, delay, period); // delay为0，是立即执行
         return true;
     }
 
@@ -230,7 +346,7 @@ public class SynchronousDBController {
 
                 SyncLog lastSyncLog = synLogService.getLastSynLog("user");
                 if (lastSyncLog == null) {
-                    startTime=new Date(0);
+                    startTime = new Date(0);
                 } else {
                     startTime = lastSyncLog.getsEndtime();
                 }
