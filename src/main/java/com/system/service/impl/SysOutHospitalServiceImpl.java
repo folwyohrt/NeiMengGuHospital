@@ -83,7 +83,7 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
             PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
             return pagingResult;
         }
-        throw new NoneGetException("没有查询到用户相关记录！");
+        throw new NoneGetException("没有查询到相关记录！");
     }
 
     private List<SysOutHospital> getOrderedSysOutHospitals(String sort, String sortOrder, List<SysOutHospital> list) {
