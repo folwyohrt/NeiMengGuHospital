@@ -22,7 +22,7 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@Api(tags = "sysArea",description = "病区相关操作--修改--08-28")
+@Api(tags = "sysArea",description = "病区相关操作--08-28")
 @RequestMapping(value = "/sysArea")
 @CheckException(reason = "检查病区操作参数的合法性")
 public class SysAreaController {
