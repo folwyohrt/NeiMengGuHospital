@@ -84,7 +84,7 @@ public class SynchronousDBController {
                 List<PtsVwZyxx> list = zyxxToHosService.getZYXXList();
                 if (list != null && list.size() > 0) {
                     System.out.println("获取 病人在院信息的总条数count---" + list.size());
-                    sysHospitalizationService.truncate();
+                    //sysHospitalizationService.truncate();
                     for (PtsVwZyxx item : list) {
                         boolean bl = zyxxToHosService.insertHos(item);
                         if (bl == false) {

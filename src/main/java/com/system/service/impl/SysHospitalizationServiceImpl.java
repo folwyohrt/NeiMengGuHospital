@@ -61,7 +61,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
 
         List<SysHospitalization> list = sysHospitalizationDao.selectAll();
         if (list.size() == 0) {
-            throw new NoneGetException("没有查询到用户相关记录！");
+            throw new NoneGetException("没有查询到在院病人相关记录！");
         }
         list = getOrderedSysHospitalizations(request.getSort(), request.getSortOrder(), list);
         List<SysHospitalizationDTO> resultList = getSysHospitalizationDTOS(list);
@@ -132,7 +132,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
             PagingResult pagingResult = new PagingResult((int) page.getTotal(), resultList);
             return pagingResult;
         }
-        throw new NoneGetException("没有查询到用户相关记录！");
+        throw new NoneGetException("没有查询到在院病人相关记录！");
     }
 
     @Override
