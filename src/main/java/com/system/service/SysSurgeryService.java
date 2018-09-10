@@ -21,6 +21,8 @@ public interface SysSurgeryService {
 
     SysSurgery get(long id);
 
+    SysSurgery get(String hId, Integer hTimes, String hXh);
+
     PagingResult getList(PagingRequest pagingRequest);
 
     PagingResult getList(SysSurgeryQuery sysSurgeryQuery);

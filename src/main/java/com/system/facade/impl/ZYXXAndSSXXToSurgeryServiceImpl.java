@@ -145,6 +145,45 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
     }
 
     @Override
+    public boolean supplySurgeryArea(PtsVwSsxx ssxx) {
+        if (ssxx == null) {
+            throw new NoneSaveException("手术信息为空！");
+        }
+        // 依赖住院号，住院次数，序号确定一条手术记录
+        SysSurgery sysSurgery = sysSurgeryService.get(ssxx.getZYH(), Integer.parseInt(ssxx.getZYCS()), ssxx.getXH());
+        if(sysSurgery == null) {
+            throw new NoneSaveException("未在MySQL中找到该手术信息！");
+        }
+        SysArea sysArea = sysAreaService.get(sysSurgery.gethArea());
+        if(sysArea == null) {
+            throw new NoneSaveException("未在MySQL中找到该病区信息！");
+        }
+        // 如果SqlServer.pts_vw_ssxx的住院科室与MySql.SysSurgery的住院科室不同，修改sysSurgery的
+        if(!ssxx.getZYKS().equals(sysArea.getValue())) {
+            String newAreaName = ssxx.getZYKS();
+            SysArea newSysArea = sysAreaService.get(newAreaName);
+            // 不存在该病区，需要插入
+            if(newSysArea == null) {
+                CreateSysAreaInfo createSysAreaInfo = new CreateSysAreaInfo();
+                createSysAreaInfo.setValue(newAreaName);
+                sysAreaService.insert(createSysAreaInfo);
+                newSysArea = sysAreaService.get(newAreaName);
+            }
+            // 修改SysSurgery的病区号
+            SysSurgery newSysSurgery = new SysSurgery();
+            // 设置主键id
+            newSysSurgery.setId(sysSurgery.getId());
+            // 设置病区id
+            newSysSurgery.sethArea(newSysArea.getId());
+            // （以主键）更新病区
+            if(sysSurgeryService.update(newSysSurgery)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     @DataSwitch(dataSource="dataSource1")
     public synchronized boolean insertSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx) {
         SysSurgery sysSurgery = new SysSurgery();
@@ -209,37 +248,17 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
 
     private SysSurgery supplyWithZyxx (SysSurgery sysSurgery, PtsVwZyxx zyxx) {
         // 年龄
-        sysSurgery.setpAge(zyxx.getNl());
+        sysSurgery.setpAge(zyxx.getNl() == null ? "-" : zyxx.getNl());
         // 入院病床号
-        sysSurgery.sethBed(zyxx.getRybch());
-        //处理病区
-        String ryks = zyxx.getRyks() == null ? "-" : zyxx.getRyks();
-        SysArea sysArea = sysAreaService.get(ryks);
-        if (sysArea == null) {
-            CreateSysAreaInfo createSysAreaInfo = new CreateSysAreaInfo();
-            createSysAreaInfo.setValue(zyxx.getRyks());
-            sysAreaService.insert(createSysAreaInfo);
-            sysArea = sysAreaService.get(zyxx.getRyks());
-        }
-        sysSurgery.sethArea(sysArea.getId());
+        sysSurgery.sethBed(zyxx.getRybch() == null ? "-" : zyxx.getRybch());
         return sysSurgery;
     }
 
     private SysSurgery supplyWithCyxx (SysSurgery sysSurgery, PtsVwCyxx cyxx) {
         // 年龄
-        sysSurgery.setpAge(cyxx.getNl());
+        sysSurgery.setpAge(cyxx.getNl() == null ? "-" : cyxx.getNl());
         // 入院病床号 出院信息无法获取病床号，置空
         sysSurgery.sethBed("-");
-        //处理病区
-        String ryks = cyxx.getRyks() == null ? "-" : cyxx.getRyks();
-        SysArea sysArea = sysAreaService.get(ryks);
-        if (sysArea == null) {
-            CreateSysAreaInfo createSysAreaInfo = new CreateSysAreaInfo();
-            createSysAreaInfo.setValue(cyxx.getRyks());
-            sysAreaService.insert(createSysAreaInfo);
-            sysArea = sysAreaService.get(cyxx.getRyks());
-        }
-        sysSurgery.sethArea(sysArea.getId());
         return sysSurgery;
     }
 
@@ -248,31 +267,20 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
         sysSurgery.setpAge("-");
         // 入院病床号
         sysSurgery.sethBed("-");
-        //处理病区
-        String areaName = "-";
-        SysArea sysArea = sysAreaService.get(areaName);
-        if (sysArea == null) {
-            CreateSysAreaInfo createSysAreaInfo = new CreateSysAreaInfo();
-            createSysAreaInfo.setValue(areaName);
-            sysAreaService.insert(createSysAreaInfo);
-            sysArea = sysAreaService.get(areaName);
-        }
-        sysSurgery.sethArea(sysArea.getId());
         return sysSurgery;
     }
 
     private SysSurgery supplySSXX (SysSurgery sysSurgery, PtsVwSsxx ssxx) {
         sysSurgery.sethId(ssxx.getZYH());
         sysSurgery.sethTimes(Integer.parseInt(ssxx.getZYCS()));
-        sysSurgery.setpName(ssxx.getXM());
-        sysSurgery.setpSex(ssxx.getXB());
         sysSurgery.sethXh(ssxx.getXH());
+        sysSurgery.setpName(ssxx.getXM() == null ? "-" : ssxx.getXM());
+        sysSurgery.setpSex(ssxx.getXB() == null ? "-" : ssxx.getXB());
         // 手术日期
         if (ssxx.getPCSJ() != null)
             sysSurgery.setSurgeryDatetime(ssxx.getPCSJ());
-        // 术前诊断
-        if (ssxx.getSQZD() != null)
-            sysSurgery.setSurgeryPodx(ssxx.getSQZD());
+        // 术前诊断，若为空，则置“-”
+        sysSurgery.setSurgeryPodx(ssxx.getSQZD() == null ? "-" : ssxx.getSQZD());
         // 手术类型
         String sslx = ssxx.getSSLX() == null ? "-" : ssxx.getSSLX();
         SysSurgeryStatus sysSurgeryStatus = sysSurgeryStatusService.get(sslx);
@@ -283,11 +291,20 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
             sysSurgeryStatus = sysSurgeryStatusService.get(sslx);
         }
         sysSurgery.setSurgeryStatus(sysSurgeryStatus.getId());
+        //处理病区，又称住院科室
+        String zyks = ssxx.getZYKS() == null ? "-" : ssxx.getZYKS();
+        SysArea sysArea = sysAreaService.get(zyks);
+        if (sysArea == null) {
+            CreateSysAreaInfo createSysAreaInfo = new CreateSysAreaInfo();
+            createSysAreaInfo.setValue(zyks);
+            sysAreaService.insert(createSysAreaInfo);
+            sysArea = sysAreaService.get(zyks);
+        }
+        sysSurgery.sethArea(sysArea.getId());
         //陪人数
         sysSurgery.setEscortsNum(1);
         //探访状态
         sysSurgery.setVisitStatus("未探访");
         return sysSurgery;
     }
-
 }
