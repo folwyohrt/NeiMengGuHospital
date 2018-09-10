@@ -7,12 +7,14 @@ import com.system.entity.DB2.test1.PtsVwRyxx;
 import com.system.entity.DB2.test1.PtsVwZyxx;
 import com.system.entity.SqlServer.PtsVwSsxx;
 import com.system.entity.SyncLog;
+import com.system.entity.SysSurgery;
 import com.system.facade.CYXXToOutHosService;
 import com.system.facade.RYXXToUserService;
 import com.system.facade.ZYXXAndSSXXToSurgeryService;
 import com.system.facade.ZYXXToHosService;
 import com.system.service.SynLogService;
 import com.system.service.SysHospitalizationService;
+import com.system.service.SysSurgeryService;
 import com.system.service.SysUserService;
 import com.system.util.CheckException;
 import com.system.util.exception.controller.result.NoneSaveException;
@@ -45,14 +47,14 @@ public class SynchronousDBController {
     Timer syncHosTimer;
     Timer syncOutHosTimer;
     Timer syncUserTimer;
-
+    Timer syncSgTimer;
+    Timer syncSgSupplyTimer;
     @Resource
     private SysHospitalizationService sysHospitalizationService;
 
     @Resource
     private SynLogService synLogService;
 
-    Timer syncSgTimer;
     @Resource
     private ZYXXAndSSXXToSurgeryService zyxxAndSSXXToSurgeryService;
 
@@ -246,6 +248,65 @@ public class SynchronousDBController {
             startTime = getBeforeStartTime(startTime);
         }
         return startTime;
+    }
+
+    /**
+     * 修复同步病人手术信息的bug，以前手术病人的病区是由住院信息或出院信息或‘-’来填充，但SSXX中本身就有住院科室，
+     * 而且以前的方法容易导致错误，所以修改为以SSXX来填充；
+     * 本方法旨在修复以前的MySQL数据库中SysSurgery与SQLServer.Pts_vw_ssxx中病区不同的错误。
+     * @param period
+     * @param delay
+     * @return
+     */
+    @ApiOperation(value = "修复同步病人手术信息的bug，前台可以无视；period时间间隔，delay延迟")
+    @RequestMapping(value = {"/syncSurgerySupplyArea/{period}/{delay}"}, method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean syncSurgerySupply(@PathVariable Long period, @PathVariable Long delay) {
+        if (syncSgSupplyTimer != null) {
+            syncSgSupplyTimer.cancel();
+        }
+        syncSgSupplyTimer = new Timer();
+        logger.info("- SSXX_supply-- period(分钟)---" + period);
+        logger.info("- SSXX_supply-- delay(分钟)---" + delay);
+        period = 1000 * 60 * period;
+        delay = 1000 * 60 * delay;
+        final String syncTypeStr = "sgSupplySysArea";
+        syncSgTimer.schedule(new TimerTask() {
+            int num = 0;
+            // 从pts_vw_ssxx视图中获取到所有手术信息，
+            // 然后往sys_surgery中更新或不更新数据；
+            // 同时记录本次同步的总数（也就是当前手术信息总数），更新的数目，未变化的数目，开始时间，结束时间
+            @Override
+            public void run() {
+                logger.info("SSXX_supply---times---" + ++num);
+                Date startTime = new Date();
+                // 获取所有的手术信息
+                List<PtsVwSsxx> list = zyxxAndSSXXToSurgeryService.getAllSSXXList();
+                int totalNum = list.size();
+                logger.info("手术信息总数：" + totalNum);
+                int updateNum = 0;
+                int noneNum = 0;
+                // 从后往前遍历，较新的数据会更早得到修复
+                for (int i = totalNum - 1; i >= 0; i --) {
+                    boolean result = zyxxAndSSXXToSurgeryService.supplySurgeryArea(list.get(i));
+                    // 记录本次同步的行为
+                    if (result == true) updateNum++;
+                    else noneNum++;
+                }
+                // 往数据库中记录本次同步的详细信息
+                SyncLog syncLog = new SyncLog();
+                syncLog.setsCount(Long.valueOf(totalNum));
+                syncLog.setsStarttime(startTime);
+                syncLog.setsEndtime(new Date());
+                syncLog.setsSuccess(totalNum == (updateNum + noneNum));
+                syncLog.setsInsert(0l);
+                syncLog.setsUpdate(Long.valueOf(updateNum));
+                syncLog.setsType(syncTypeStr);
+                synLogService.insertSynLog(syncLog);
+                logger.info("SSXX_Supply---times--- 第 " + num + " 次同步，更新数目：" + updateNum);
+            }
+        }, delay, period); // delay为0，是立即执行
+        return true;
     }
 
     @ApiOperation(value = "同步病人手术信息，period时间间隔，delay延迟，syncType同步类型（1.当天 2.所有带日期（未实现） 3.所有（未实现））")

@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.system.dao.SysSurgeryDao;
 import com.system.entity.*;
+import com.system.entity.SqlServer.PtsVwSsxx;
 import com.system.entity.SysSurgery;
 import com.system.pojo.*;
 import com.system.service.SysAreaService;
@@ -62,6 +63,25 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
             throw new NoneGetException("没有此条信息！");
         }
         return result;
+    }
+
+    @Override
+    public SysSurgery get(String hId, Integer hTimes, String hXh) {
+        // 查询mysql中的手术信息列表
+        List<SysSurgery> sysSurgeryList = sysSurgeryDao.selectByExample(getSgExample(hId, hTimes, hXh));
+        if(sysSurgeryList.size() > 0) {
+            return sysSurgeryList.get(0);
+        }
+        return null;
+    }
+
+    private Example getSgExample(String hId, Integer hTimes, String hXh) {
+        Example example = new Example(SysSurgery.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("hId", hId);
+        criteria.andEqualTo("hTimes", hTimes);
+        criteria.andEqualTo("hXh", hXh);
+        return example;
     }
 
     @Override

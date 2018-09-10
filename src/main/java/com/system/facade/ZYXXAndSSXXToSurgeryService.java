@@ -21,4 +21,5 @@ public interface ZYXXAndSSXXToSurgeryService {
     String insertOrUpdateSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx);
     boolean insertSurgery(PtsVwSsxx ssxx, PtsVwZyxx zyxx, PtsVwCyxx cyxx);
     boolean updateSurgeryDate(PtsVwSsxx ssxx);
+    boolean supplySurgeryArea(PtsVwSsxx ssxx);
 }
