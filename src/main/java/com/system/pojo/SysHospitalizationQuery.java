@@ -5,7 +5,7 @@ package com.system.pojo;
  * @Date: 2018/6/13 09:51
  * @Description:
  */
-public class SysHospitalizationQuery {
+public class SysHospitalizationQuery extends PagingRequest {
     //病区
     private Integer hArea;
     //住院号
@@ -13,6 +13,7 @@ public class SysHospitalizationQuery {
     private String pName;
     //住院时间
     private String hDate;
+    private String hBed;
 
     public Integer gethArea() {
         return hArea;
@@ -44,5 +45,13 @@ public class SysHospitalizationQuery {
 
     public void sethDate(String hDate) {
         this.hDate = hDate;
+    }
+
+    public String gethBed() {
+        return hBed;
+    }
+
+    public void sethBed(String hBed) {
+        this.hBed = hBed;
     }
 }

@@ -49,7 +49,9 @@ public class ExceptionHandlerController {
     @ExceptionHandler(NoneGetException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNoneGetException(HttpServletRequest request, RuntimeException e) {
-        logger.error("Request: " + request.getRequestURL() + " raised:", e);
+        //注释掉这句，因为查询不到该数据，并不是所谓的“异常”，不用打印太多信息，迷惑我们，还以为是报错了。
+        //logger.error("Request: " + request.getRequestURL() + " raised:", e);
+        logger.error("Request: " + request.getRequestURL() + " Error Message:"+e.getMessage());
         return e.getMessage();
     }
 

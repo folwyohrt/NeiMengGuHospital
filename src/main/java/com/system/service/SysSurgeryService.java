@@ -1,6 +1,8 @@
 package com.system.service;
 
 import com.system.entity.SysSurgery;
+import com.system.pojo.PagingRequest;
+import com.system.pojo.PagingResult;
 import com.system.pojo.SysSurgeryDTO;
 import com.system.pojo.SysSurgeryQuery;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,15 @@ public interface SysSurgeryService {
 
     SysSurgery get(long id);
 
-    List<SysSurgeryDTO> getList();
+    SysSurgery get(String hId, Integer hTimes, String hXh);
 
-    List<SysSurgeryDTO> getList(SysSurgeryQuery sysSurgeryQuery);
+    PagingResult getList(PagingRequest pagingRequest);
+
+    PagingResult getList(SysSurgeryQuery sysSurgeryQuery);
 
     boolean insert(SysSurgeryDTO createSysSurgeryInfo);
+
+    boolean insert(SysSurgery sysSurgery);
 
     boolean update(SysSurgeryDTO sysUserDTO);
 
@@ -31,4 +37,5 @@ public interface SysSurgeryService {
 
     boolean delete(List<Long> idList);
 
+    List<String> getNameList();
 }

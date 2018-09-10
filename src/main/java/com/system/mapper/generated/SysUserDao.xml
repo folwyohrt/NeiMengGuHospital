@@ -12,11 +12,12 @@
     <result column="user_group" jdbcType="VARCHAR" property="userGroup" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+    <result column="codeno" jdbcType="VARCHAR" property="codeno" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    user_id, user_name, user_pwd, user_role, user_group, gmt_create, gmt_modified
+    user_id, user_name, user_pwd, user_role, user_group, gmt_create, gmt_modified, codeno
   </sql>
 </mapper>

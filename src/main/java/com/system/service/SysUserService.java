@@ -1,5 +1,6 @@
 package com.system.service;
 
+import com.system.entity.SysUser;
 import com.system.pojo.CreateSysUserInfo;
 import com.system.pojo.EnumBean;
 import com.system.pojo.SysUserDTO;
@@ -17,15 +18,23 @@ public interface SysUserService {
 
     SysUserDTO get(int id);
 
+    SysUserDTO get(String codeno);
+
+    List<SysUserDTO> getByCodenoList(String codeno);
+
+    boolean isHave(String codeno);
+
     List<SysUserDTO> getList();
 
     List<SysUserDTO> getList(String name);
 
     boolean insert(CreateSysUserInfo createSysUserInfo);
 
+    boolean insert(SysUser sysUser);
+
     boolean update(SysUserDTO sysUserDTO);
 
     boolean delete(List<Integer> idList);
 
-
+    List<String> getRoleList();
 }

@@ -1,17 +1,14 @@
 package com.system.service.impl;
 
-import com.google.gson.Gson;
 import com.system.dao.SysUserDao;
 import com.system.entity.SysUser;
 import com.system.pojo.*;
 import com.system.service.SysUserService;
-import com.system.util.exception.controller.input.NullArgumentException;
+import com.system.util.database.DataSwitch;
 import com.system.util.exception.controller.result.NoneGetException;
 import com.system.util.exception.controller.result.NoneRemoveException;
 import com.system.util.exception.controller.result.NoneSaveException;
 import com.system.util.exception.controller.result.NoneUpdateException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,16 +32,48 @@ class SysUserServiceImpl implements SysUserService {
     @Override
     public SysUserDTO get(int id) {
         SysUser result = sysUserDao.selectByPrimaryKey(id);
-        if(result==null){
+        if (result == null) {
             throw new NoneGetException("没有该用户！");
         }
         return convertToSysUserDTO(result);
     }
 
+    @Override
+    public SysUserDTO get(String codeno){
+        List<SysUser> resultList = sysUserDao.selectByExample(getExample(codeno));
+        if (resultList != null&&resultList.size()>0) {
+            return convertToSysUserDTO(resultList.get(0));
+        }
+        return null;
+    }
+
+    @Override
+    public List<SysUserDTO> getByCodenoList(String codeno){
+        List<SysUser> resultList = sysUserDao.selectByExample(getExample(codeno));
+        if (resultList != null&&resultList.size()>0) {
+            List<SysUserDTO> list=new ArrayList<>();
+            for (SysUser item: resultList){
+                list.add(convertToSysUserDTO(item));
+            }
+            return list;
+        }
+        return null;
+    }
+
+    @Override
+    @DataSwitch(dataSource="dataSource1")
+    public boolean isHave(String codeno){
+        SysUserDTO sysUser=get(codeno);
+        if(sysUser==null){
+            return false;
+        }
+        return true;
+    }
+
     public SysUserDTO login(SysUserQuery sysUserQuery) {
         List<SysUser> sysUserList = sysUserDao.selectByExample(getExample(sysUserQuery));
         if (sysUserList.size() != 0) {
-            SysUserDTO sysUserDTO=convertToSysUserDTO(sysUserList.get(0));
+            SysUserDTO sysUserDTO = convertToSysUserDTO(sysUserList.get(0));
             return sysUserDTO;
         }
         throw new NoneGetException();
@@ -62,7 +91,7 @@ class SysUserServiceImpl implements SysUserService {
 
     @Override
     public List<SysUserDTO> getList(String name) {
-        List<SysUserDTO> resultList = sysUserDao.selectAll().stream().filter(item->item.getUserName().equals(name)).sorted(Comparator.comparing
+        List<SysUserDTO> resultList = sysUserDao.selectAll().stream().filter(item -> item.getUserName().equals(name)).sorted(Comparator.comparing
                 (SysUser::getGmtModified).reversed()).map(this::convertToSysUserDTO).collect(Collectors.toList());
         if (resultList.size() == 0) {
             throw new NoneGetException("没有查询到用户相关记录！");
@@ -70,21 +99,23 @@ class SysUserServiceImpl implements SysUserService {
         return resultList;
     }
 
-    public boolean insert(CreateSysUserInfo createSysUserInfo){
-        List<SysUser> sysUserList=sysUserDao.selectByExample(getExample(createSysUserInfo.getUserName()));
-        if(sysUserList!=null&&sysUserList.size()>0){
+    public boolean insert(CreateSysUserInfo createSysUserInfo) {
+        List<SysUser> sysUserList = sysUserDao.selectByExample(getExample(createSysUserInfo.getCodeno()));
+        if (sysUserList != null && sysUserList.size() > 0) {
             throw new NoneSaveException("不能新增同一条记录");
         }
-        SysUser sysUser=convertToSysUser(createSysUserInfo);
-        sysUser.setUserRole("2");
-        return sysUserDao.insertSelective(sysUser)>0;
+        SysUser sysUser = convertToSysUser(createSysUserInfo);
+        return sysUserDao.insertSelective(sysUser) > 0;
+    }
+
+    public boolean insert(SysUser sysUser){
+        return sysUserDao.insertSelective(sysUser) > 0;
     }
 
     @Override
     public boolean update(SysUserDTO sysUserDTO) {
         SysUser sysUser = convertToSysUser(sysUserDTO);
         if (sysUserDao.updateByPrimaryKeySelective(sysUser) > 0) {
-//            return convertToSysUserDTO(sysUserDao.selectByPrimaryKey(sysUserDTO.getUserId()));
             return true;
         }
         throw new NoneUpdateException();
@@ -101,20 +132,27 @@ class SysUserServiceImpl implements SysUserService {
         return true;
     }
 
-    private Example getExample(String userName) {
+    @Override
+    @DataSwitch(dataSource="dataSource1")
+    public List<String> getRoleList(){
+        List<String> list=sysUserDao.getRoleList();
+        return list;
+    }
+
+    private Example getExample(String codeno) {
         Example example = new Example(SysUser.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("userName", userName);
+        criteria.andEqualTo("codeno", codeno);
         return example;
     }
 
     private Example getExample(SysUserQuery sysUserQuery) {
         Example example = new Example(SysUser.class);
         Example.Criteria criteria = example.createCriteria();
-        if(sysUserQuery.getUserName()!=""){
-            criteria.andEqualTo("userName", sysUserQuery.getUserName());
+        if (sysUserQuery.getCodeno() != "") {
+            criteria.andEqualTo("codeno", sysUserQuery.getCodeno());
         }
-        if(sysUserQuery.getUserPwd()!=""){
+        if (sysUserQuery.getUserPwd() != "") {
             criteria.andEqualTo("userPwd", sysUserQuery.getUserPwd());
         }
         return example;

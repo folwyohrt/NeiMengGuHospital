@@ -7,12 +7,13 @@ import java.util.Date;
  * @Date: 2018/6/12 09:06
  * @Description:
  */
-public class SysSurgeryQuery {
+public class SysSurgeryQuery extends PagingRequest {
 
     private String hId;
     private String pName;
     private Integer hArea;
     private String surgeryDatetime;
+    private String hBed;
 
     public String gethId() {
         return hId;
@@ -44,5 +45,13 @@ public class SysSurgeryQuery {
 
     public void setSurgeryDatetime(String surgeryDatetime) {
         this.surgeryDatetime = surgeryDatetime;
+    }
+
+    public String gethBed() {
+        return hBed;
+    }
+
+    public void sethBed(String hBed) {
+        this.hBed = hBed;
     }
 }

@@ -61,7 +61,6 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
-
     <!--跨域访问配置-->
     <!--<mvc:cors>-->
     <!--<mvc:mapping path="/**" allowed-methods="*"/>-->

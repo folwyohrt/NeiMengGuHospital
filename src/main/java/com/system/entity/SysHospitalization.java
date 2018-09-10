@@ -17,6 +17,12 @@ public class SysHospitalization implements Serializable {
     private String hId;
 
     /**
+     * 住院次数
+     */
+    @Column(name = "h_times")
+    private Integer hTimes;
+
+    /**
      * 姓名
      */
     @Column(name = "p_name")
@@ -32,7 +38,7 @@ public class SysHospitalization implements Serializable {
      * 年龄
      */
     @Column(name = "p_age")
-    private Integer pAge;
+    private String pAge;
 
     /**
      * 病区
@@ -53,7 +59,7 @@ public class SysHospitalization implements Serializable {
     private Integer escortsNum;
 
     /**
-     * 访视状态
+     * 探访状态
      */
     @Column(name = "visit_status")
     private String visitStatus;
@@ -68,13 +74,13 @@ public class SysHospitalization implements Serializable {
      * 患者状态
      */
     @Column(name = "p_status")
-    private String pStatus;
+    private Integer pStatus;
 
     /**
      * 医保类型
      */
     @Column(name = "p_insur")
-    private String pInsur;
+    private Integer pInsur;
 
     /**
      * 责任医生
@@ -93,6 +99,9 @@ public class SysHospitalization implements Serializable {
      */
     @Column(name = "gmt_modified")
     private Date gmtModified;
+
+    @Column(name = "nursing_level")
+    private Integer nursingLevel;
 
     private static final long serialVersionUID = 1L;
 
@@ -126,6 +135,24 @@ public class SysHospitalization implements Serializable {
      */
     public void sethId(String hId) {
         this.hId = hId == null ? null : hId.trim();
+    }
+
+    /**
+     * 获取住院次数
+     *
+     * @return h_times - 住院次数
+     */
+    public Integer gethTimes() {
+        return hTimes;
+    }
+
+    /**
+     * 设置住院次数
+     *
+     * @param hTimes 住院次数
+     */
+    public void sethTimes(Integer hTimes) {
+        this.hTimes = hTimes;
     }
 
     /**
@@ -169,7 +196,7 @@ public class SysHospitalization implements Serializable {
      *
      * @return p_age - 年龄
      */
-    public Integer getpAge() {
+    public String getpAge() {
         return pAge;
     }
 
@@ -178,8 +205,8 @@ public class SysHospitalization implements Serializable {
      *
      * @param pAge 年龄
      */
-    public void setpAge(Integer pAge) {
-        this.pAge = pAge;
+    public void setpAge(String pAge) {
+        this.pAge = pAge == null ? null : pAge.trim();
     }
 
     /**
@@ -237,18 +264,18 @@ public class SysHospitalization implements Serializable {
     }
 
     /**
-     * 获取访视状态
+     * 获取探访状态
      *
-     * @return visit_status - 访视状态
+     * @return visit_status - 探访状态
      */
     public String getVisitStatus() {
         return visitStatus;
     }
 
     /**
-     * 设置访视状态
+     * 设置探访状态
      *
-     * @param visitStatus 访视状态
+     * @param visitStatus 探访状态
      */
     public void setVisitStatus(String visitStatus) {
         this.visitStatus = visitStatus == null ? null : visitStatus.trim();
@@ -277,7 +304,7 @@ public class SysHospitalization implements Serializable {
      *
      * @return p_status - 患者状态
      */
-    public String getpStatus() {
+    public Integer getpStatus() {
         return pStatus;
     }
 
@@ -286,8 +313,8 @@ public class SysHospitalization implements Serializable {
      *
      * @param pStatus 患者状态
      */
-    public void setpStatus(String pStatus) {
-        this.pStatus = pStatus == null ? null : pStatus.trim();
+    public void setpStatus(Integer pStatus) {
+        this.pStatus = pStatus;
     }
 
     /**
@@ -295,7 +322,7 @@ public class SysHospitalization implements Serializable {
      *
      * @return p_insur - 医保类型
      */
-    public String getpInsur() {
+    public Integer getpInsur() {
         return pInsur;
     }
 
@@ -304,8 +331,8 @@ public class SysHospitalization implements Serializable {
      *
      * @param pInsur 医保类型
      */
-    public void setpInsur(String pInsur) {
-        this.pInsur = pInsur == null ? null : pInsur.trim();
+    public void setpInsur(Integer pInsur) {
+        this.pInsur = pInsur;
     }
 
     /**
@@ -362,6 +389,20 @@ public class SysHospitalization implements Serializable {
         this.gmtModified = gmtModified;
     }
 
+    /**
+     * @return nursing_level
+     */
+    public Integer getNursingLevel() {
+        return nursingLevel;
+    }
+
+    /**
+     * @param nursingLevel
+     */
+    public void setNursingLevel(Integer nursingLevel) {
+        this.nursingLevel = nursingLevel;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -376,6 +417,7 @@ public class SysHospitalization implements Serializable {
         SysHospitalization other = (SysHospitalization) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.gethId() == null ? other.gethId() == null : this.gethId().equals(other.gethId()))
+            && (this.gethTimes() == null ? other.gethTimes() == null : this.gethTimes().equals(other.gethTimes()))
             && (this.getpName() == null ? other.getpName() == null : this.getpName().equals(other.getpName()))
             && (this.getpSex() == null ? other.getpSex() == null : this.getpSex().equals(other.getpSex()))
             && (this.getpAge() == null ? other.getpAge() == null : this.getpAge().equals(other.getpAge()))
@@ -388,7 +430,8 @@ public class SysHospitalization implements Serializable {
             && (this.getpInsur() == null ? other.getpInsur() == null : this.getpInsur().equals(other.getpInsur()))
             && (this.getDcrName() == null ? other.getDcrName() == null : this.getDcrName().equals(other.getDcrName()))
             && (this.getGmtCreate() == null ? other.getGmtCreate() == null : this.getGmtCreate().equals(other.getGmtCreate()))
-            && (this.getGmtModified() == null ? other.getGmtModified() == null : this.getGmtModified().equals(other.getGmtModified()));
+            && (this.getGmtModified() == null ? other.getGmtModified() == null : this.getGmtModified().equals(other.getGmtModified()))
+            && (this.getNursingLevel() == null ? other.getNursingLevel() == null : this.getNursingLevel().equals(other.getNursingLevel()));
     }
 
     @Override
@@ -397,6 +440,7 @@ public class SysHospitalization implements Serializable {
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((gethId() == null) ? 0 : gethId().hashCode());
+        result = prime * result + ((gethTimes() == null) ? 0 : gethTimes().hashCode());
         result = prime * result + ((getpName() == null) ? 0 : getpName().hashCode());
         result = prime * result + ((getpSex() == null) ? 0 : getpSex().hashCode());
         result = prime * result + ((getpAge() == null) ? 0 : getpAge().hashCode());
@@ -410,6 +454,7 @@ public class SysHospitalization implements Serializable {
         result = prime * result + ((getDcrName() == null) ? 0 : getDcrName().hashCode());
         result = prime * result + ((getGmtCreate() == null) ? 0 : getGmtCreate().hashCode());
         result = prime * result + ((getGmtModified() == null) ? 0 : getGmtModified().hashCode());
+        result = prime * result + ((getNursingLevel() == null) ? 0 : getNursingLevel().hashCode());
         return result;
     }
 
@@ -421,6 +466,7 @@ public class SysHospitalization implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
         sb.append(", hId=").append(hId);
+        sb.append(", hTimes=").append(hTimes);
         sb.append(", pName=").append(pName);
         sb.append(", pSex=").append(pSex);
         sb.append(", pAge=").append(pAge);
@@ -434,6 +480,7 @@ public class SysHospitalization implements Serializable {
         sb.append(", dcrName=").append(dcrName);
         sb.append(", gmtCreate=").append(gmtCreate);
         sb.append(", gmtModified=").append(gmtModified);
+        sb.append(", nursingLevel=").append(nursingLevel);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

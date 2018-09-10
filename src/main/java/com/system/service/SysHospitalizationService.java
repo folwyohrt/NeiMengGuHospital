@@ -1,11 +1,12 @@
 package com.system.service;
 
-import com.system.pojo.SysHospitalizationDTO;
-import com.system.pojo.SysHospitalizationQuery;
+import com.system.entity.SysHospitalization;
+import com.system.pojo.*;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Auther: 李景然
@@ -15,13 +16,29 @@ import java.util.List;
 public interface SysHospitalizationService {
     SysHospitalizationDTO get(long id);
 
-    List<SysHospitalizationDTO> getList() ;
+    SysHospitalization get(int times, String hId);
 
-    List<SysHospitalizationDTO> getList(SysHospitalizationQuery sysHospitalizationQuery)  ;
+    PagingResult getPageList( PagingRequest request);
 
-    boolean insert(SysHospitalizationDTO createSysHospitalizationInfo)  ;
+    PagingResult getPageList(SysHospitalizationQuery sysHospitalizationQuery);
+    //用于 后台 修改 出院状态
+    List<SysHospitalization> getList(int pStatus);
 
-    boolean update(SysHospitalizationDTO sysUserDTO)  ;
+    List<String> getBedList(Integer areaId);
+
+    SysHospitalization getLatestRecordByhBed(String hBed);
+
+    boolean insert(SysHospitalizationDTO createSysHospitalizationInfo);
+
+    boolean insert(SysHospitalization sysHospitalization);
+
+    boolean update(SysHospitalizationDTO sysHospitalizationDTO);
+
+    boolean update(SysHospitalization sysHospitalization);
 
     boolean delete(List<Long> idList);
+
+    boolean truncate();
+
+    List<String> getNameList();
 }

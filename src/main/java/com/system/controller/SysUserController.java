@@ -1,5 +1,6 @@
 package com.system.controller;
 
+import com.system.entity.SysUser;
 import com.system.pojo.*;
 import com.system.service.SysUserService;
 import com.system.util.CheckException;
@@ -30,6 +31,20 @@ public class SysUserController {
     @ResponseStatus(HttpStatus.OK)
     public SysUserDTO get(@PathVariable int id){
         return sysUserService.get(id);
+    }
+
+    @ApiOperation(value = "根据codeno查询用户")
+    @RequestMapping(value = "/getByCodeno", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public SysUserDTO get(@RequestBody String codeno){
+        return sysUserService.get(codeno);
+    }
+
+    @ApiOperation(value = "根据codeno查询用户")
+    @RequestMapping(value = "/getByCodeno/{codeno}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<SysUserDTO> getByCodeno(@PathVariable String codeno){
+        return sysUserService.getByCodenoList(codeno);
     }
 
     @ApiOperation(value ="登录")
@@ -74,5 +89,11 @@ public class SysUserController {
         return sysUserService.delete(idList);
     }
 
+    @ApiOperation(value ="获取用户角色")
+    @RequestMapping(value = "/getRoleList",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getRoleList(){
+        return sysUserService.getRoleList();
+    }
 
 }

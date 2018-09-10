@@ -3,7 +3,6 @@ package com.system.service;
 import com.system.entity.SysArea;
 import com.system.pojo.CreateSysAreaInfo;
 import com.system.pojo.SysAreaDTO;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -14,6 +13,7 @@ import java.util.List;
  */
 public interface SysAreaService {
     SysArea get(int id);
+    SysArea get(String areaStr);
     List<SysArea> getList();
     boolean insert(CreateSysAreaInfo sysAreaInfo);
     boolean update(SysAreaDTO sysAreaDTO);
