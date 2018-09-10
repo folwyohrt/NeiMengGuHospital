@@ -79,4 +79,11 @@ public class SysSurgeryController {
     public boolean visit(@RequestAttribute long id, int visitStatus) {
         return sysSurgeryVisitService.updateVisit(id, visitStatus);
     }
+
+    @ApiOperation(value = "获取所有姓名")
+    @RequestMapping(value = "/getNameList", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getList() {
+        return sysSurgeryService.getNameList();
+    }
 }

@@ -303,7 +303,7 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
         sysSurgery.sethArea(sysArea.getId());
         //陪人数
         sysSurgery.setEscortsNum(1);
-        //访视状态
+        //探访状态
         sysSurgery.setVisitStatus("未探访");
         return sysSurgery;
     }

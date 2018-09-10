@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.text.Collator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -161,6 +162,14 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
             }
         }
         return true;
+    }
+
+    private final Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
+
+    public List<String> getNameList(){
+        List<String> list= sysOutHospitalDao.selectAll().stream().sorted(Comparator.comparing(SysOutHospital::getpName)).map(item->item.getpName()).distinct().collect(Collectors.toList());
+        Collections.sort(list, CHINA_COMPARE);
+        return list;
     }
 
     private Example getExample(SysOutHospitalQuery query) {

@@ -39,4 +39,6 @@ public interface SysHospitalizationService {
     boolean delete(List<Long> idList);
 
     boolean truncate();
+
+    List<String> getNameList();
 }

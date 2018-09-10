@@ -72,4 +72,10 @@ public class SysOutHospitalController {
         return sysOutHospitalService.delete(idList);
     }
 
+    @ApiOperation(value = "获取所有姓名")
+    @RequestMapping(value = "/getNameList", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getList() {
+        return sysOutHospitalService.getNameList();
+    }
 }

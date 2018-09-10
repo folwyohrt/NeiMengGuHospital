@@ -8,6 +8,7 @@ import com.system.entity.DB2.test1.PtsVwZyxx;
 import com.system.entity.SqlServer.PtsVwSsxx;
 import com.system.entity.SyncLog;
 import com.system.entity.SysSurgery;
+import com.system.entity.SysHospitalization;
 import com.system.facade.CYXXToOutHosService;
 import com.system.facade.RYXXToUserService;
 import com.system.facade.ZYXXAndSSXXToSurgeryService;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.system.util.tools.DateFormatHelper.getTodayDate;
 
@@ -49,6 +51,8 @@ public class SynchronousDBController {
     Timer syncUserTimer;
     Timer syncSgTimer;
     Timer syncSgSupplyTimer;
+    Timer updateNotVisitTimer;
+
     @Resource
     private SysHospitalizationService sysHospitalizationService;
 
@@ -60,6 +64,49 @@ public class SynchronousDBController {
 
     @Resource
     private ZYXXToHosService zyxxToHosService;
+
+    @ApiOperation(value = "凌晨12点，探访状态均改为未探访")
+    @RequestMapping(value = "/updateNotVisit/", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean updateNotVisit() {
+        if (updateNotVisitTimer != null) {
+            updateNotVisitTimer.cancel();
+        }
+        updateNotVisitTimer = new Timer();
+        //周期任务执行的开始时间
+        Calendar calendar=Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY,0);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        Date beginTime=calendar.getTime();//开始执行时间：当天00点
+        long period = 1000 * 60 * 60*24;//一天的时间
+        //long period = 1000 * 60 * 10;//10分钟
+
+        updateNotVisitTimer.scheduleAtFixedRate(new TimerTask() {
+            int num = 0;
+
+            @Override
+            public void run() {
+                Date runTime=new Date();
+                System.out.println("凌晨12点修改探访状态 第几次---" + num);
+                System.out.println("凌晨12点修改探访状态 执行时间---" + runTime);
+                List<SysHospitalization> hosList = sysHospitalizationService.getList(1);
+                for (SysHospitalization item:hosList){
+                    item.setVisitStatus("未探访");
+                    sysHospitalizationService.update(item);
+                }
+
+                SyncLog syncLog = new SyncLog();
+                syncLog.setsCount((long) hosList.size());
+                syncLog.setsEndtime(runTime);
+                syncLog.setsStarttime(runTime);
+                syncLog.setsSuccess(true);
+                syncLog.setsType("updateNotVisit");
+                synLogService.insertSynLog(syncLog);
+            }
+        }, beginTime, period);
+        return true;
+    }
 
     @ApiOperation(value = "同步在院病人在院信息(分钟)")
     @RequestMapping(value = "/syncHos/{period}", method = RequestMethod.GET)
@@ -88,11 +135,17 @@ public class SynchronousDBController {
                     System.out.println("获取 病人在院信息的总条数count---" + list.size());
                     //sysHospitalizationService.truncate();
                     for (PtsVwZyxx item : list) {
-                        boolean bl = zyxxToHosService.insertHos(item);
-                        if (bl == false) {
-                            throw new NoneSaveException();
+                        SysHospitalization old=sysHospitalizationService.get(item.getZycs(),item.getZyh());
+                        if(old==null){
+                            boolean bl = zyxxToHosService.insertHos(item);
+                            if (bl == false) {
+                                throw new NoneSaveException();
+                            }
+                        }else{
+                            zyxxToHosService.update(item,old);
                         }
                     }
+
                     SyncLog syncLog = new SyncLog();
                     syncLog.setsCount((long) list.size());
                     syncLog.setsEndtime(endTime);
@@ -104,11 +157,24 @@ public class SynchronousDBController {
                     System.out.println("在院 startTime---" + startTime);
                     System.out.println("在院 endTime---" + endTime);
                     System.out.println("插入 病人在院信息count---" + list.size());
+
                 } else {
                     System.out.println("在院 startTime---" + startTime);
                     System.out.println("在院 endTime---" + endTime);
                     System.out.println("暂无需要同步 的病人在院信息的数据");
                 }
+
+                List<SysHospitalization> hosList = sysHospitalizationService.getList(1);
+                List<SysHospitalization> deleteList = new ArrayList<>();
+                for (SysHospitalization item : hosList) {
+                    boolean bl = zyxxToHosService.isExitHos(item);
+                    if (bl == true) {
+                        deleteList.add(item);
+                    }
+                }
+                List<Long> idList = deleteList.stream().map(sh -> sh.getId()).collect(Collectors.toList());
+                zyxxToHosService.deleteExitHos(idList);
+                System.out.println("删除在院信息表中的离院数据条数有：" + deleteList.size() + "条");
             }
         }, beginTime, period);
         return true;
