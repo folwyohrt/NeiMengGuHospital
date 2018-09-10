@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @Description:
  */
 @Service("synLogService")
-public class SynLogServiceImpl implements SynLogService {
+public class    SynLogServiceImpl implements SynLogService {
 
     @Resource
     private SyncLogDao syncLogDao;

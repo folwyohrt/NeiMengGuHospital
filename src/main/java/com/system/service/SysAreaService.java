@@ -3,7 +3,6 @@ package com.system.service;
 import com.system.entity.SysArea;
 import com.system.pojo.CreateSysAreaInfo;
 import com.system.pojo.SysAreaDTO;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

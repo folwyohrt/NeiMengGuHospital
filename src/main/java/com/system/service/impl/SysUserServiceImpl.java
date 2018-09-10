@@ -116,7 +116,6 @@ class SysUserServiceImpl implements SysUserService {
     public boolean update(SysUserDTO sysUserDTO) {
         SysUser sysUser = convertToSysUser(sysUserDTO);
         if (sysUserDao.updateByPrimaryKeySelective(sysUser) > 0) {
-//            return convertToSysUserDTO(sysUserDao.selectByPrimaryKey(sysUserDTO.getUserId()));
             return true;
         }
         throw new NoneUpdateException();

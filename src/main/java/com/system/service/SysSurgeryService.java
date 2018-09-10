@@ -35,4 +35,5 @@ public interface SysSurgeryService {
 
     boolean delete(List<Long> idList);
 
+    List<String> getNameList();
 }

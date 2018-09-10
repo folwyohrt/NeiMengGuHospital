@@ -65,7 +65,7 @@ public class SysSurgery implements Serializable {
     private Integer escortsNum;
 
     /**
-     * 访视状态
+     * 探访状态
      */
     @Column(name = "visit_status")
     private String visitStatus;
@@ -279,18 +279,18 @@ public class SysSurgery implements Serializable {
     }
 
     /**
-     * 获取访视状态
+     * 获取探访状态
      *
-     * @return visit_status - 访视状态
+     * @return visit_status - 探访状态
      */
     public String getVisitStatus() {
         return visitStatus;
     }
 
     /**
-     * 设置访视状态
+     * 设置探访状态
      *
-     * @param visitStatus 访视状态
+     * @param visitStatus 探访状态
      */
     public void setVisitStatus(String visitStatus) {
         this.visitStatus = visitStatus == null ? null : visitStatus.trim();

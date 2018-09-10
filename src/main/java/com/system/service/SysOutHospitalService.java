@@ -28,4 +28,6 @@ public interface SysOutHospitalService {
     boolean update(SysOutHospital sysOutHospital);
 
     boolean delete(List<Long> idList);
+
+    List<String> getNameList();
 }

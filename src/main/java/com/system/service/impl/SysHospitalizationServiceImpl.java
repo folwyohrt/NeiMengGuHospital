@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.text.Collator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -46,6 +47,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     }
 
     @Override
+    @DataSwitch(dataSource = "dataSource1")
     public SysHospitalization get(int times, String hId) {
         List<SysHospitalization> sysHospitalizationList = sysHospitalizationDao.selectByExample(getExample(times, hId));
         if (sysHospitalizationList != null && sysHospitalizationList.size() > 0) {
@@ -200,6 +202,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     }
 
     @Override
+    @DataSwitch(dataSource = "dataSource1")
     @Transactional(rollbackFor = NoneRemoveException.class)
     public boolean delete(List<Long> idList) {
         for (Long anIdList : idList) {
@@ -217,16 +220,24 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         return true;
     }
 
+    private final Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
+
+    public List<String> getNameList(){
+        List<String> list= sysHospitalizationDao.selectAll().stream().sorted(Comparator.comparing(SysHospitalization::getpName)).map(item->item.getpName()).distinct().collect(Collectors.toList());
+        Collections.sort(list, CHINA_COMPARE);
+        return list;
+    }
+
     private Example getExample(SysHospitalizationQuery query) {
         Example example = new Example(SysHospitalization.class);
-        String sort=query.getSort();
-        for (int i=0;i<sort.length();i++){
-            if(Character.isUpperCase(sort.charAt(i))){
-                sort=sort.substring(0,i)+"_"+sort.substring(i,sort.length());
+        String sort = query.getSort();
+        for (int i = 0; i < sort.length(); i++) {
+            if (Character.isUpperCase(sort.charAt(i))) {
+                sort = sort.substring(0, i) + "_" + sort.substring(i, sort.length());
                 break;
             }
         }
-        String orderStr=sort+" "+query.getSortOrder();
+        String orderStr = sort + " " + query.getSortOrder();
         example.setOrderByClause(orderStr);
         Example.Criteria criteria = example.createCriteria();
 
@@ -281,7 +292,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     private Example getExampleBypStatus(int id) {
         Example example = new Example(SysHospitalization.class);
         Example.Criteria criteria = example.createCriteria();
-        if(id!=0){
+        if (id != 0) {
             criteria.andEqualTo("pStatus", id);
         }
         return example;

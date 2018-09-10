@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,6 +67,15 @@ public class ZYXXToHosServiceImpl implements ZYXXToHosService {
         return list;
     }
 
+    @DataSwitch(dataSource = "dataSource3")
+    private PtsVwZyxx getZYXX(String zyh,int times){
+        List<PtsVwZyxx> list=ptsVwZyxxDao.selectByExample(getZYXXExample(times,zyh));
+        if(list!=null&&list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
+
     @Override
     @DataSwitch(dataSource = "dataSource3")
     public List<PtsVwCyxx> getCYXXList(Date startTime, Date endTime) {
@@ -82,7 +93,7 @@ public class ZYXXToHosServiceImpl implements ZYXXToHosService {
     @Override
     @DataSwitch(dataSource = "dataSource3")
     public PtsVwCyxx getCYXX(String zyh,int times){
-        List<PtsVwCyxx> list=ptsVwCyxxDao.selectByExample(getExample(times,zyh));
+        List<PtsVwCyxx> list=ptsVwCyxxDao.selectByExample(getCYXXExample(times,zyh));
         if(list!=null&&list.size()>0){
             return list.get(0);
         }
@@ -92,11 +103,32 @@ public class ZYXXToHosServiceImpl implements ZYXXToHosService {
     @Override
     @DataSwitch(dataSource = "dataSource1")
     public boolean insertHos(PtsVwZyxx ptsVwZyxx) {
-        SysHospitalization sysHospitalization = convertToSysHospitalization(ptsVwZyxx);
+        SysHospitalization sysHospitalization = convertToSysHospitalization(ptsVwZyxx,1,"未探访");
         return sysHospitalizationService.insert(sysHospitalization);
     }
 
-    private SysHospitalization convertToSysHospitalization(PtsVwZyxx ptsVwZyxx) {
+    @Override
+    @DataSwitch(dataSource = "dataSource1")
+    public boolean update(PtsVwZyxx ptsVwZyxx,SysHospitalization old){
+        SysHospitalization sysHospitalization = convertToSysHospitalization(ptsVwZyxx,old.getEscortsNum(),old.getVisitStatus());
+        sysHospitalization.setId(old.getId());
+        return sysHospitalizationService.update(sysHospitalization);
+    }
+
+    @DataSwitch(dataSource = "dataSource3")
+    public boolean isExitHos(SysHospitalization item) {
+        PtsVwZyxx zyxx=getZYXX(item.gethId(),item.gethTimes());
+        if (zyxx!=null)
+            return false;
+        return true;
+    }
+
+    @DataSwitch(dataSource = "dataSource1")
+    public boolean deleteExitHos(List<Long> idList){
+        return sysHospitalizationService.delete(idList);
+    }
+
+    private SysHospitalization convertToSysHospitalization(PtsVwZyxx ptsVwZyxx,int escortsNum,String visitStatus) {
         if (null == ptsVwZyxx) {
             return null;
         }
@@ -112,9 +144,9 @@ public class ZYXXToHosServiceImpl implements ZYXXToHosService {
         //住院次数
         result.sethTimes(ptsVwZyxx.getZycs());
         //陪人数
-        result.setEscortsNum(1);
-        //访视状态
-        result.setVisitStatus("未探访");
+        result.setEscortsNum(escortsNum);
+        //探访状态
+        result.setVisitStatus(visitStatus);
 
         //处理医保类型
         SysMedicalInsurance sysMedicalInsurance = sysMedicalInsuranceService.get(ptsVwZyxx.getYlfkfs());
@@ -152,8 +184,18 @@ public class ZYXXToHosServiceImpl implements ZYXXToHosService {
         return result;
     }
 
-    private Example getExample(int times, String zyh) {
+    private Example getCYXXExample(int times, String zyh) {
         Example example = new Example(PtsVwCyxx.class);
+        Example.Criteria criteria = example.createCriteria();
+
+        criteria.andEqualTo("zyh", zyh);
+        criteria.andEqualTo("zycs", times);
+
+        return example;
+    }
+
+    private Example getZYXXExample(int times, String zyh) {
+        Example example = new Example(PtsVwZyxx.class);
         Example.Criteria criteria = example.createCriteria();
 
         criteria.andEqualTo("zyh", zyh);
