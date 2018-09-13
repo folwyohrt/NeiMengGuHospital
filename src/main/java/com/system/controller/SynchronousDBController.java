@@ -337,7 +337,7 @@ public class SynchronousDBController {
         period = 1000 * 60 * period;
         delay = 1000 * 60 * delay;
         final String syncTypeStr = "sgSupplySysArea";
-        syncSgTimer.schedule(new TimerTask() {
+        syncSgSupplyTimer.schedule(new TimerTask() {
             int num = 0;
             // 从pts_vw_ssxx视图中获取到所有手术信息，
             // 然后往sys_surgery中更新或不更新数据；
@@ -346,8 +346,10 @@ public class SynchronousDBController {
             public void run() {
                 logger.info("SSXX_supply---times---" + ++num);
                 Date startTime = new Date();
-                // 获取所有的手术信息
-                List<PtsVwSsxx> list = zyxxAndSSXXToSurgeryService.getAllSSXXList();
+                // 获取今天的0点时间（格式：2018-08-01 00:00:00）
+                Date todayDate = getTodayDate();
+                // 获取今天以前的所有的手术信息
+                List<PtsVwSsxx> list = zyxxAndSSXXToSurgeryService.getSSXXListBySgDate(new Date(0), todayDate);
                 int totalNum = list.size();
                 logger.info("手术信息总数：" + totalNum);
                 int updateNum = 0;

@@ -144,7 +144,13 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
         return sysSurgeryDao.updateByExampleSelective(sysSurgery, getSgExample(ssxx)) > 0;
     }
 
+    /**
+     * 修复MySQL中已有手术信息中病区与pts_vw_ssxx中不匹配的记录
+     * @param ssxx
+     * @return
+     */
     @Override
+    @DataSwitch(dataSource="dataSource1")
     public boolean supplySurgeryArea(PtsVwSsxx ssxx) {
         if (ssxx == null) {
             throw new NoneSaveException("手术信息为空！");
@@ -152,33 +158,43 @@ public class ZYXXAndSSXXToSurgeryServiceImpl implements ZYXXAndSSXXToSurgeryServ
         // 依赖住院号，住院次数，序号确定一条手术记录
         SysSurgery sysSurgery = sysSurgeryService.get(ssxx.getZYH(), Integer.parseInt(ssxx.getZYCS()), ssxx.getXH());
         if(sysSurgery == null) {
-            throw new NoneSaveException("未在MySQL中找到该手术信息！");
+            // MySQL中不存在该信息，无需修改
+            return false;
         }
         SysArea sysArea = sysAreaService.get(sysSurgery.gethArea());
+        String newAreaName = "";
+        // 病区不存在，需要插入病区，然后修改病区id
         if(sysArea == null) {
-            throw new NoneSaveException("未在MySQL中找到该病区信息！");
+            // 首先获取新的病区名
+            newAreaName = ssxx.getZYKS();
+            sysArea  = sysAreaService.get(newAreaName);
         }
-        // 如果SqlServer.pts_vw_ssxx的住院科室与MySql.SysSurgery的住院科室不同，修改sysSurgery的
-        if(!ssxx.getZYKS().equals(sysArea.getValue())) {
-            String newAreaName = ssxx.getZYKS();
-            SysArea newSysArea = sysAreaService.get(newAreaName);
-            // 不存在该病区，需要插入
-            if(newSysArea == null) {
-                CreateSysAreaInfo createSysAreaInfo = new CreateSysAreaInfo();
-                createSysAreaInfo.setValue(newAreaName);
-                sysAreaService.insert(createSysAreaInfo);
-                newSysArea = sysAreaService.get(newAreaName);
-            }
-            // 修改SysSurgery的病区号
-            SysSurgery newSysSurgery = new SysSurgery();
-            // 设置主键id
-            newSysSurgery.setId(sysSurgery.getId());
-            // 设置病区id
-            newSysSurgery.sethArea(newSysArea.getId());
-            // （以主键）更新病区
-            if(sysSurgeryService.update(newSysSurgery)) {
-                return true;
-            }
+        // 如果SqlServer.pts_vw_ssxx的住院科室与MySql.SysSurgery的住院科室不同，需要修改病区id，首先获取到pts_vw_ssxx的病区
+        else if(!ssxx.getZYKS().equals(sysArea.getValue())) {
+            // 首先获取新的病区名
+            newAreaName = ssxx.getZYKS();
+            sysArea = sysAreaService.get(newAreaName);
+        }
+        // 存在病区且两个数据库中的数据保持一致，无需修改，返回
+        else {
+            return false;
+        }
+        // 不存在该病区，需要插入
+        if(sysArea == null) {
+            CreateSysAreaInfo createSysAreaInfo = new CreateSysAreaInfo();
+            createSysAreaInfo.setValue(newAreaName);
+            sysAreaService.insert(createSysAreaInfo);
+            sysArea = sysAreaService.get(newAreaName);
+        }
+        // 修改SysSurgery的病区id
+        SysSurgery newSysSurgery = new SysSurgery();
+        // 设置主键id
+        newSysSurgery.setId(sysSurgery.getId());
+        // 设置病区id
+        newSysSurgery.sethArea(sysArea.getId());
+        // （以主键）更新病区
+        if(sysSurgeryService.update(newSysSurgery)) {
+            return true;
         }
         return false;
     }
