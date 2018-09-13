@@ -70,7 +70,7 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     public SysSurgery get(String hId, Integer hTimes, String hXh) {
         // 查询mysql中的手术信息列表
         List<SysSurgery> sysSurgeryList = sysSurgeryDao.selectByExample(getSgExample(hId, hTimes, hXh));
-        if(sysSurgeryList.size() > 0) {
+        if (sysSurgeryList.size() > 0) {
             return sysSurgeryList.get(0);
         }
         return null;
@@ -228,8 +228,12 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
 
     private final Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
 
-    public List<String> getNameList(){
-        List<String> list= sysSurgeryDao.selectAll().stream().sorted(Comparator.comparing(SysSurgery::getpName)).map(item->item.getpName()).distinct().collect(Collectors.toList());
+    public List<String> getNameList() {
+        Date todayDate = getTodayDate();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        List<String> list = sysSurgeryDao.selectByExample(getExampleByDate(
+                getTodayDate())).stream().sorted(Comparator.comparing(SysSurgery::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
         Collections.sort(list, CHINA_COMPARE);
         return list;
     }
@@ -283,6 +287,16 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
             cal.add(Calendar.DATE, 1);
             criteria.andBetween("surgeryDatetime", todayDate, cal.getTime());
         }
+        return example;
+    }
+
+    private Example getExampleByDate(Date todayDate) {
+        Example example = new Example(SysSurgery.class);
+        Example.Criteria criteria = example.createCriteria();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(todayDate);
+        cal.add(Calendar.DATE, 1);
+        criteria.andBetween("surgeryDatetime", todayDate, cal.getTime());
         return example;
     }
 
