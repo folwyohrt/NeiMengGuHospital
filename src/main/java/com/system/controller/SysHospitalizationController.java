@@ -105,10 +105,17 @@ public class SysHospitalizationController {
         return sysHospitalizationService.update(sysHospitalizationDTO);
     }
 
-    @ApiOperation(value = "获取所有姓名")
-    @RequestMapping(value = "/getNameList", method = RequestMethod.GET)
+    @ApiOperation(value = "获某个病区的所有姓名")
+    @RequestMapping(value = "/getNameList/{hArea}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public List<String> getList() {
-        return sysHospitalizationService.getNameList();
+    public List<String> getList(@PathVariable int hArea) {
+        return sysHospitalizationService.getNameList(hArea);
+    }
+
+    @ApiOperation(value = "按照名字获取相应的列表")
+    @RequestMapping(value = "/getListByName/", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<SysHospitalizationDTO> getListByName(@RequestBody List<String> names) {
+        return sysHospitalizationService.getListByName(names);
     }
 }

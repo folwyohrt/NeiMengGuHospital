@@ -228,14 +228,30 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
 
     private final Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
 
-    public List<String> getNameList() {
+    public List<String> getNameList(int hArea) {
         Date todayDate = getTodayDate();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
         List<String> list = sysSurgeryDao.selectByExample(getExampleByDate(
-                getTodayDate())).stream().sorted(Comparator.comparing(SysSurgery::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
+                getTodayDate(),hArea)).stream().sorted(Comparator.comparing(SysSurgery::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
         Collections.sort(list, CHINA_COMPARE);
         return list;
+    }
+
+    public List<SysSurgeryDTO> getListByName(List<String> names) {
+        List<SysSurgeryDTO> list = sysSurgeryDao.selectByExample(getExample(names,getTodayDate())).stream().sorted(Comparator.comparing(SysSurgery::getSurgeryDatetime).reversed()).map(this::getSysSurgeryDTO).collect(Collectors.toList());
+        return list;
+    }
+
+    private Example getExample(List<String> names,Date todayDate) {
+        Example example = new Example(SysSurgery.class);
+        Example.Criteria criteria = example.createCriteria();
+        ArrayList<String> arrayList = new ArrayList<>();
+        Iterator<String> iterator = arrayList.iterator();
+        criteria.andIn("pName", names);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(todayDate);
+        cal.add(Calendar.DATE, 1);
+        criteria.andBetween("surgeryDatetime", todayDate, cal.getTime());
+        return example;
     }
 
     private Example getExample(SysSurgeryQuery query) {
@@ -290,13 +306,16 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         return example;
     }
 
-    private Example getExampleByDate(Date todayDate) {
+    private Example getExampleByDate(Date todayDate,int hArea) {
         Example example = new Example(SysSurgery.class);
         Example.Criteria criteria = example.createCriteria();
         Calendar cal = Calendar.getInstance();
         cal.setTime(todayDate);
         cal.add(Calendar.DATE, 1);
         criteria.andBetween("surgeryDatetime", todayDate, cal.getTime());
+        if(hArea!=0){
+            criteria.andEqualTo("hArea", hArea);
+        }
         return example;
     }
 

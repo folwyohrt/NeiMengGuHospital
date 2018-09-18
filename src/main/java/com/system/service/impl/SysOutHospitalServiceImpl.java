@@ -166,10 +166,24 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
 
     private final Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
 
-    public List<String> getNameList(){
-        List<String> list= sysOutHospitalDao.selectAll().stream().sorted(Comparator.comparing(SysOutHospital::getpName)).map(item->item.getpName()).distinct().collect(Collectors.toList());
+    public List<String> getNameList(int hArea){
+        List<String> list= sysOutHospitalDao.selectByExample(getExample(hArea)).stream().sorted(Comparator.comparing(SysOutHospital::getpName)).map(item->item.getpName()).distinct().collect(Collectors.toList());
         Collections.sort(list, CHINA_COMPARE);
         return list;
+    }
+
+    public List<SysOutHospitalDTO> getListByName(List<String> names){
+        List<SysOutHospitalDTO> list = sysOutHospitalDao.selectByExample(getExample(names)).stream().sorted(Comparator.comparing(SysOutHospital::gethOutDate).reversed()).map(this::getSysOutHospitalDTO).collect(Collectors.toList());
+        return list;
+    }
+
+    private Example getExample(List<String> names) {
+        Example example = new Example(SysOutHospital.class);
+        Example.Criteria criteria = example.createCriteria();
+        ArrayList<String> arrayList = new ArrayList<>();
+        Iterator<String> iterator = arrayList.iterator();
+        criteria.andIn("pName", names);
+        return example;
     }
 
     private Example getExample(SysOutHospitalQuery query) {
@@ -226,7 +240,9 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
     private Example getExample(int areaId) {
         Example example = new Example(SysOutHospital.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("hArea", areaId);
+        if(areaId!=0){
+            criteria.andEqualTo("hArea", areaId);
+        }
         return example;
     }
 

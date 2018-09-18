@@ -29,5 +29,7 @@ public interface SysOutHospitalService {
 
     boolean delete(List<Long> idList);
 
-    List<String> getNameList();
+    List<String> getNameList(int hArea);
+
+    List<SysOutHospitalDTO> getListByName(List<String> names);
 }

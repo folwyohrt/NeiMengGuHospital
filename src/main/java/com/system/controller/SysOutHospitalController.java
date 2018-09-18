@@ -72,10 +72,17 @@ public class SysOutHospitalController {
         return sysOutHospitalService.delete(idList);
     }
 
-    @ApiOperation(value = "获取所有姓名")
-    @RequestMapping(value = "/getNameList", method = RequestMethod.GET)
+    @ApiOperation(value = "获某个病区的所有姓名")
+    @RequestMapping(value = "/getNameList/{hArea}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public List<String> getList() {
-        return sysOutHospitalService.getNameList();
+    public List<String> getList(@PathVariable int hArea) {
+        return sysOutHospitalService.getNameList(hArea);
+    }
+
+    @ApiOperation(value = "按照名字获取相应的列表")
+    @RequestMapping(value = "/getListByName/", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<SysOutHospitalDTO> getListByName(@RequestBody List<String> names) {
+        return sysOutHospitalService.getListByName(names);
     }
 }

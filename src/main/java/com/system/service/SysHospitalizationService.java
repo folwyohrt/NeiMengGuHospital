@@ -40,5 +40,7 @@ public interface SysHospitalizationService {
 
     boolean truncate();
 
-    List<String> getNameList();
+    List<String> getNameList(int hArea);
+
+    List<SysHospitalizationDTO> getListByName(List<String> names);
 }

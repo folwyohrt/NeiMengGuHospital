@@ -16,6 +16,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.awt.util.IdentityArrayList;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
@@ -222,9 +223,14 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
 
     private final Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
 
-    public List<String> getNameList(){
-        List<String> list= sysHospitalizationDao.selectAll().stream().sorted(Comparator.comparing(SysHospitalization::getpName)).map(item->item.getpName()).distinct().collect(Collectors.toList());
+    public List<String> getNameList(int hArea) {
+            List<String> list = sysHospitalizationDao.selectByExample(getExample(hArea)).stream().sorted(Comparator.comparing(SysHospitalization::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
         Collections.sort(list, CHINA_COMPARE);
+        return list;
+    }
+
+    public List<SysHospitalizationDTO> getListByName(List<String> names) {
+        List<SysHospitalizationDTO> list = sysHospitalizationDao.selectByExample(getExample(names)).stream().sorted(Comparator.comparing(SysHospitalization::gethDate).reversed()).map(this::getSysHospitalizationDTO).collect(Collectors.toList());
         return list;
     }
 
@@ -282,10 +288,22 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         return example;
     }
 
+    private Example getExample(List<String> names) {
+        //ClassificationExample
+        Example example = new Example(SysHospitalization.class);
+        Example.Criteria criteria = example.createCriteria();
+        ArrayList<String> arrayList = new ArrayList<>();
+        Iterator<String> iterator = arrayList.iterator();
+        criteria.andIn("pName", names);
+        return example;
+    }
+
     private Example getExample(int areaId) {
         Example example = new Example(SysHospitalization.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("hArea", areaId);
+        if (areaId != 0) {
+            criteria.andEqualTo("hArea", areaId);
+        }
         return example;
     }
 

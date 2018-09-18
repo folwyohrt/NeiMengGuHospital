@@ -37,5 +37,7 @@ public interface SysSurgeryService {
 
     boolean delete(List<Long> idList);
 
-    List<String> getNameList();
+    List<String> getNameList(int hArea);
+
+    List<SysSurgeryDTO> getListByName(List<String> names);
 }
