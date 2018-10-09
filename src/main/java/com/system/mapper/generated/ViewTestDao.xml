@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.ViewTestDao">
+  <resultMap id="BaseResultMap" type="com.system.entity.ViewTest">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="h_id" jdbcType="VARCHAR" property="hId" />
+    <result column="p_name" jdbcType="VARCHAR" property="pName" />
+    <result column="p_sex" jdbcType="VARCHAR" property="pSex" />
+    <result column="p_age" jdbcType="VARCHAR" property="pAge" />
+    <result column="h_bed" jdbcType="VARCHAR" property="hBed" />
+    <result column="escorts_num" jdbcType="INTEGER" property="escortsNum" />
+    <result column="visit_status" jdbcType="VARCHAR" property="visitStatus" />
+    <result column="h_date" jdbcType="TIMESTAMP" property="hDate" />
+    <result column="p_status" jdbcType="INTEGER" property="pStatus" />
+    <result column="p_insur" jdbcType="INTEGER" property="pInsur" />
+    <result column="dcr_name" jdbcType="VARCHAR" property="dcrName" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+    <result column="h_area" jdbcType="INTEGER" property="hArea" />
+  </resultMap>
+</mapper>

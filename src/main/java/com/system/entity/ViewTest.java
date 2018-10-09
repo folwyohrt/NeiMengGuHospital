@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
-@Table(name = "sys_surgery")
-public class SysSurgery implements Serializable {
-    @Id
+@Table(name = "view_test")
+public class ViewTest implements Serializable {
+    private String value;
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -15,18 +16,6 @@ public class SysSurgery implements Serializable {
      */
     @Column(name = "h_id")
     private String hId;
-
-    /**
-     * 住院次数
-     */
-    @Column(name = "h_times")
-    private Integer hTimes;
-
-    /**
-     * 序号
-     */
-    @Column(name = "h_xh")
-    private String hXh;
 
     /**
      * 姓名
@@ -47,12 +36,6 @@ public class SysSurgery implements Serializable {
     private String pAge;
 
     /**
-     * 病区
-     */
-    @Column(name = "h_area")
-    private Integer hArea;
-
-    /**
      * 床号
      */
     @Column(name = "h_bed")
@@ -71,16 +54,28 @@ public class SysSurgery implements Serializable {
     private String visitStatus;
 
     /**
-     * 手术类型
+     * 住院日期
      */
-    @Column(name = "surgery_status")
-    private Integer surgeryStatus;
+    @Column(name = "h_date")
+    private Date hDate;
 
     /**
-     * 手术时间
+     * 患者状态
      */
-    @Column(name = "surgery_datetime")
-    private Date surgeryDatetime;
+    @Column(name = "p_status")
+    private Integer pStatus;
+
+    /**
+     * 医保类型
+     */
+    @Column(name = "p_insur")
+    private Integer pInsur;
+
+    /**
+     * 责任医生
+     */
+    @Column(name = "dcr_name")
+    private String dcrName;
 
     /**
      * 创建时间
@@ -95,12 +90,26 @@ public class SysSurgery implements Serializable {
     private Date gmtModified;
 
     /**
-     * 术前诊断
+     * 病区
      */
-    @Column(name = "surgery_podx")
-    private String surgeryPodx;
+    @Column(name = "h_area")
+    private Integer hArea;
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * @return value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * @param value
+     */
+    public void setValue(String value) {
+        this.value = value == null ? null : value.trim();
+    }
 
     /**
      * @return id
@@ -132,42 +141,6 @@ public class SysSurgery implements Serializable {
      */
     public void sethId(String hId) {
         this.hId = hId == null ? null : hId.trim();
-    }
-
-    /**
-     * 获取住院次数
-     *
-     * @return h_times - 住院次数
-     */
-    public Integer gethTimes() {
-        return hTimes;
-    }
-
-    /**
-     * 设置住院次数
-     *
-     * @param hTimes 住院次数
-     */
-    public void sethTimes(Integer hTimes) {
-        this.hTimes = hTimes;
-    }
-
-    /**
-     * 获取序号
-     *
-     * @return h_xh - 序号
-     */
-    public String gethXh() {
-        return hXh;
-    }
-
-    /**
-     * 设置序号
-     *
-     * @param hXh 序号
-     */
-    public void sethXh(String hXh) {
-        this.hXh = hXh == null ? null : hXh.trim();
     }
 
     /**
@@ -225,24 +198,6 @@ public class SysSurgery implements Serializable {
     }
 
     /**
-     * 获取病区
-     *
-     * @return h_area - 病区
-     */
-    public Integer gethArea() {
-        return hArea;
-    }
-
-    /**
-     * 设置病区
-     *
-     * @param hArea 病区
-     */
-    public void sethArea(Integer hArea) {
-        this.hArea = hArea;
-    }
-
-    /**
      * 获取床号
      *
      * @return h_bed - 床号
@@ -297,39 +252,75 @@ public class SysSurgery implements Serializable {
     }
 
     /**
-     * 获取手术类型
+     * 获取住院日期
      *
-     * @return surgery_status - 手术类型
+     * @return h_date - 住院日期
      */
-    public Integer getSurgeryStatus() {
-        return surgeryStatus;
+    public Date gethDate() {
+        return hDate;
     }
 
     /**
-     * 设置手术类型
+     * 设置住院日期
      *
-     * @param surgeryStatus 手术类型
+     * @param hDate 住院日期
      */
-    public void setSurgeryStatus(Integer surgeryStatus) {
-        this.surgeryStatus = surgeryStatus;
+    public void sethDate(Date hDate) {
+        this.hDate = hDate;
     }
 
     /**
-     * 获取手术时间
+     * 获取患者状态
      *
-     * @return surgery_datetime - 手术时间
+     * @return p_status - 患者状态
      */
-    public Date getSurgeryDatetime() {
-        return surgeryDatetime;
+    public Integer getpStatus() {
+        return pStatus;
     }
 
     /**
-     * 设置手术时间
+     * 设置患者状态
      *
-     * @param surgeryDatetime 手术时间
+     * @param pStatus 患者状态
      */
-    public void setSurgeryDatetime(Date surgeryDatetime) {
-        this.surgeryDatetime = surgeryDatetime;
+    public void setpStatus(Integer pStatus) {
+        this.pStatus = pStatus;
+    }
+
+    /**
+     * 获取医保类型
+     *
+     * @return p_insur - 医保类型
+     */
+    public Integer getpInsur() {
+        return pInsur;
+    }
+
+    /**
+     * 设置医保类型
+     *
+     * @param pInsur 医保类型
+     */
+    public void setpInsur(Integer pInsur) {
+        this.pInsur = pInsur;
+    }
+
+    /**
+     * 获取责任医生
+     *
+     * @return dcr_name - 责任医生
+     */
+    public String getDcrName() {
+        return dcrName;
+    }
+
+    /**
+     * 设置责任医生
+     *
+     * @param dcrName 责任医生
+     */
+    public void setDcrName(String dcrName) {
+        this.dcrName = dcrName == null ? null : dcrName.trim();
     }
 
     /**
@@ -369,21 +360,21 @@ public class SysSurgery implements Serializable {
     }
 
     /**
-     * 获取术前诊断
+     * 获取病区
      *
-     * @return surgery_podx - 术前诊断
+     * @return h_area - 病区
      */
-    public String getSurgeryPodx() {
-        return surgeryPodx;
+    public Integer gethArea() {
+        return hArea;
     }
 
     /**
-     * 设置术前诊断
+     * 设置病区
      *
-     * @param surgeryPodx 术前诊断
+     * @param hArea 病区
      */
-    public void setSurgeryPodx(String surgeryPodx) {
-        this.surgeryPodx = surgeryPodx == null ? null : surgeryPodx.trim();
+    public void sethArea(Integer hArea) {
+        this.hArea = hArea;
     }
 
     @Override
@@ -397,45 +388,45 @@ public class SysSurgery implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        SysSurgery other = (SysSurgery) that;
-        return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
+        ViewTest other = (ViewTest) that;
+        return (this.getValue() == null ? other.getValue() == null : this.getValue().equals(other.getValue()))
+            && (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.gethId() == null ? other.gethId() == null : this.gethId().equals(other.gethId()))
-            && (this.gethTimes() == null ? other.gethTimes() == null : this.gethTimes().equals(other.gethTimes()))
-            && (this.gethXh() == null ? other.gethXh() == null : this.gethXh().equals(other.gethXh()))
             && (this.getpName() == null ? other.getpName() == null : this.getpName().equals(other.getpName()))
             && (this.getpSex() == null ? other.getpSex() == null : this.getpSex().equals(other.getpSex()))
             && (this.getpAge() == null ? other.getpAge() == null : this.getpAge().equals(other.getpAge()))
-            && (this.gethArea() == null ? other.gethArea() == null : this.gethArea().equals(other.gethArea()))
             && (this.gethBed() == null ? other.gethBed() == null : this.gethBed().equals(other.gethBed()))
             && (this.getEscortsNum() == null ? other.getEscortsNum() == null : this.getEscortsNum().equals(other.getEscortsNum()))
             && (this.getVisitStatus() == null ? other.getVisitStatus() == null : this.getVisitStatus().equals(other.getVisitStatus()))
-            && (this.getSurgeryStatus() == null ? other.getSurgeryStatus() == null : this.getSurgeryStatus().equals(other.getSurgeryStatus()))
-            && (this.getSurgeryDatetime() == null ? other.getSurgeryDatetime() == null : this.getSurgeryDatetime().equals(other.getSurgeryDatetime()))
+            && (this.gethDate() == null ? other.gethDate() == null : this.gethDate().equals(other.gethDate()))
+            && (this.getpStatus() == null ? other.getpStatus() == null : this.getpStatus().equals(other.getpStatus()))
+            && (this.getpInsur() == null ? other.getpInsur() == null : this.getpInsur().equals(other.getpInsur()))
+            && (this.getDcrName() == null ? other.getDcrName() == null : this.getDcrName().equals(other.getDcrName()))
             && (this.getGmtCreate() == null ? other.getGmtCreate() == null : this.getGmtCreate().equals(other.getGmtCreate()))
             && (this.getGmtModified() == null ? other.getGmtModified() == null : this.getGmtModified().equals(other.getGmtModified()))
-            && (this.getSurgeryPodx() == null ? other.getSurgeryPodx() == null : this.getSurgeryPodx().equals(other.getSurgeryPodx()));
+            && (this.gethArea() == null ? other.gethArea() == null : this.gethArea().equals(other.gethArea()));
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((getValue() == null) ? 0 : getValue().hashCode());
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((gethId() == null) ? 0 : gethId().hashCode());
-        result = prime * result + ((gethTimes() == null) ? 0 : gethTimes().hashCode());
-        result = prime * result + ((gethXh() == null) ? 0 : gethXh().hashCode());
         result = prime * result + ((getpName() == null) ? 0 : getpName().hashCode());
         result = prime * result + ((getpSex() == null) ? 0 : getpSex().hashCode());
         result = prime * result + ((getpAge() == null) ? 0 : getpAge().hashCode());
-        result = prime * result + ((gethArea() == null) ? 0 : gethArea().hashCode());
         result = prime * result + ((gethBed() == null) ? 0 : gethBed().hashCode());
         result = prime * result + ((getEscortsNum() == null) ? 0 : getEscortsNum().hashCode());
         result = prime * result + ((getVisitStatus() == null) ? 0 : getVisitStatus().hashCode());
-        result = prime * result + ((getSurgeryStatus() == null) ? 0 : getSurgeryStatus().hashCode());
-        result = prime * result + ((getSurgeryDatetime() == null) ? 0 : getSurgeryDatetime().hashCode());
+        result = prime * result + ((gethDate() == null) ? 0 : gethDate().hashCode());
+        result = prime * result + ((getpStatus() == null) ? 0 : getpStatus().hashCode());
+        result = prime * result + ((getpInsur() == null) ? 0 : getpInsur().hashCode());
+        result = prime * result + ((getDcrName() == null) ? 0 : getDcrName().hashCode());
         result = prime * result + ((getGmtCreate() == null) ? 0 : getGmtCreate().hashCode());
         result = prime * result + ((getGmtModified() == null) ? 0 : getGmtModified().hashCode());
-        result = prime * result + ((getSurgeryPodx() == null) ? 0 : getSurgeryPodx().hashCode());
+        result = prime * result + ((gethArea() == null) ? 0 : gethArea().hashCode());
         return result;
     }
 
@@ -445,22 +436,22 @@ public class SysSurgery implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
+        sb.append(", value=").append(value);
         sb.append(", id=").append(id);
         sb.append(", hId=").append(hId);
-        sb.append(", hTimes=").append(hTimes);
-        sb.append(", hXh=").append(hXh);
         sb.append(", pName=").append(pName);
         sb.append(", pSex=").append(pSex);
         sb.append(", pAge=").append(pAge);
-        sb.append(", hArea=").append(hArea);
         sb.append(", hBed=").append(hBed);
         sb.append(", escortsNum=").append(escortsNum);
         sb.append(", visitStatus=").append(visitStatus);
-        sb.append(", surgeryStatus=").append(surgeryStatus);
-        sb.append(", surgeryDatetime=").append(surgeryDatetime);
+        sb.append(", hDate=").append(hDate);
+        sb.append(", pStatus=").append(pStatus);
+        sb.append(", pInsur=").append(pInsur);
+        sb.append(", dcrName=").append(dcrName);
         sb.append(", gmtCreate=").append(gmtCreate);
         sb.append(", gmtModified=").append(gmtModified);
-        sb.append(", surgeryPodx=").append(surgeryPodx);
+        sb.append(", hArea=").append(hArea);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

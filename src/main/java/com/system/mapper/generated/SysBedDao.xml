@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.SysBedDao">
+  <resultMap id="BaseResultMap" type="com.system.entity.SysBed">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="b_id" jdbcType="INTEGER" property="bId" />
+    <result column="h_area" jdbcType="INTEGER" property="hArea" />
+    <result column="h_bed" jdbcType="VARCHAR" property="hBed" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    b_id, h_area, h_bed, gmt_create, gmt_modified
+  </sql>
+</mapper>

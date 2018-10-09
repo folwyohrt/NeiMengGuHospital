@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.DB2.test1.PtsVwBedDao">
+  <resultMap id="BaseResultMap" type="com.system.entity.DB2.test1.PtsVwBed">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="OFFICE" jdbcType="VARCHAR" property="office" />
+    <result column="OFFICEID" jdbcType="VARCHAR" property="officeid" />
+    <result column="BEDID" jdbcType="VARCHAR" property="bedid" />
+  </resultMap>
+</mapper>

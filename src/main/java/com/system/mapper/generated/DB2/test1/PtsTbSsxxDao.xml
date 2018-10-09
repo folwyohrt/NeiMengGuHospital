@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.DB2.test1.PtsTbSsxxDao">
+  <resultMap id="BaseResultMap" type="com.system.entity.DB2.test1.PtsTbSsxx">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="ZYH" jdbcType="VARCHAR" property="zyh" />
+    <result column="ZYCS" jdbcType="INTEGER" property="zycs" />
+    <result column="SSLX" jdbcType="VARCHAR" property="sslx" />
+    <result column="SSRQ" jdbcType="TIMESTAMP" property="ssrq" />
+    <result column="SQZD" jdbcType="VARCHAR" property="sqzd" />
+    <result column="SSYS" jdbcType="VARCHAR" property="ssys" />
+  </resultMap>
+</mapper>

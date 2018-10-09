@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.DB2.test1.PtsVwZyxxDao">
+  <resultMap id="BaseResultMap" type="com.system.entity.DB2.test1.PtsVwZyxx">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="ZYH" jdbcType="VARCHAR" property="zyh" />
+    <result column="YLFKFS" jdbcType="VARCHAR" property="ylfkfs" />
+    <result column="ZYCS" jdbcType="INTEGER" property="zycs" />
+    <result column="XM" jdbcType="VARCHAR" property="xm" />
+    <result column="XB" jdbcType="VARCHAR" property="xb" />
+    <result column="CSRQ" jdbcType="TIMESTAMP" property="csrq" />
+    <result column="NL" jdbcType="VARCHAR" property="nl" />
+    <result column="RYRQ" jdbcType="TIMESTAMP" property="ryrq" />
+    <result column="RYKS" jdbcType="VARCHAR" property="ryks" />
+    <result column="RYBCH" jdbcType="VARCHAR" property="rybch" />
+    <result column="ZZYS" jdbcType="VARCHAR" property="zzys" />
+    <result column="RYZDYSMS" jdbcType="VARCHAR" property="ryzdysms" />
+    <result column="RYTJ" jdbcType="VARCHAR" property="rytj" />
+    <result column="HLJB" jdbcType="VARCHAR" property="hljb" />
+  </resultMap>
+</mapper>
