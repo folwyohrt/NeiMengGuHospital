@@ -114,37 +114,37 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortOrder)) {
             if (sort.equals("pName")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getpName).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::getpName).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getpName)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::getpName));
                 }
             }
             if (sort.equals("hId")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::gethId).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::gethId).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::gethId)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::gethId));
                 }
             }
             if (sort.equals("hBed")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::gethBed).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::gethBed).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::gethBed)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::gethBed));
                 }
             }
             if (sort.equals("visitStatus")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getVisitStatus).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::getVisitStatus).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getVisitStatus)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::getVisitStatus));
                 }
             }
             if (sort.equals("surgeryDatetime")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getSurgeryDatetime).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::getSurgeryDatetime).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysSurgery::getSurgeryDatetime)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysSurgery::getSurgeryDatetime));
                 }
             }
         }
@@ -231,17 +231,17 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
     public List<String> getNameList(int hArea) {
         Date todayDate = getTodayDate();
         List<String> list = sysSurgeryDao.selectByExample(getExampleByDate(
-                getTodayDate(),hArea)).stream().sorted(Comparator.comparing(SysSurgery::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
+                getTodayDate(), hArea)).stream().sorted(Comparator.comparing(SysSurgery::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
         Collections.sort(list, CHINA_COMPARE);
         return list;
     }
 
     public List<SysSurgeryDTO> getListByName(List<String> names) {
-        List<SysSurgeryDTO> list = sysSurgeryDao.selectByExample(getExample(names,getTodayDate())).stream().sorted(Comparator.comparing(SysSurgery::getSurgeryDatetime).reversed()).map(this::getSysSurgeryDTO).collect(Collectors.toList());
+        List<SysSurgeryDTO> list = sysSurgeryDao.selectByExample(getExample(names, getTodayDate())).stream().sorted(Comparator.comparing(SysSurgery::getSurgeryDatetime).reversed()).map(this::getSysSurgeryDTO).collect(Collectors.toList());
         return list;
     }
 
-    private Example getExample(List<String> names,Date todayDate) {
+    private Example getExample(List<String> names, Date todayDate) {
         Example example = new Example(SysSurgery.class);
         Example.Criteria criteria = example.createCriteria();
         ArrayList<String> arrayList = new ArrayList<>();
@@ -306,14 +306,14 @@ public class SysSurgeryServiceImpl implements SysSurgeryService {
         return example;
     }
 
-    private Example getExampleByDate(Date todayDate,int hArea) {
+    private Example getExampleByDate(Date todayDate, int hArea) {
         Example example = new Example(SysSurgery.class);
         Example.Criteria criteria = example.createCriteria();
         Calendar cal = Calendar.getInstance();
         cal.setTime(todayDate);
         cal.add(Calendar.DATE, 1);
         criteria.andBetween("surgeryDatetime", todayDate, cal.getTime());
-        if(hArea!=0){
+        if (hArea != 0) {
             criteria.andEqualTo("hArea", hArea);
         }
         return example;

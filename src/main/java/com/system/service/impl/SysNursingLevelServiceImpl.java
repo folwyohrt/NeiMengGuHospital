@@ -45,10 +45,8 @@ public class SysNursingLevelServiceImpl implements SysNursingLevelService {
 
     @Override
     public List<SysNursingLevel> getList() {
-        List<SysNursingLevel> list= sysNursingLevelDao.selectAll()
-                .stream()
-                .sorted(Comparator.comparing(sysNursingLevel -> sysNursingLevel.getValue()))
-                .collect(Collectors.toList());
+        List<SysNursingLevel> list= sysNursingLevelDao.selectAll();
+        list.sort(Comparator.comparing(snl -> snl.getValue()));
         if(list==null||list.size()==0){
             throw new NoneGetException();
         }

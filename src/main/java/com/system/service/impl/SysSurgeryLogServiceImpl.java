@@ -30,8 +30,8 @@ public class SysSurgeryLogServiceImpl implements SysSurgeryLogService {
     private SysSurgeryLogDao sysSurgeryLogDao;
 
     public SysSurgeryLog get(long sId) {
-        List<SysSurgeryLog> resultList=sysSurgeryLogDao.selectByExample(getExample(sId)).stream().sorted(Comparator.comparing
-                (SysSurgeryLog::getVisitTime).reversed()).collect(Collectors.toList());
+        List<SysSurgeryLog> resultList = sysSurgeryLogDao.selectByExample(getExample(sId));
+        resultList.sort(Comparator.comparing(SysSurgeryLog::getVisitTime).reversed());
         if (resultList.size() != 0) {
             return resultList.get(0);
         }

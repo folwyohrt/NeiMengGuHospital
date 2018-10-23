@@ -91,16 +91,16 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortOrder)) {
             if (sort.equals("pName")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysOutHospital::getpName).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysOutHospital::getpName).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysOutHospital::getpName)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysOutHospital::getpName));
                 }
             }
             if (sort.equals("hId")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysOutHospital::gethId).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysOutHospital::gethId).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysOutHospital::gethId)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysOutHospital::gethId));
                 }
             }
         }
@@ -166,13 +166,13 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
 
     private final Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
 
-    public List<String> getNameList(int hArea){
-        List<String> list= sysOutHospitalDao.selectByExample(getExample(hArea)).stream().sorted(Comparator.comparing(SysOutHospital::getpName)).map(item->item.getpName()).distinct().collect(Collectors.toList());
+    public List<String> getNameList(int hArea) {
+        List<String> list = sysOutHospitalDao.selectByExample(getExample(hArea)).stream().sorted(Comparator.comparing(SysOutHospital::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
         Collections.sort(list, CHINA_COMPARE);
         return list;
     }
 
-    public List<SysOutHospitalDTO> getListByName(List<String> names){
+    public List<SysOutHospitalDTO> getListByName(List<String> names) {
         List<SysOutHospitalDTO> list = sysOutHospitalDao.selectByExample(getExample(names)).stream().sorted(Comparator.comparing(SysOutHospital::gethOutDate).reversed()).map(this::getSysOutHospitalDTO).collect(Collectors.toList());
         return list;
     }
@@ -189,14 +189,14 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
     private Example getExample(SysOutHospitalQuery query) {
         Example example = new Example(SysOutHospital.class);
 
-        String sort=query.getSort();
-        for (int i=0;i<sort.length();i++){
-            if(Character.isUpperCase(sort.charAt(i))){
-                sort=sort.substring(0,i)+"_"+sort.substring(i,sort.length());
+        String sort = query.getSort();
+        for (int i = 0; i < sort.length(); i++) {
+            if (Character.isUpperCase(sort.charAt(i))) {
+                sort = sort.substring(0, i) + "_" + sort.substring(i, sort.length());
                 break;
             }
         }
-        String orderStr=sort+" "+query.getSortOrder();
+        String orderStr = sort + " " + query.getSortOrder();
         example.setOrderByClause(orderStr);
 
         Example.Criteria criteria = example.createCriteria();
@@ -240,7 +240,7 @@ public class SysOutHospitalServiceImpl implements SysOutHospitalService {
     private Example getExample(int areaId) {
         Example example = new Example(SysOutHospital.class);
         Example.Criteria criteria = example.createCriteria();
-        if(areaId!=0){
+        if (areaId != 0) {
             criteria.andEqualTo("hArea", areaId);
         }
         return example;

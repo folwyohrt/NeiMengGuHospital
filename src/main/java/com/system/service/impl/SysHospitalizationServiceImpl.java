@@ -78,37 +78,37 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortOrder)) {
             if (sort.equals("pName")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::getpName).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::getpName).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::getpName)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::getpName));
                 }
             }
             if (sort.equals("hId")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethId).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::gethId).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethId)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::gethId));
                 }
             }
             if (sort.equals("hBed")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethBed).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::gethBed).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethBed)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::gethBed));
                 }
             }
             if (sort.equals("visitStatus")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::getVisitStatus).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::getVisitStatus).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::getVisitStatus)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::getVisitStatus));
                 }
             }
             if (sort.equals("hDate")) {
                 if (sortOrder.equals("desc")) {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethDate).reversed()).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::gethDate).reversed());
                 } else {
-                    list = list.stream().sorted(Comparator.comparing(SysHospitalization::gethDate)).collect(Collectors.toList());
+                    list.sort(Comparator.comparing(SysHospitalization::gethDate));
                 }
             }
         }
@@ -153,10 +153,8 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
 
     @Override
     public SysHospitalization getLatestRecordByhBed(String hBed) {
-        List<SysHospitalization> sysHospitalizationList = sysHospitalizationDao.selectByExample(getExample(hBed))
-                .stream()
-                .sorted(Comparator.comparing(SysHospitalization::getGmtModified).reversed())
-                .collect(Collectors.toList());
+        List<SysHospitalization> sysHospitalizationList = sysHospitalizationDao.selectByExample(getExample(hBed));
+        sysHospitalizationList.sort(Comparator.comparing(SysHospitalization::getGmtModified).reversed());
         return sysHospitalizationList.get(0);
     }
 
@@ -224,7 +222,7 @@ public class SysHospitalizationServiceImpl implements SysHospitalizationService 
     private final Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
 
     public List<String> getNameList(int hArea) {
-            List<String> list = sysHospitalizationDao.selectByExample(getExample(hArea)).stream().sorted(Comparator.comparing(SysHospitalization::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
+        List<String> list = sysHospitalizationDao.selectByExample(getExample(hArea)).stream().sorted(Comparator.comparing(SysHospitalization::getpName)).map(item -> item.getpName()).distinct().collect(Collectors.toList());
         Collections.sort(list, CHINA_COMPARE);
         return list;
     }
